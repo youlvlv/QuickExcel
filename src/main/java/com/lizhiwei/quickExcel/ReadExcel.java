@@ -81,6 +81,8 @@ public class ReadExcel {
                 }
             }
             int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
+            //空行数
+            int emptySize = 0;
             for (int i = startrow; i < rowNum; i++) { // 行循环开始
 
 //				PageData varpd = new PageData();
@@ -92,22 +94,35 @@ public class ReadExcel {
                 }
                 T t = null;
                 try {
+                    //创建新的实体类
                     t = entity.getDeclaredConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
-                cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
+                int size = properties.size();
                 for (ExcelEntity property : properties) {
                     Field field = null;
                     try {
                         field = entity.getDeclaredField(property.getProperty());
                         field.setAccessible(true);
-                        field.set(t, getExcelValue(row, property));
+                        Object o = getExcelValue(row, property);
+                        if (o == null){
+                            --size;
+                        }
+                        field.set(t, o);
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                varList.add(t);
+                if (size == 0) {
+                    if (++emptySize > 3){
+                        break;
+                    }
+                } else {
+                    emptySize = 0;
+                    varList.add(t);
+                }
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -123,11 +138,7 @@ public class ReadExcel {
         if (null != cell) {
             if (cell.toString().contains("-") && checkDate(cell.toString())) {
                 String ans = "";
-                try {
                     cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
-                } catch (Exception e) {
-
-                }
             } else {
                 switch (cell.getCellTypeEnum()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
                     case NUMERIC:
@@ -163,7 +174,7 @@ public class ReadExcel {
                 try {
                     type = Class.forName(property.getType());
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("抱歉，未找到该类型",e);
+                    throw new RuntimeException(e);
                 }
                 if (cellValue == null) {
                     return null;

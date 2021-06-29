@@ -9,6 +9,7 @@ public class ExcelEntity {
     private String value;
     private String property;
     private String type;
+    private Class<? extends ExcelFormat> format;
 
     public String getTitle() {
         return title;
@@ -42,6 +43,20 @@ public class ExcelEntity {
         this.type = type;
     }
 
+    public Class<? extends ExcelFormat> getFormat() {
+        return format;
+    }
+
+    public void setFormat(Class<? extends ExcelFormat> format) {
+        this.format = format;
+    }
+
+    public ExcelEntity(String value, String title, Class<? extends ExcelFormat> format) {
+        this.title = title;
+        this.value = value;
+        this.format = format;
+    }
+
     public ExcelEntity(String value, String title) {
         this.title = title;
         this.value = value;
@@ -49,5 +64,6 @@ public class ExcelEntity {
 
     public ExcelEntity() {
     }
+
 
 }

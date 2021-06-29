@@ -1,5 +1,7 @@
 package com.lizhiwei.quickExcel.entity;
 
+
+
 import java.lang.annotation.*;
 
 @Target(ElementType.FIELD)
@@ -7,12 +9,17 @@ import java.lang.annotation.*;
 @Documented
 public @interface Excel {
     /**
+     * 导入EXCEL匹配名称
+     * @return
+     */
+    String value() default "";
+    /**
      * 导出EXCEL时 匹配名称
      *
      * @return
      */
     String name() default "";
 
-    String value() default "";
 
+    Class<? extends ExcelFormat> format() default DefaultFormat.class;
 }
