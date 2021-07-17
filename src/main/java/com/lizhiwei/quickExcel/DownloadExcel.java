@@ -16,7 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import javax.servlet.http.HttpServletResponse;
+//import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
@@ -34,33 +34,32 @@ public class DownloadExcel {
      * @param path     文件地址
      * @throws IOException 异常
      */
-    public static void downloadTemplate(HttpServletResponse response, String path) throws IOException {
-            String fileName = path.substring(path.lastIndexOf("/") + 1);
-            File file = new File(path);
-            /** 将文件名称进行编码 */
-            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            response.setContentType("application/octet-stream");
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/
-                outputStream.write(buffer, 0, len);
-            }
-            inputStream.close();
-            outputStream.close();
-    }
+//    public static void download(HttpServletResponse response, File path) throws IOException {
+//            String fileName = "文件名";
+//            File file = this.setExcelProperty()
+//            /** 将文件名称进行编码 */
+//            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+//            response.setContentType("application/octet-stream");
+//            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+//            OutputStream outputStream = response.getOutputStream();
+//            byte[] buffer = new byte[1024];
+//            int len;
+//            while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/
+//                outputStream.write(buffer, 0, len);
+//            }
+//            inputStream.close();
+//            outputStream.close();
+//    }
 
     /**
      * 生成Excel表格以供下载
      *
      * @param fileNameParam
-     * @param response
      * @param listTitle
      * @param listContent
      * @param <T>
      */
-    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, List<ExcelEntity> listTitle, List<T> listContent) {
+    public static <T> File setExcelProperty(String fileNameParam,  List<ExcelEntity> listTitle, List<T> listContent) {
         SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
         XSSFWorkbook xWorkbook = null;
         String fileName = "";
@@ -70,11 +69,6 @@ public class DownloadExcel {
             //String fileName = df.format(new Date()) + ".xlsx";
             fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
             fileName2 = "cache/" + fileName;
-            response.reset();
-            //作用：在前端作用显示为调用浏览器下载弹窗
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
-            response.setContentType("application/octet-stream");
             //创建表格工作空间
             xWorkbook = new XSSFWorkbook();
             //创建一个新表格
@@ -86,32 +80,22 @@ public class DownloadExcel {
             FileOutputStream outFile = new FileOutputStream(fileName2);
             xWorkbook.write(outFile);
             xWorkbook.close();
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName2));
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/
-                outputStream.write(buffer, 0, len);
-            }
-            inputStream.close();
-            outputStream.close();
+
+
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            File file = new File(fileName2);
-            file.delete();
         }
+        return new File(fileName2);
     }
 
     /**
      * 生成EXCEL表
      * @param fileNameParam 文件名
-     * @param response 下载流
      * @param entity 列表实体类
      * @param listContent 列表
      * @param <T> 实体类
      */
-    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity, List<T> listContent) {
+    public static <T> File setExcelProperty(String fileNameParam, Class<T> entity, List<T> listContent) {
         SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
         XSSFWorkbook xWorkbook = null;
         String fileName = "";
@@ -134,11 +118,6 @@ public class DownloadExcel {
             //String fileName = df.format(new Date()) + ".xlsx";
             fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
             fileName2 = "cache/" + fileName;
-            response.reset();
-            //作用：在前端作用显示为调用浏览器下载弹窗
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
-            response.setContentType("application/octet-stream");
             //创建表格工作空间
             xWorkbook = new XSSFWorkbook();
             //创建一个新表格
@@ -156,24 +135,14 @@ public class DownloadExcel {
             FileOutputStream outFile = new FileOutputStream(file);
             xWorkbook.write(outFile);
             xWorkbook.close();
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName2));
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/
-                outputStream.write(buffer, 0, len);
-            }
-            inputStream.close();
-            outputStream.close();
+
+
         } catch (Exception e) {
             e.printStackTrace();
             //更换为自定异常！！！！
             throw new RuntimeException("导出表格时出现异常...请联系管理员",e);
-        } finally {
-            File file = new File(fileName2);
-            //删除文件
-            file.delete();
         }
+        return new File(fileName2);
     }
 
 
@@ -273,7 +242,7 @@ public class DownloadExcel {
      * @param listContent
      * @param
      */
-    public static <T,E> void setExcelProperty(String fileNameParam, HttpServletResponse response, List<Map<T,E>> listTitle, List<Map<T,E>> listContent, Integer z) {
+    public static <T,E> File setExcelProperty(String fileNameParam, List<Map<T,E>> listTitle, List<Map<T,E>> listContent, Integer z) {
         SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
         XSSFWorkbook xWorkbook = null;
         String fileName = "";
@@ -283,11 +252,7 @@ public class DownloadExcel {
             //String fileName = df.format(new Date()) + ".xlsx";
             fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
             fileName2 = "cache/" + fileName;
-            response.reset();
-            //作用：在前端作用显示为调用浏览器下载弹窗
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
-            response.setContentType("application/octet-stream");
+
             //创建表格工作空间
             xWorkbook = new XSSFWorkbook();
             //创建一个新表格
@@ -299,21 +264,11 @@ public class DownloadExcel {
             FileOutputStream outFile = new FileOutputStream(fileName2);
             xWorkbook.write(outFile);
             xWorkbook.close();
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName2));
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/
-                outputStream.write(buffer, 0, len);
-            }
-            inputStream.close();
-            outputStream.close();
+
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            File file = new File(fileName2);
-            file.delete();
         }
+        return  new File(fileName2);
     }
 
 
