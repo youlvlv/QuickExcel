@@ -1,6 +1,5 @@
 package com.lizhiwei.quickExcel.entity;
 
-import com.chinatechstar.component.commons.utils.PageData;
 
 /**
  * 导出Excel实体类
@@ -82,11 +81,5 @@ public class ExcelEntity {
     public ExcelEntity() {
     }
 
-    public PageData toPageData() {
-        PageData a = new PageData();
-        a.put("value", this.value);
-        a.put("title", this.title);
-        a.put("property",this.property);
-        return a;
-    }
+
 }
