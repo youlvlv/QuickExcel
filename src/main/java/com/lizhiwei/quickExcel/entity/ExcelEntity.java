@@ -1,5 +1,6 @@
 package com.lizhiwei.quickExcel.entity;
 
+import com.chinatechstar.component.commons.utils.PageData;
 
 /**
  * 导出Excel实体类
@@ -8,8 +9,9 @@ public class ExcelEntity {
     private String title;
     private String value;
     private String property;
-    private String type;
-    private Class<? extends ExcelFormat> format;
+    private Class<?> type;
+    private ExcelFormat<?> format;
+    private int index;
 
     public String getTitle() {
         return title;
@@ -35,26 +37,41 @@ public class ExcelEntity {
         this.property = property;
     }
 
-    public String getType() {
+    public Class<?> getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 
-    public Class<? extends ExcelFormat> getFormat() {
+    public ExcelFormat<?> getFormat() {
         return format;
     }
 
-    public void setFormat(Class<? extends ExcelFormat> format) {
+    public void setFormat(ExcelFormat<?> format) {
         this.format = format;
     }
 
-    public ExcelEntity(String value, String title, Class<? extends ExcelFormat> format) {
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public ExcelEntity(String value, String title, ExcelFormat<?> format) {
         this.title = title;
         this.value = value;
         this.format = format;
+    }
+
+    public ExcelEntity(String value, String title, ExcelFormat<?> format,int index) {
+        this.title = title;
+        this.value = value;
+        this.format = format;
+        this.index = index;
     }
 
     public ExcelEntity(String value, String title) {
@@ -65,5 +82,11 @@ public class ExcelEntity {
     public ExcelEntity() {
     }
 
-
+    public PageData toPageData() {
+        PageData a = new PageData();
+        a.put("value", this.value);
+        a.put("title", this.title);
+        a.put("property",this.property);
+        return a;
+    }
 }

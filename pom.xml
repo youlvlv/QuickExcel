@@ -6,13 +6,10 @@
 
     <groupId>com.github</groupId>
     <artifactId>QuickExcel</artifactId>
-    <version>1.0.1-bate</version>
+    <version>1.0.2-bate</version>
     <packaging>jar</packaging>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -36,6 +33,13 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compile.source>1.8</maven.compile.source>
+        <maven.compile.target>1.8</maven.compile.target>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -48,7 +52,6 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>

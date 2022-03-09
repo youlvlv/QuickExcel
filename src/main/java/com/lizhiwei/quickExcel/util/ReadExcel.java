@@ -1,8 +1,10 @@
-package com.lizhiwei.quickExcel;
+package com.lizhiwei.quickExcel.util;
 
 
+import com.lizhiwei.quickExcel.entity.DefaultFormat;
 import com.lizhiwei.quickExcel.entity.Excel;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
+import com.lizhiwei.quickExcel.entity.ExcelFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -24,13 +26,14 @@ import java.util.List;
 
 public class ReadExcel {
 
-
     /**
-     * @param filepath //文件路径
-     * @param filename //文件名
-     * @param startrow //开始行号
-     * @param startcol //开始列号
-     * @param sheetnum //sheet
+     * 读取excel
+     *
+     * @param filepath 文件路径
+     * @param filename 文件名
+     * @param startrow 开始行号
+     * @param startcol 开始列号
+     * @param sheetnum sheet
      * @return list
      */
     public static <T> List<T> readExcel(String filepath, String filename, int startrow, int startcol, int sheetnum, Class<T> entity) {
@@ -54,6 +57,7 @@ public class ReadExcel {
             }
             Sheet sheet = wb.getSheetAt(sheetnum); // sheet 从0开始
             List<ExcelEntity> properties = new ArrayList<>();
+            //获取实体类所有属性
             Field[] fields = entity.getDeclaredFields();
             /*----------匹配头------------*/
             Row row = sheet.getRow(startrow - 1); // 行
@@ -64,16 +68,24 @@ public class ReadExcel {
                     break;
                 } else {
                     ExcelEntity excelEntity = new ExcelEntity();
+                    //循环实体类所有属性
                     for (Field field : fields) {
                         field.setAccessible(true);
                         if (!field.isAnnotationPresent(Excel.class)) {
                             continue;
                         }
                         Excel excel = field.getAnnotation(Excel.class);
+                        //匹配是否为相同头
                         if (excel.value().equals(cell.getStringCellValue())) {
                             excelEntity.setProperty(field.getName());
                             excelEntity.setValue(j + "");
-                            excelEntity.setType(field.getGenericType().getTypeName());
+                            excelEntity.setType(field.getType());
+                            try {
+                                excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
+                            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                                e.printStackTrace();
+                                excelEntity.setFormat(new DefaultFormat());
+                            }
                             properties.add(excelEntity);
                             break;
                         }
@@ -106,7 +118,7 @@ public class ReadExcel {
                         field = entity.getDeclaredField(property.getProperty());
                         field.setAccessible(true);
                         Object o = getExcelValue(row, property);
-                        if (o == null){
+                        if (o == null || o.toString().equals("")) {
                             --size;
                         }
                         field.set(t, o);
@@ -115,14 +127,13 @@ public class ReadExcel {
                     }
                 }
                 if (size == 0) {
-                    if (++emptySize > 3){
+                    if (++emptySize > 3) {
                         break;
                     }
                 } else {
                     emptySize = 0;
                     varList.add(t);
                 }
-
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -138,7 +149,7 @@ public class ReadExcel {
         if (null != cell) {
             if (cell.toString().contains("-") && checkDate(cell.toString())) {
                 String ans = "";
-                    cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
+                cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
             } else {
                 switch (cell.getCellTypeEnum()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
                     case NUMERIC:
@@ -170,34 +181,12 @@ public class ReadExcel {
                         cellValue = String.valueOf(cell.getErrorCellValue());
                         break;
                 }
-                Class type = null;
-                try {
-                    type = Class.forName(property.getType());
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
+                Class<?> type = property.getType();
+                ExcelFormat<?> format = property.getFormat();
+                if (format instanceof DefaultFormat) {
+                    return ((DefaultFormat) format).ReadToExcel(type, cellValue);
                 }
-                if (cellValue == null) {
-                    return null;
-                } else {
-                    if (type == String.class) {
-                        return cellValue;
-                    } else if (type == Integer.class) {
-                        return Integer.parseInt(cellValue);
-                    } else if (type == Long.class) {
-                        return Long.valueOf(cellValue);
-                    } else if (type == Double.class) {
-                        return Double.valueOf(cellValue);
-                    } else if (type == Boolean.class) {
-                        return Boolean.valueOf(cellValue);
-                    } else if (type == Date.class) {
-                        try {
-                            return sdf.parse(cellValue);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-
+                return format.ReadToExcel(cellValue);
             }
         } else {
             cellValue = "";
@@ -224,7 +213,6 @@ public class ReadExcel {
         }
         return false;
     }
-
 
 
     public static Date getDate(String time) {
@@ -257,12 +245,35 @@ public class ReadExcel {
         }
     }
 
+
+//    public static String checkNumber(String number) {
+//
+//        String a = null;
+//        if (number.contains(".0")) {
+//            a = number.substring(0, number.length() - 2);
+//        }else if(number.contains("-0")){
+//            a= number;
+//        } else {
+//            a = number;
+//        }
+//        return a;
+//    }
+
+    // 工资条问题  上面的是原版的
     public static String checkNumber(String number) {
+
         String a = null;
-        if (number.contains(".0")) {
-            a = number.substring(0, number.length() - 2);
-        } else {
+        if (number.contains(".01") || number.contains(".02") || number.contains(".03") || number.contains(".04") || number.contains(".05")
+                || number.contains(".06") || number.contains(".07") || number.contains(".08") || number.contains(".09")) {
             a = number;
+        } else {
+            if (number.contains(".0")) {
+                a = number.substring(0, number.length() - 2);
+            } else if (number.contains("-0")) {
+                a = number;
+            } else {
+                a = number;
+            }
         }
         return a;
     }
