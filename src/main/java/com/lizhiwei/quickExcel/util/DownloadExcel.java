@@ -85,9 +85,7 @@ public class DownloadExcel {
             //定义表格导出时默认文件名 时间戳
             //String fileName = df.format(new Date()) + ".xlsx";
             fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
-            fileName =  "11111-" + fileNameParam + ".xlsx";
             fileName2 = "cache/" + fileName;
-            fileName2 = "C:\\datadisk\\hsoa\\out\\cache\\excel" + fileName;// 文件上传路径
             //创建表格工作空间
             xWorkbook = new XSSFWorkbook();
             //创建一个新表格
