@@ -1,7 +1,7 @@
 package com.lizhiwei.quickExcel.entity;
 
 
-public interface  ExcelFormat<T> {
+public interface ExcelFormat<T> {
     /**
      * 读取实体类属性至excel值
      * @param v
@@ -11,7 +11,6 @@ public interface  ExcelFormat<T> {
 
     /**
      * 读取excel的值转换至实体类属性类型
-     * @param type 属性
      * @param v 值
      * @return 属性
      */

@@ -8,11 +8,20 @@ import java.lang.annotation.*;
 public @interface Excel {
     /**
      * 导入EXCEL匹配名称
+     *
      * @return
      */
-    String value() default "";
+    String value();
+
     /**
-     * 导出EXCEL时 匹配名称
+     * 导出excel时显示的第二名称
+     *
+     * @return
+     */
+    Class<? extends TopName> secondName() default DefaultTopName.class;
+
+    /**
+     * 导出EXCEL时 匹配名称 非必填
      *
      * @return
      */
@@ -20,10 +29,14 @@ public @interface Excel {
 
     /**
      * 默认排序
+     *
      * @return
      */
     int index() default -1;
 
-
+    /**
+     * 转换工具
+     * @return
+     */
     Class<? extends ExcelFormat> format() default DefaultFormat.class;
 }

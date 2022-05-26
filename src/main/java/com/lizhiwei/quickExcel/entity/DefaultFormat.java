@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DefaultFormat implements ExcelFormat<Object>{
+public class DefaultFormat implements ExcelFormat<Object> {
 
 
     @Override
@@ -24,6 +24,12 @@ public class DefaultFormat implements ExcelFormat<Object>{
             }
         } else if (v instanceof Number) {
             value = v.toString();
+        } else if (v instanceof Boolean) {
+            if ((boolean) v) {
+                return "是";
+            } else {
+                return "否";
+            }
         }
         return value;
     }
@@ -35,19 +41,24 @@ public class DefaultFormat implements ExcelFormat<Object>{
 
     public Object ReadToExcel(Class<?> type, String v) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if (v == null) {
+        if (v == null|| v.equals("")) {
             return null;
         } else {
             if (type == String.class) {
-                return  v;
+                return v;
             } else if (type == Integer.class) {
-                return  Integer.valueOf(v);
+                return Integer.valueOf(v);
             } else if (type == Long.class) {
-                return  Long.valueOf(v);
+                return Long.valueOf(v);
             } else if (type == Double.class) {
-                return  Double.valueOf(v);
+                return Double.valueOf(v);
             } else if (type == Boolean.class) {
-                return  Boolean.valueOf(v);
+                if (v.contains("是")) {
+                    return true;
+                } else if (v.contains("否")) {
+                    return false;
+                }
+                return Boolean.valueOf(v);
             } else if (type == Date.class) {
                 try {
                     return sdf.parse(v);
