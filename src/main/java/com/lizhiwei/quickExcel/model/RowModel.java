@@ -64,5 +64,12 @@ public class RowModel {
         return this;
     }
 
+    public RowModel setValue(int i, String value) {
+        XSSFCell cell = createCell(i);
+        cell.setCellValue(value);
+        cell.setCellStyle(sheet.getExcel().getDefaultStyle());
+        return this;
+    }
+
 
 }
