@@ -92,7 +92,7 @@ public class ExcelFileToZip implements FileOperation {
      * @param zipFile  压缩包文件
      * @throws RuntimeException
      */
-    public static void toZip(List<File> srcFiles, File zipFile) throws RuntimeException {
+    public void toZip(List<File> srcFiles, File zipFile) throws RuntimeException {
         //判断压缩文件是否为空
         if (zipFile == null) {
             return;
