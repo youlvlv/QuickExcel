@@ -3,7 +3,6 @@ package com.lizhiwei.quickExcel.model;
 
 import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
-import com.lizhiwei.quickExcel.util.DownloadComplexExcel;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -11,7 +10,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -76,16 +74,12 @@ public class ExcelModel extends ExcelUtil {
         return this;
     }
 
-    public ExcelModel exportExcel(DownloadComplexExcel.DownloadExcel stream) {
-        try {
-            stream.download(this);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public ExcelModel exportExcel(FileOperation operation) {
+        operation.run(this);
         return this;
     }
 
-    public void close()  {
+    public void close() {
         try {
             xWorkbook.close();
         } catch (IOException e) {
