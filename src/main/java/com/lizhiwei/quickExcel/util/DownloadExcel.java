@@ -2,7 +2,7 @@ package com.lizhiwei.quickExcel.util;
 
 import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
-import com.lizhiwei.quickExcel.entity.IORunTimeException;
+import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
 

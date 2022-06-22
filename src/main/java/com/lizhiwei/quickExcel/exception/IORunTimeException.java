@@ -1,4 +1,4 @@
-package com.lizhiwei.quickExcel.entity;
+package com.lizhiwei.quickExcel.exception;
 
 public class IORunTimeException extends RuntimeException{
     public IORunTimeException() {
