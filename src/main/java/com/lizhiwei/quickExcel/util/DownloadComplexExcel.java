@@ -44,7 +44,7 @@ public class DownloadComplexExcel {
             String fileName2 = "cache/" + fileName;
             FileOutputStream outFile = new FileOutputStream(fileName2);
             try {
-                excel.getWorkbook().write(outFile);
+                excel.write(outFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

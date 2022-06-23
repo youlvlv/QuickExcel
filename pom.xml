@@ -43,24 +43,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifestEntries>
                             <Class-Path>.</Class-Path>
+                            <addClasspath>true</addClasspath> <!-- 在jar的MF文件中生成classpath属性 -->
+                            <classpathPrefix>lib/</classpathPrefix>
                         </manifestEntries>
                     </archive>
                     <descriptorRefs>

@@ -82,7 +82,13 @@ public class DownloadExcel extends ExcelUtil {
             //set Sheet页内容
             util.setSheetContent(sheet,listContent,listTitle);
             FileOutputStream outFile = new FileOutputStream(fileName2);
-            excel.exportExcel(outFile).close();
+            excel.exportExcel((x) -> {
+                try {
+                    x.write(outFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).close();
             downloadTemplate(response, fileName2);
         } catch (Exception e) {
             e.printStackTrace();

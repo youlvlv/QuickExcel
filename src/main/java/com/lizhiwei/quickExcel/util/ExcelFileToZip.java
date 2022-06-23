@@ -37,7 +37,7 @@ public class ExcelFileToZip implements FileOperation {
         File file = new File(path, fileName + ".xlsx");
         try {
             FileOutputStream outFile = new FileOutputStream(file);
-            model.getWorkbook().write(outFile);
+            model.write(outFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
