@@ -108,7 +108,6 @@ public class ExcelFileToZip implements FileOperation {
             for (File srcFile : srcFiles) {
                 byte[] buf = new byte[4096];
                 zos.putNextEntry(new ZipEntry(srcFile.getName()));
-                System.out.println("srcFile.getName()" + srcFile.getName());
                 int len;
                 FileInputStream in = new FileInputStream(srcFile);
                 while ((len = in.read(buf)) != -1) {
