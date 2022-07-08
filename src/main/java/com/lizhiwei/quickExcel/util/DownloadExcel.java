@@ -57,15 +57,6 @@ public class DownloadExcel extends ExcelUtil {
     public static <T> void setExcelProperty(FileOperation operation, List<ExcelEntity> listTitle, List<T> listContent) {
         SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
         //列表排序
-        listTitle.sort((o1, o2) -> {
-            if (o2.getIndex() < 0) {
-                return -1;
-            }
-            if (o1.getIndex() < 0) {
-                return 1;
-            }
-            return Integer.compare(o1.getIndex(), o2.getIndex());
-        });
         try {
             //创建表格工作空间
             ExcelModel excel = new ExcelModel();

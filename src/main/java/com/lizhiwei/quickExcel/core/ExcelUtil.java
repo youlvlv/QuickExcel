@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class ExcelUtil {
@@ -44,15 +45,24 @@ public class ExcelUtil {
                 int order = i++;
                 ExcelEntity excelEntity;
                 try {
-                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), e.format().getDeclaredConstructor().newInstance(), order, e.secondName());
+                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), e.format().getDeclaredConstructor().newInstance(), e.index(), e.secondName());
                 } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
                          NoSuchMethodException ex) {
                     ex.printStackTrace();
-                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), new DefaultFormat(), order, DefaultTopName.class);
+                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), new DefaultFormat(), e.index(), DefaultTopName.class);
                 }
                 listTitle.add(excelEntity);
             }
         }
+        listTitle.sort((o1, o2) -> {
+            if (o2.getIndex() < 0) {
+                return -1;
+            }
+            if (o1.getIndex() < 0) {
+                return 1;
+            }
+            return Integer.compare(o1.getIndex(), o2.getIndex());
+        });
         return listTitle;
     }
 
@@ -91,10 +101,12 @@ public class ExcelUtil {
             Map<Class<? extends TopName>, List<ExcelEntity>> group = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class))
                     .collect(Collectors.groupingBy(ExcelEntity::getTopName));
 //            Map<Integer,TopName> type = new HashMap<>();
+            AtomicInteger order = new AtomicInteger();
             group.forEach((k, v) -> {
                 try {
-                    xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
+                    xRow0.setHeaderValue(order.get(), order.get() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
                     xRow0.setSecondHeaderValue(v);
+                    order.getAndIncrement();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
                     throw new RuntimeException(e);
@@ -102,7 +114,7 @@ public class ExcelUtil {
             });
             for (ExcelEntity excelEntity : listTitle) {
                 if (excelEntity.getTopName().equals(DefaultTopName.class)) {
-                    xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
+                    xRow0.setValue(order.getAndIncrement(), excelEntity.getTitle(), cs);
                 }
             }
         } else {
@@ -148,6 +160,7 @@ public class ExcelUtil {
                     RowModel xRow = sheet.newRow();
                     //获取类属性
                     Field field;
+                    int order = 0;
                     for (ExcelEntity excelEntity : listTitle) {
                         String str = excelEntity.getProperty();
                         //获取完成get方法  首字母大写如：getId
@@ -158,7 +171,7 @@ public class ExcelUtil {
                         ExcelFormat format = excelEntity.getFormat();
                         value = format.WriterToExcel(o);
                         //循环设置每列的值
-                        xRow.setValue(excelEntity.getIndex(), value, cs);
+                        xRow.setValue(order++, value, cs);
 //                        XSSFCell xCell = xRow.createCell(j);
 //                        xCell.setCellStyle(cs);
 //                        xCell.setCellValue(value);

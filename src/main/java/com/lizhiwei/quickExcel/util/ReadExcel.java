@@ -64,36 +64,33 @@ public class ReadExcel {
             /*----------匹配头------------*/
             Row row = sheet.getRow(startrow - 1); // 行
             int cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
+            List<String> cellName = new ArrayList<>();
             for (int j = startcol; j < cellNum; j++) { // 列循环开始
-//                Cell cell = row.getCell(Short.parseShort(j + ""));
-//                if (cell == null) {
-//                    break;
-//                } else {
-                ExcelEntity excelEntity = new ExcelEntity();
-                //循环实体类所有属性
-                for (Field field : fields) {
-                    field.setAccessible(true);
-                    if (!field.isAnnotationPresent(Excel.class)) {
-                        continue;
-                    }
-                    Excel excel = field.getAnnotation(Excel.class);
-                    //匹配是否为相同头
-                    if (excel.value().equals(getMergedRegionValue(sheet, startrow - 1, j))) {
-                        excelEntity.setProperty(field.getName());
-                        excelEntity.setValue(j);
-                        excelEntity.setType(field.getType());
-                        try {
-                            excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
-                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                                 NoSuchMethodException e) {
-                            e.printStackTrace();
-                            excelEntity.setFormat(new DefaultFormat());
-                        }
-                        properties.add(excelEntity);
-                        break;
-                    }
+                cellName.add(getMergedRegionValue(sheet, startrow - 1, j));
+            }
+            //循环实体类所有属性
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if (!field.isAnnotationPresent(Excel.class)) {
+                    continue;
                 }
-//                }
+
+                ExcelEntity excelEntity = new ExcelEntity();
+                Excel excel = field.getAnnotation(Excel.class);
+                //匹配是否为相同头
+                if (cellName.contains(excel.value())) {
+                    excelEntity.setProperty(field.getName());
+                    excelEntity.setValue(startcol + cellName.indexOf(excel.value()));
+                    excelEntity.setType(field.getType());
+                    try {
+                        excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        e.printStackTrace();
+                        excelEntity.setFormat(new DefaultFormat());
+                    }
+                    properties.add(excelEntity);
+                }
             }
             int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
             //空行数

@@ -6,7 +6,7 @@
 
     <groupId>com.github</groupId>
     <artifactId>QuickExcel</artifactId>
-    <version>2.0-bate</version>
+    <version>2.0</version>
     <packaging>jar</packaging>
 
 
@@ -42,6 +42,36 @@
     </properties>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.alipay.sofa</groupId>
+                <artifactId>sofa-ark-plugin-maven-plugin</artifactId>
+                <version>1.1.6</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>ark-plugin</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+<!--                    &lt;!&ndash; configure imported class &ndash;&gt;-->
+<!--                    <imported>-->
+<!--                        &lt;!&ndash; configure class-level imported class &ndash;&gt;-->
+<!--                        <packages>-->
+<!--                            <package>org.apache.poi</package>-->
+<!--                        </packages>-->
+<!--                    </imported>-->
+
+                    <!-- configure exported class -->
+                    <exported>
+                        <!-- configure class-level exported class -->
+                        <packages>
+                            <package>com.lizhiwei.quickExcel</package>
+                        </packages>
+                    </exported>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
