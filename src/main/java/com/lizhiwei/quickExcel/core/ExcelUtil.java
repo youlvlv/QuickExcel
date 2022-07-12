@@ -15,6 +15,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,7 +35,6 @@ public class ExcelUtil {
     public <T> List<ExcelEntity> getExcelEntities(Class<T> entity) {
         Field[] fields = entity.getDeclaredFields();
         List<ExcelEntity> listTitle = new ArrayList<>();
-        int i = 0;
         for (Field field : fields) {
             //设置属性默认可访问，防止private阻止访问
             field.setAccessible(true);
@@ -42,7 +42,6 @@ public class ExcelUtil {
             if (field.isAnnotationPresent(Excel.class)) {
                 //获取Excel注解
                 Excel e = field.getDeclaredAnnotation(Excel.class);
-                int order = i++;
                 ExcelEntity excelEntity;
                 try {
                     excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), e.format().getDeclaredConstructor().newInstance(), e.index(), e.secondName());
@@ -54,15 +53,12 @@ public class ExcelUtil {
                 listTitle.add(excelEntity);
             }
         }
-        listTitle.sort((o1, o2) -> {
-            if (o2.getIndex() < 0) {
-                return -1;
-            }
-            if (o1.getIndex() < 0) {
-                return 1;
-            }
-            return Integer.compare(o1.getIndex(), o2.getIndex());
-        });
+        //判断当前是否有自主排序
+        if (listTitle.stream().anyMatch(x -> x.getIndex() != -1))
+            listTitle.sort(Comparator.comparingInt(ExcelEntity::getIndex));
+        //重置排序
+        AtomicInteger i = new AtomicInteger();
+        listTitle.forEach(x -> x.setIndex(i.getAndIncrement()));
         return listTitle;
     }
 
@@ -101,12 +97,10 @@ public class ExcelUtil {
             Map<Class<? extends TopName>, List<ExcelEntity>> group = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class))
                     .collect(Collectors.groupingBy(ExcelEntity::getTopName));
 //            Map<Integer,TopName> type = new HashMap<>();
-            AtomicInteger order = new AtomicInteger();
             group.forEach((k, v) -> {
                 try {
-                    xRow0.setHeaderValue(order.get(), order.get() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
+                    xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
                     xRow0.setSecondHeaderValue(v);
-                    order.getAndIncrement();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
                     throw new RuntimeException(e);
@@ -114,19 +108,17 @@ public class ExcelUtil {
             });
             for (ExcelEntity excelEntity : listTitle) {
                 if (excelEntity.getTopName().equals(DefaultTopName.class)) {
-                    xRow0.setValue(order.getAndIncrement(), excelEntity.getTitle(), cs);
+                    xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
                 }
             }
         } else {
             //创建一行
             RowModel xRow0 = sheet.newRow();
-            int i = 0;
             for (ExcelEntity excelEntity : listTitle) {
-                xRow0.setValue(i, excelEntity.getTitle(), cs);
+                xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
 //            XSSFCell xCell0 = xRow0.createCell(i);
 //            xCell0.setCellStyle(cs);
 //            xCell0.setCellValue(excelEntity.getTitle());
-                i++;
             }
         }
         return sheet;

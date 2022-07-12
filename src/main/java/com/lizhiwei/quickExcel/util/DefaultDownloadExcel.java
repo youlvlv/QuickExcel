@@ -7,6 +7,7 @@ import com.lizhiwei.quickExcel.model.FileOperation;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,7 +40,7 @@ class DefaultDownloadExcel implements FileOperation {
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
             /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
             response.setContentType("application/octet-stream");
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
             OutputStream outputStream = response.getOutputStream();
             byte[] buffer = new byte[1024];
             int len;

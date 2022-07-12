@@ -88,6 +88,11 @@ public class ExcelModel extends ExcelUtil {
         return this;
     }
 
+    public void exportExcelAndClose(FileOperation operation) {
+        operation.run(this);
+        this.close();
+    }
+
     public void close() {
         try {
             xWorkbook.close();

@@ -6,12 +6,8 @@ import com.lizhiwei.quickExcel.entity.Excel;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.ExcelFormat;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -154,9 +150,9 @@ public class ReadExcel {
                 String ans = "";
                 cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
             } else {
-                switch (cell.getCellTypeEnum()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
+                switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
                     case NUMERIC:
-                        if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        if (DateUtil.isCellDateFormatted(cell)) {
                             //判断是否为日期类型
                             cellValue = sdf.format(cell.getDateCellValue());
                         } else {
