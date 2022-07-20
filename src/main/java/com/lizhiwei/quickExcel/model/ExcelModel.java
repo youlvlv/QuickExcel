@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 public class ExcelModel extends ExcelUtil {
@@ -19,6 +20,14 @@ public class ExcelModel extends ExcelUtil {
 
     public XSSFWorkbook getWorkbook() {
         return xWorkbook;
+    }
+
+    /**
+     * 通过流写出
+     * @param stream
+     */
+    public void write(OutputStream stream) throws IOException{
+        xWorkbook.write(stream);
     }
 
     /**
@@ -65,18 +74,23 @@ public class ExcelModel extends ExcelUtil {
         return cs;
     }
 
-    public ExcelModel exportExcel(FileOutputStream stream) {
-        try {
-            xWorkbook.write(stream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return this;
-    }
+//    public ExcelModel exportExcel(FileOutputStream stream) {
+//        try {
+//            xWorkbook.write(stream);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return this;
+//    }
 
     public ExcelModel exportExcel(FileOperation operation) {
         operation.run(this);
         return this;
+    }
+
+    public void exportExcelAndClose(FileOperation operation) {
+        operation.run(this);
+        this.close();
     }
 
     public void close() {

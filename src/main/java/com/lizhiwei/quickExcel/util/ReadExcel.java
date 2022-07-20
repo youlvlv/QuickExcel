@@ -6,12 +6,8 @@ import com.lizhiwei.quickExcel.entity.Excel;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.ExcelFormat;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -64,36 +60,33 @@ public class ReadExcel {
             /*----------匹配头------------*/
             Row row = sheet.getRow(startrow - 1); // 行
             int cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
+            List<String> cellName = new ArrayList<>();
             for (int j = startcol; j < cellNum; j++) { // 列循环开始
-//                Cell cell = row.getCell(Short.parseShort(j + ""));
-//                if (cell == null) {
-//                    break;
-//                } else {
-                ExcelEntity excelEntity = new ExcelEntity();
-                //循环实体类所有属性
-                for (Field field : fields) {
-                    field.setAccessible(true);
-                    if (!field.isAnnotationPresent(Excel.class)) {
-                        continue;
-                    }
-                    Excel excel = field.getAnnotation(Excel.class);
-                    //匹配是否为相同头
-                    if (excel.value().equals(getMergedRegionValue(sheet, startrow - 1, j))) {
-                        excelEntity.setProperty(field.getName());
-                        excelEntity.setValue(j);
-                        excelEntity.setType(field.getType());
-                        try {
-                            excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
-                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                                 NoSuchMethodException e) {
-                            e.printStackTrace();
-                            excelEntity.setFormat(new DefaultFormat());
-                        }
-                        properties.add(excelEntity);
-                        break;
-                    }
+                cellName.add(getMergedRegionValue(sheet, startrow - 1, j));
+            }
+            //循环实体类所有属性
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if (!field.isAnnotationPresent(Excel.class)) {
+                    continue;
                 }
-//                }
+
+                ExcelEntity excelEntity = new ExcelEntity();
+                Excel excel = field.getAnnotation(Excel.class);
+                //匹配是否为相同头
+                if (cellName.contains(excel.value())) {
+                    excelEntity.setProperty(field.getName());
+                    excelEntity.setValue(startcol + cellName.indexOf(excel.value()));
+                    excelEntity.setType(field.getType());
+                    try {
+                        excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        e.printStackTrace();
+                        excelEntity.setFormat(new DefaultFormat());
+                    }
+                    properties.add(excelEntity);
+                }
             }
             int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
             //空行数
@@ -157,9 +150,9 @@ public class ReadExcel {
                 String ans = "";
                 cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
             } else {
-                switch (cell.getCellTypeEnum()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
+                switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
                     case NUMERIC:
-                        if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        if (DateUtil.isCellDateFormatted(cell)) {
                             //判断是否为日期类型
                             cellValue = sdf.format(cell.getDateCellValue());
                         } else {

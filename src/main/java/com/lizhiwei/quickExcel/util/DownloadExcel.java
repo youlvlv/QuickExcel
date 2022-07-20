@@ -4,6 +4,7 @@ import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.model.ExcelModel;
+import com.lizhiwei.quickExcel.model.FileOperation;
 import com.lizhiwei.quickExcel.model.SheetModel;
 
 
@@ -48,48 +49,28 @@ public class DownloadExcel extends ExcelUtil {
     /**
      * 生成Excel表格以供下载
      *
-     * @param fileNameParam
-     * @param response
+     * @Param operation 文件操作
      * @param listTitle
      * @param listContent
      * @param <T>
      */
-    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, List<ExcelEntity> listTitle, List<T> listContent) {
+    public static <T> void setExcelProperty(FileOperation operation, List<ExcelEntity> listTitle, List<T> listContent) {
         SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
-        String fileName = "";
-        String fileName2 = "";
         //列表排序
-        listTitle.sort((o1, o2) -> {
-            if (o2.getIndex() < 0) {
-                return -1;
-            }
-            if (o1.getIndex() < 0) {
-                return 1;
-            }
-            return Integer.compare(o1.getIndex(), o2.getIndex());
-        });
         try {
-            //定义表格导出时默认文件名 时间戳
-            fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
-            fileName2 = "cache/" + fileName;
             //创建表格工作空间
             ExcelModel excel = new ExcelModel();
             //创建一个新表格
 //            XSSFSheet xSheet = xWorkbook.createSheet(fileNameParam);
-            SheetModel sheet = excel.newSheet(fileNameParam);
+            SheetModel sheet = excel.newSheet();
             //set Sheet页头部
-            util.setSheetHeader(sheet,listTitle);
+            util.setSheetHeader(sheet, listTitle);
             //set Sheet页内容
-            util.setSheetContent(sheet,listContent,listTitle);
-            FileOutputStream outFile = new FileOutputStream(fileName2);
-            excel.exportExcel(outFile).close();
-            downloadTemplate(response, fileName2);
+            util.setSheetContent(sheet, listContent, listTitle);
+            excel.exportExcel(operation).close();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("导出表格时出现异常...请联系管理员", e);
-        } finally {
-            File file = new File(fileName2);
-            file.delete();
         }
     }
 
@@ -104,7 +85,20 @@ public class DownloadExcel extends ExcelUtil {
      */
     public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity, List<T> listContent) {
         List<ExcelEntity> listTitle = util.getExcelEntities(entity);
-        setExcelProperty(fileNameParam, response, listTitle, listContent);
+        setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), listTitle, listContent);
+    }
+
+    /**
+     * 生成EXCEL表
+     *
+     * @param operation   文件操作
+     * @param entity      列表实体类
+     * @param listContent 列表
+     * @param <T>         实体类
+     */
+    public static <T> void setExcelProperty(FileOperation operation, Class<T> entity, List<T> listContent) {
+        List<ExcelEntity> listTitle = util.getExcelEntities(entity);
+        setExcelProperty(operation, listTitle, listContent);
     }
 
     private DownloadExcel() {

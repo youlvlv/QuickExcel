@@ -15,8 +15,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class ExcelUtil {
@@ -33,7 +35,6 @@ public class ExcelUtil {
     public <T> List<ExcelEntity> getExcelEntities(Class<T> entity) {
         Field[] fields = entity.getDeclaredFields();
         List<ExcelEntity> listTitle = new ArrayList<>();
-        int i = 0;
         for (Field field : fields) {
             //设置属性默认可访问，防止private阻止访问
             field.setAccessible(true);
@@ -41,18 +42,23 @@ public class ExcelUtil {
             if (field.isAnnotationPresent(Excel.class)) {
                 //获取Excel注解
                 Excel e = field.getDeclaredAnnotation(Excel.class);
-                int order = i++;
                 ExcelEntity excelEntity;
                 try {
-                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), e.format().getDeclaredConstructor().newInstance(), order, e.secondName());
+                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), e.format().getDeclaredConstructor().newInstance(), e.index(), e.secondName());
                 } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
                          NoSuchMethodException ex) {
                     ex.printStackTrace();
-                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), new DefaultFormat(), order, DefaultTopName.class);
+                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), new DefaultFormat(), e.index(), DefaultTopName.class);
                 }
                 listTitle.add(excelEntity);
             }
         }
+        //判断当前是否有自主排序
+        if (listTitle.stream().anyMatch(x -> x.getIndex() != -1))
+            listTitle.sort(Comparator.comparingInt(ExcelEntity::getIndex));
+        //重置排序
+        AtomicInteger i = new AtomicInteger();
+        listTitle.forEach(x -> x.setIndex(i.getAndIncrement()));
         return listTitle;
     }
 
@@ -108,13 +114,11 @@ public class ExcelUtil {
         } else {
             //创建一行
             RowModel xRow0 = sheet.newRow();
-            int i = 0;
             for (ExcelEntity excelEntity : listTitle) {
-                xRow0.setValue(i, excelEntity.getTitle(), cs);
+                xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
 //            XSSFCell xCell0 = xRow0.createCell(i);
 //            xCell0.setCellStyle(cs);
 //            xCell0.setCellValue(excelEntity.getTitle());
-                i++;
             }
         }
         return sheet;
@@ -148,6 +152,7 @@ public class ExcelUtil {
                     RowModel xRow = sheet.newRow();
                     //获取类属性
                     Field field;
+                    int order = 0;
                     for (ExcelEntity excelEntity : listTitle) {
                         String str = excelEntity.getProperty();
                         //获取完成get方法  首字母大写如：getId
@@ -158,7 +163,7 @@ public class ExcelUtil {
                         ExcelFormat format = excelEntity.getFormat();
                         value = format.WriterToExcel(o);
                         //循环设置每列的值
-                        xRow.setValue(excelEntity.getIndex(), value, cs);
+                        xRow.setValue(order++, value, cs);
 //                        XSSFCell xCell = xRow.createCell(j);
 //                        xCell.setCellStyle(cs);
 //                        xCell.setCellValue(value);
