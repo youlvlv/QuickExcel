@@ -62,7 +62,7 @@ public class ReadExcel {
             int cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
             List<String> cellName = new ArrayList<>();
             for (int j = startcol; j < cellNum; j++) { // 列循环开始
-                cellName.add(getMergedRegionValue(sheet, startrow - 1, j));
+                cellName.add(getCellValue(getMergedRegionValue(sheet, startrow - 1, j)));
             }
             //循环实体类所有属性
             for (Field field : fields) {
@@ -93,9 +93,6 @@ public class ReadExcel {
             int emptySize = 0;
             for (int i = startrow; i < rowNum; i++) { // 行循环开始
 
-//				PageData varpd = new PageData();
-//				HSSFRow row = sheet.getRow(i); // 行
-//				int cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
                 row = sheet.getRow(i); // 行
                 if (row == null) {
                     break;
@@ -114,7 +111,7 @@ public class ReadExcel {
                     try {
                         field = entity.getDeclaredField(property.getProperty());
                         field.setAccessible(true);
-                        Object o = getExcelValue(row, property);
+                        Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
                         if (o == null || o.toString().equals("")) {
                             --size;
                         }
@@ -140,10 +137,8 @@ public class ReadExcel {
         return varList;
     }
 
-    private static Object getExcelValue(Row row, ExcelEntity property) {
-        int j = property.getValue();
+    private static Object getExcelValue(Cell cell, ExcelEntity property) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Cell cell = row.getCell(Short.parseShort(j + ""));
         String cellValue = null;
         if (null != cell) {
             if (cell.toString().contains("-") && checkDate(cell.toString())) {
@@ -207,7 +202,7 @@ public class ReadExcel {
      * @param column
      * @return
      */
-    public static String getMergedRegionValue(Sheet sheet, int row, int column) {
+    public static Cell getMergedRegionValue(Sheet sheet, int row, int column) {
         int sheetMergeCount = sheet.getNumMergedRegions();
 
         for (int i = 0; i < sheetMergeCount; i++) {
@@ -220,13 +215,12 @@ public class ReadExcel {
             if (row >= firstRow && row <= lastRow) {
                 if (column >= firstColumn && column <= lastColumn) {
                     Row fRow = sheet.getRow(firstRow);
-                    Cell fCell = fRow.getCell(firstColumn);
-                    return getCellValue(fCell);
+                    return fRow.getCell(firstColumn);
                 }
             }
         }
 
-        return sheet.getRow(row).getCell(column).getStringCellValue();
+        return sheet.getRow(row).getCell(column);
     }
 
     /**
