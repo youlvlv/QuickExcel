@@ -46,7 +46,6 @@
             <plugin>
                 <groupId>com.alipay.sofa</groupId>
                 <artifactId>sofa-ark-plugin-maven-plugin</artifactId>
-                <version>1.1.6</version>
                 <executions>
                     <execution>
                         <id>default-cli</id>
@@ -55,49 +54,65 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-<!--                    &lt;!&ndash; configure imported class &ndash;&gt;-->
-<!--                    <imported>-->
-<!--                        &lt;!&ndash; configure class-level imported class &ndash;&gt;-->
-<!--                        <packages>-->
-<!--                            <package>org.apache.poi</package>-->
-<!--                        </packages>-->
-<!--                    </imported>-->
-
-                    <!-- configure exported class -->
-                    <exported>
-                        <!-- configure class-level exported class -->
-                        <packages>
-                            <package>com.lizhiwei.quickExcel</package>
-                        </packages>
-                    </exported>
-                </configuration>
+                <version>1.1.6</version>
             </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>com.alipay.sofa</groupId>-->
+            <!--                <artifactId>sofa-ark-plugin-maven-plugin</artifactId>-->
+            <!--                <version>2.0.0</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>default-cli</id>-->
+            <!--                        <goals>-->
+            <!--                            <goal>ark-plugin</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <classifier>ark-plugin</classifier>-->
+            <!--&lt;!&ndash;                    &lt;!&ndash; configure imported class &ndash;&gt;&ndash;&gt;-->
+            <!--&lt;!&ndash;                    <imported>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        &lt;!&ndash; configure class-level imported class &ndash;&gt;&ndash;&gt;-->
+            <!--&lt;!&ndash;                        <packages>&ndash;&gt;-->
+            <!--&lt;!&ndash;                            <package>org.apache.poi</package>&ndash;&gt;-->
+            <!--&lt;!&ndash;                        </packages>&ndash;&gt;-->
+            <!--&lt;!&ndash;                    </imported>&ndash;&gt;-->
 
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Class-Path>.</Class-Path>
-                            <addClasspath>true</addClasspath> <!-- 在jar的MF文件中生成classpath属性 -->
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifestEntries>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--                    &lt;!&ndash; configure exported class &ndash;&gt;-->
+            <!--                    <exported>-->
+            <!--                        &lt;!&ndash; configure class-level exported class &ndash;&gt;-->
+            <!--                        <packages>-->
+            <!--                            <package>com.lizhiwei.quickExcel</package>-->
+            <!--                        </packages>-->
+            <!--                    </exported>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
+
+
+            <!--            <plugin>-->
+            <!--                <artifactId>maven-assembly-plugin</artifactId>-->
+            <!--                <configuration>-->
+            <!--                    <archive>-->
+            <!--                        <manifestEntries>-->
+            <!--                            <Class-Path>.</Class-Path>-->
+            <!--                            <addClasspath>true</addClasspath> &lt;!&ndash; 在jar的MF文件中生成classpath属性 &ndash;&gt;-->
+            <!--                            <classpathPrefix>lib/</classpathPrefix>-->
+            <!--                        </manifestEntries>-->
+            <!--                    </archive>-->
+            <!--                    <descriptorRefs>-->
+            <!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
+            <!--                    </descriptorRefs>-->
+            <!--                </configuration>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>make-assembly</id>-->
+            <!--                        <phase>package</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>single</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 

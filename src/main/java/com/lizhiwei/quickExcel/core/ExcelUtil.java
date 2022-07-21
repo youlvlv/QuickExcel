@@ -155,7 +155,7 @@ public class ExcelUtil {
                     int order = 0;
                     for (ExcelEntity excelEntity : listTitle) {
                         String str = excelEntity.getProperty();
-                        //获取完成get方法  首字母大写如：getId
+                        //获取该属性
                         field = t.getClass().getDeclaredField(str);
                         field.setAccessible(true);
                         Object o = field.get(t);
