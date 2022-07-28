@@ -34,7 +34,9 @@ public class ExcelEntity {
     /**
      * 顶部名称
      */
-    private Class<? extends TopName> topName;
+    private Class<? extends TopName> topName = DefaultTopName.class;
+
+    private ParamType paramType = ParamType.NORMAL;
 
     public String getTitle() {
         return title;
@@ -88,10 +90,19 @@ public class ExcelEntity {
         return topName;
     }
 
+    public ParamType getParamType() {
+        return paramType;
+    }
+
+    public void setParamType(ParamType paramType) {
+        this.paramType = paramType;
+    }
+
     public TopName getTopNameInt() {
         try {
             return topName.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                 IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -108,6 +119,14 @@ public class ExcelEntity {
         this.format = format;
         this.index = index;
         this.topName = topName;
+    }
+
+    public ExcelEntity(ParamType index) {
+        if (index == ParamType.INDEX) {
+            this.title = "序号";
+            this.paramType = index;
+            this.type = Integer.class;
+        }
     }
 
     public ExcelEntity(Integer value, String title) {

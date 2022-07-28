@@ -2,6 +2,7 @@ package com.lizhiwei.quickExcel.util;
 
 import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
+import com.lizhiwei.quickExcel.entity.IndexType;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.FileOperation;
@@ -99,6 +100,20 @@ public class DownloadExcel extends ExcelUtil {
     public static <T> void setExcelProperty(FileOperation operation, Class<T> entity, List<T> listContent) {
         List<ExcelEntity> listTitle = util.getExcelEntities(entity);
         setExcelProperty(operation, listTitle, listContent);
+    }
+
+    /**
+     * 生成EXCEL表
+     *
+     * @param fileNameParam 文件名
+     * @param response      下载流
+     * @param entity        列表实体类
+     * @param listContent   列表
+     * @param <T>           实体类
+     */
+    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity, List<T> listContent, IndexType type) {
+        List<ExcelEntity> listTitle = util.getExcelEntities(entity,true,type);
+        setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), listTitle, listContent);
     }
 
     private DownloadExcel() {
