@@ -38,7 +38,6 @@ public class RowModel {
     }
 
     public RowModel setMergerValue(int start, int end, String value) {
-
         sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
         XSSFCell cell = createCell(start);
         cell.setCellValue(value);

@@ -6,12 +6,9 @@ import com.lizhiwei.quickExcel.entity.Excel;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.ExcelFormat;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -22,9 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ReadExcel {
 
@@ -42,20 +37,18 @@ public class ReadExcel {
         List<T> varList = new ArrayList<>();
 
         try {
-//			File target = new File(filepath, filename);
-//			FileInputStream fi = new FileInputStream(target);
-//
-//			HSSFWorkbook wb = new HSSFWorkbook(fi);
-//			HSSFSheet sheet = wb.getSheetAt(sheetnum); // sheet 从0开始
-//			int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
+            //读取文件
             File target = new File(filepath, filename);
             FileInputStream fi = new FileInputStream(target);
             String fileType = filename.substring(filename.lastIndexOf(".") + 1);
             Workbook wb = null;
+            //判断文件类型
             if (fileType.equals("xls")) {
                 wb = new HSSFWorkbook(fi);
             } else if (fileType.equals("xlsx")) {
                 wb = new XSSFWorkbook(fi);
+            } else {
+                throw new IORunTimeException("您导入的文件不是标准excel文件");
             }
             Sheet sheet = wb.getSheetAt(sheetnum); // sheet 从0开始
             List<ExcelEntity> properties = new ArrayList<>();
@@ -64,45 +57,44 @@ public class ReadExcel {
             /*----------匹配头------------*/
             Row row = sheet.getRow(startrow - 1); // 行
             int cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
+            //首行名称与位置
+            Map<String, Integer> cellName = new HashMap<>();
             for (int j = startcol; j < cellNum; j++) { // 列循环开始
-//                Cell cell = row.getCell(Short.parseShort(j + ""));
-//                if (cell == null) {
-//                    break;
-//                } else {
-                ExcelEntity excelEntity = new ExcelEntity();
-                //循环实体类所有属性
-                for (Field field : fields) {
-                    field.setAccessible(true);
-                    if (!field.isAnnotationPresent(Excel.class)) {
-                        continue;
-                    }
-                    Excel excel = field.getAnnotation(Excel.class);
-                    //匹配是否为相同头
-                    if (excel.value().equals(getMergedRegionValue(sheet, startrow - 1, j))) {
-                        excelEntity.setProperty(field.getName());
-                        excelEntity.setValue(j);
-                        excelEntity.setType(field.getType());
-                        try {
-                            excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
-                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                                 NoSuchMethodException e) {
-                            e.printStackTrace();
-                            excelEntity.setFormat(new DefaultFormat());
-                        }
-                        properties.add(excelEntity);
-                        break;
-                    }
+                cellName.put(getCellValue(getMergedRegionValue(sheet, startrow - 1, j)),j);
+            }
+            //循环实体类所有属性
+            for (Field field : fields) {
+                field.setAccessible(true);
+                //判断当前字段是否被excel注解
+                if (!field.isAnnotationPresent(Excel.class)) {
+                    continue;
                 }
-//                }
+                //生成实体类
+                ExcelEntity excelEntity = new ExcelEntity();
+                Excel excel = field.getAnnotation(Excel.class);
+                //匹配是否为相同头
+                if (cellName.containsKey(excel.value())) {
+                    excelEntity.setProperty(field.getName());
+                    excelEntity.setValue(cellName.get(excel.value()));
+                    //实体类中该属性类型
+                    excelEntity.setType(field.getType());
+                    try {
+                        excelEntity.setFormat(excel.format().getDeclaredConstructor().newInstance());
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        e.printStackTrace();
+                        //当前转换器生成实例时抛出异常，使用默认转换器
+                        excelEntity.setFormat(new DefaultFormat());
+                    }
+                    properties.add(excelEntity);
+                }
             }
             int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
             //空行数
             int emptySize = 0;
+            /*--------------数据行-----------------------*/
             for (int i = startrow; i < rowNum; i++) { // 行循环开始
 
-//				PageData varpd = new PageData();
-//				HSSFRow row = sheet.getRow(i); // 行
-//				int cellNum = row.getLastCellNum(); // 每行的最后一个单元格位置
                 row = sheet.getRow(i); // 行
                 if (row == null) {
                     break;
@@ -115,16 +107,21 @@ public class ReadExcel {
                          NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
+                //获取需要读取的数量
                 int size = properties.size();
                 for (ExcelEntity property : properties) {
                     Field field = null;
                     try {
+                        //实例化字段
                         field = entity.getDeclaredField(property.getProperty());
                         field.setAccessible(true);
-                        Object o = getExcelValue(row, property);
+                        //读取当前字段在excel中的值
+                        Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+                        //若当前字段为空，则读取数量减1
                         if (o == null || o.toString().equals("")) {
                             --size;
                         }
+                        //赋值
                         field.set(t, o);
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         throw new RuntimeException(e);
@@ -132,11 +129,14 @@ public class ReadExcel {
                         throw new ExcelValueError("第" + i + "行", e);
                     }
                 }
+                //若当前行为空行则将连续空行+1
                 if (size == 0) {
+                    //连续三行都是空行，则认定当前为excel结尾
                     if (++emptySize > 3) {
                         break;
                     }
                 } else {
+                    //若不为空行，则清空连续空行数
                     emptySize = 0;
                     varList.add(t);
                 }
@@ -147,19 +147,17 @@ public class ReadExcel {
         return varList;
     }
 
-    private static Object getExcelValue(Row row, ExcelEntity property) {
-        int j = property.getValue();
+    private static Object getExcelValue(Cell cell, ExcelEntity property) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Cell cell = row.getCell(Short.parseShort(j + ""));
         String cellValue = null;
         if (null != cell) {
             if (cell.toString().contains("-") && checkDate(cell.toString())) {
                 String ans = "";
                 cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
             } else {
-                switch (cell.getCellTypeEnum()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
+                switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
                     case NUMERIC:
-                        if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        if (DateUtil.isCellDateFormatted(cell)) {
                             //判断是否为日期类型
                             cellValue = sdf.format(cell.getDateCellValue());
                         } else {
@@ -214,7 +212,7 @@ public class ReadExcel {
      * @param column
      * @return
      */
-    public static String getMergedRegionValue(Sheet sheet, int row, int column) {
+    public static Cell getMergedRegionValue(Sheet sheet, int row, int column) {
         int sheetMergeCount = sheet.getNumMergedRegions();
 
         for (int i = 0; i < sheetMergeCount; i++) {
@@ -227,13 +225,12 @@ public class ReadExcel {
             if (row >= firstRow && row <= lastRow) {
                 if (column >= firstColumn && column <= lastColumn) {
                     Row fRow = sheet.getRow(firstRow);
-                    Cell fCell = fRow.getCell(firstColumn);
-                    return getCellValue(fCell);
+                    return fRow.getCell(firstColumn);
                 }
             }
         }
 
-        return sheet.getRow(row).getCell(column).getStringCellValue();
+        return sheet.getRow(row).getCell(column);
     }
 
     /**

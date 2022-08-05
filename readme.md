@@ -1,6 +1,7 @@
 # quick-excel
 ## 更便捷的导入导出excel文件框架
 ### 使用说明
+当前版本: 2.0
 ---
 #### 快捷使用
 1. 在实体类的属性上加上注解`@Excel` value为导入时excel表头名称
@@ -23,3 +24,25 @@ name为导出时excel表头名称 index是导出时的排序 format为导出时�
 5. `MoreRowModel` 为excel中相邻的两行，其中拥有方法
 - `setValue()` 设置值
 - `setMergerValue` 设置两个合并单元格的值
+
+### 引入方法
+1. 使用maven的package命令 打包,从target中选择 QuickExcel-2.0-jar-with-dependencies.jar 文件 拷入需引入项目目录下，
+   然后在引入项目的pom中填入如下内容
+   ``` xml
+   <dependency>
+      <groupId>com.github</groupId>
+      <artifactId>QuickExcel</artifactId>
+      <version>2.0</version>
+      <scope>system</scope>
+      <systemPath>${pom.basedir}/jar包地址</systemPath>
+    </dependency>
+    ```
+2. 使用maven的install命令,在需要引入的项目pom中填入如下内容
+   ``` xml
+     <dependency>
+         <groupId>com.github</groupId>
+         <artifactId>QuickExcel</artifactId>
+         <version>2.0</version>
+     </dependency>
+   ```
+ 
