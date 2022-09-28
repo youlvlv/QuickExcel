@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class ExcelModel extends ExcelUtil {
+public class ExcelModel extends ExcelUtil implements AutoCloseable{
     protected XSSFWorkbook xWorkbook;
 
     public XSSFWorkbook getWorkbook() {
