@@ -50,7 +50,7 @@ public class ReadExcel {
             //首行名称与位置
             Map<String, Integer> cellName = new HashMap<>();
             for (int j = startcol; j < cellNum; j++) { // 列循环开始
-                cellName.put(getCellValue(getMergedRegionValue(sheet, startrow - 1, j)),j);
+                cellName.put(getCellValue(getMergedRegionValue(sheet, startrow - 1, j)), j);
             }
             //循环实体类所有属性
             for (Field field : fields) {
@@ -149,11 +149,11 @@ public class ReadExcel {
      */
     public static <T> List<T> readExcel(String filepath, String filename, int startrow, int startcol, int sheetnum, Class<T> entity) {
         File target = new File(filepath, filename);
-        return readExcel(target,startrow,startcol,sheetnum,entity);
+        return readExcel(target, startrow, startcol, sheetnum, entity);
     }
 
     public static <T> List<T> readExcel(UploadFile file, int startrow, int startcol, int sheetnum, Class<T> entity) {
-        return readExcel(file.getFile(),startrow,startcol,sheetnum,entity);
+        return readExcel(file.getFile(), startrow, startcol, sheetnum, entity);
     }
 
     private static Object getExcelValue(Cell cell, ExcelEntity property) {

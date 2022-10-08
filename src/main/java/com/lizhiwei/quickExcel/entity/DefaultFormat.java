@@ -39,7 +39,7 @@ public class DefaultFormat implements ExcelFormat<Object> {
 
     public Object ReadToExcel(Class<?> type, String v) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if (v == null|| v.equals("")) {
+        if (v == null || v.equals("")) {
             return null;
         } else {
             if (type == String.class) {
