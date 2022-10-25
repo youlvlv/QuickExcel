@@ -10,28 +10,26 @@ public class DefaultFormat implements ExcelFormat<Object> {
 
     @Override
     public String WriterToExcel(Object v) {
-        String value = "";
-        //判断属性的类型
-        if (v instanceof String) {
-            //String类型执行toString方法
-            value = v.toString();
-        } else if (v instanceof Date) {
-            //时间类型，则转换时间
-            DateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm"); //HH表示24小时制；
-            value = dFormat.format((Date) v);
-            if (value.contains("08:00")) {
-                value = value.substring(0, value.length() - 5);
-            }
-        } else if (v instanceof Number) {
-            value = v.toString();
-        } else if (v instanceof Boolean) {
-            if ((boolean) v) {
-                return "是";
-            } else {
-                return "否";
-            }
+        if (v != null) {
+            //判断属性的类型
+            if (v instanceof String) {
+                //String类型执行toString方法
+                return v.toString();
+            } else if (v instanceof Date) {
+                //时间类型，则转换时间
+                DateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //HH表示24小时制；
+                return dFormat.format((Date) v);
+            } else if (v instanceof Number) {
+                return v.toString();
+            } else if (v instanceof Boolean) {
+                if ((boolean) v) {
+                    return "是";
+                } else {
+                    return "否";
+                }
+            } else return v.toString();
         }
-        return value;
+        return "";
     }
 
     @Override
@@ -41,7 +39,7 @@ public class DefaultFormat implements ExcelFormat<Object> {
 
     public Object ReadToExcel(Class<?> type, String v) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if (v == null|| v.equals("")) {
+        if (v == null || v.equals("")) {
             return null;
         } else {
             if (type == String.class) {

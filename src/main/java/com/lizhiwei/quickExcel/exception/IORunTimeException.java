@@ -1,6 +1,6 @@
 package com.lizhiwei.quickExcel.exception;
 
-public class IORunTimeException extends RuntimeException{
+public class IORunTimeException extends RuntimeException {
     public IORunTimeException() {
         super();
     }

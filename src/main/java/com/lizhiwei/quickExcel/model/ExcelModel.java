@@ -10,12 +10,11 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class ExcelModel extends ExcelUtil {
+public class ExcelModel extends ExcelUtil implements AutoCloseable {
     protected XSSFWorkbook xWorkbook;
 
     public XSSFWorkbook getWorkbook() {
@@ -24,9 +23,10 @@ public class ExcelModel extends ExcelUtil {
 
     /**
      * 通过流写出
+     *
      * @param stream
      */
-    public void write(OutputStream stream) throws IOException{
+    public void write(OutputStream stream) throws IOException {
         xWorkbook.write(stream);
     }
 

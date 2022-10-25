@@ -1,15 +1,9 @@
 package com.lizhiwei.quickExcel.util;
 
 
-import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.model.ExcelModel;
-import com.lizhiwei.quickExcel.model.FileOperation;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * 通过链式方式构建Excel

@@ -8,12 +8,10 @@ import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.FileOperation;
 import com.lizhiwei.quickExcel.model.SheetModel;
 
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class DownloadExcel extends ExcelUtil {
@@ -50,10 +48,10 @@ public class DownloadExcel extends ExcelUtil {
     /**
      * 生成Excel表格以供下载
      *
-     * @Param operation 文件操作
      * @param listTitle
      * @param listContent
      * @param <T>
+     * @Param operation 文件操作
      */
     public static <T> void setExcelProperty(FileOperation operation, List<ExcelEntity> listTitle, List<T> listContent) {
         SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
@@ -112,7 +110,7 @@ public class DownloadExcel extends ExcelUtil {
      * @param <T>           实体类
      */
     public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity, List<T> listContent, IndexType type) {
-        List<ExcelEntity> listTitle = util.getExcelEntities(entity,true,type);
+        List<ExcelEntity> listTitle = util.getExcelEntities(entity, true, type);
         setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), listTitle, listContent);
     }
 
