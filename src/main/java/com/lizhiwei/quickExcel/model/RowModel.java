@@ -37,6 +37,11 @@ public class RowModel {
         return this;
     }
 
+    /**
+     * 设置合并单元格
+     *
+     * @return
+     */
     public RowModel setMergerValue(int start, int end, String value) {
         sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
         XSSFCell cell = createCell(start);

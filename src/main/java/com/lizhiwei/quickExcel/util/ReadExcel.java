@@ -152,6 +152,15 @@ public class ReadExcel {
         return readExcel(target, startrow, startcol, sheetnum, entity);
     }
 
+    /**
+     * 读取excel
+     *
+     * @param file 上传文件
+     * @param startrow 开始行号
+     * @param startcol 开始列号
+     * @param sheetnum sheet
+     * @return list
+     */
     public static <T> List<T> readExcel(UploadFile file, int startrow, int startcol, int sheetnum, Class<T> entity) {
         return readExcel(file.getFile(), startrow, startcol, sheetnum, entity);
     }

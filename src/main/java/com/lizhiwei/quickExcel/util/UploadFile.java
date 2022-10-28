@@ -15,6 +15,10 @@ public abstract class UploadFile {
         this.file = file;
     }
 
+    /**
+     * 获取文件
+     * @return
+     */
     public File getFile() {
         return file;
     }
