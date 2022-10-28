@@ -5,6 +5,9 @@ package com.lizhiwei.quickExcel.model;
  */
 @FunctionalInterface
 public interface FileOperation {
-
+    /**
+     * 文件处理方法
+     * @param model
+     */
     void run(ExcelModel model);
 }

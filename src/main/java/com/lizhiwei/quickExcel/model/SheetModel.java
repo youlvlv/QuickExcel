@@ -36,11 +36,24 @@ public class SheetModel extends ExcelUtil {
         return util.setSheetContent(newSheet, listContent, list, null);
     }
 
+    /**
+     * 创建数据头
+     * @param entity
+     * @return
+     * @param <T>
+     */
     public <T> SheetModel createHeader(Class<T> entity) {
         List<ExcelEntity> list = util.getExcelEntities(entity);
         return util.setSheetHeader(this, list);
     }
 
+    /**
+     * 录入数据信息
+     * @param entity 实体类class
+     * @param content  数据
+     * @return
+     * @param <T>
+     */
     public <T> SheetModel createContent(Class<T> entity, T content) {
         List<ExcelEntity> list = util.getExcelEntities(entity);
         List<T> first = new ArrayList<>();
@@ -48,11 +61,26 @@ public class SheetModel extends ExcelUtil {
         return util.setSheetContent(this, first, list, null);
     }
 
+    /**
+     * 录入数据信息
+     * @param entity 实体类class
+     * @param listContent 数据
+     * @return
+     * @param <T>
+     */
     public <T> SheetModel createContent(Class<T> entity, List<T> listContent) {
         List<ExcelEntity> list = util.getExcelEntities(entity);
         return util.setSheetContent(this, listContent, list, null);
     }
 
+    /**
+     * 录入数据信息
+     * @param entity 实体类class
+     * @param listContent 数据
+     * @param since 合并
+     * @return
+     * @param <T>
+     */
     public <T> SheetModel createContent(Class<T> entity, List<T> listContent, Since... since) {
         List<ExcelEntity> list = util.getExcelEntities(entity);
         return util.setSheetContent(this, listContent, list, Arrays.asList(since));

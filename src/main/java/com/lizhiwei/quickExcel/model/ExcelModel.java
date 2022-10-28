@@ -14,9 +14,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+/**
+ * excel模型
+ */
 public class ExcelModel extends ExcelUtil implements AutoCloseable {
     protected XSSFWorkbook xWorkbook;
 
+    /**
+     * 获取poi模型
+     * @return
+     */
     public XSSFWorkbook getWorkbook() {
         return xWorkbook;
     }
@@ -48,16 +55,32 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
         return this;
     }
 
+    /**
+     * 创建新 sheet
+     *
+     * @param name        sheet 名
+     * @return
+     */
     public SheetModel newSheet(String name) {
         XSSFSheet xSheet = xWorkbook.createSheet(name);
         return new SheetModel(xSheet, this);
     }
 
+
+    /**
+     * 创建新 sheet
+     *
+     * @return
+     */
     public SheetModel newSheet() {
         XSSFSheet xSheet = xWorkbook.createSheet();
         return new SheetModel(xSheet, this);
     }
 
+    /**
+     * 获取默认单元格格式
+     * @return
+     */
     public CellStyle getDefaultStyle() {
         CellStyle cs = xWorkbook.createCellStyle();
         //设置水平、垂直居中
@@ -83,11 +106,20 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
 //        return this;
 //    }
 
+    /**
+     * 导出excel
+     * @param operation 文件操作类
+     * @return
+     */
     public ExcelModel exportExcel(FileOperation operation) {
         operation.run(this);
         return this;
     }
 
+    /**
+     * 导出excel并关闭excel
+     * @param operation
+     */
     public void exportExcelAndClose(FileOperation operation) {
         operation.run(this);
         this.close();
