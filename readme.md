@@ -1,6 +1,5 @@
-<img src="doc/image/logo.png" width = 745 height = 438  alt="logo" />
+<img alt="logo" src="doc/image/logo.png" width="50%"/>
 
-![logo.png](doc%2Fimage%2Flogo.png)
 # quick-excel
 
 ## 更便捷的导入导出excel文件框架
