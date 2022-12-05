@@ -1,4 +1,4 @@
-<img alt="logo" src="doc/image/logo.png" width="50%"/>
+<img alt="logo" src="/doc/image/logo.png" width="50%"/>
 
 # quick-excel
 
