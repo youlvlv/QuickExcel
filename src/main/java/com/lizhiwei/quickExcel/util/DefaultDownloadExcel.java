@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * 默认下载excel工具类
+ */
 class DefaultDownloadExcel implements FileOperation {
 
     private HttpServletResponse response;
@@ -19,6 +22,11 @@ class DefaultDownloadExcel implements FileOperation {
 
     private final SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
 
+    /**
+     * 开始下载
+     * @param excel
+     * @throws FileNotFoundException
+     */
     public void download(ExcelModel excel) throws FileNotFoundException {
         String fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
         String fileName2 = "cache/" + fileName;
@@ -31,7 +39,7 @@ class DefaultDownloadExcel implements FileOperation {
         downloadTemplate(response, fileName2);
     }
 
-    public static void downloadTemplate(HttpServletResponse response, String path) {
+    private static void downloadTemplate(HttpServletResponse response, String path) {
         try {
 
             String fileName = path.substring(path.lastIndexOf("/") + 1);
