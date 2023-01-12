@@ -28,6 +28,9 @@ class DefaultDownloadExcel implements FileOperation {
      * @throws FileNotFoundException
      */
     public void download(ExcelModel excel) throws FileNotFoundException {
+        if (new File("cache").exists()){
+            new File("cache").mkdir();
+        }
         String fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
         String fileName2 = "cache/" + fileName;
         FileOutputStream outFile = new FileOutputStream(fileName2);
