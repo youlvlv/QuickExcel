@@ -50,7 +50,6 @@ class DefaultDownloadExcel implements FileOperation {
             File file = new File(path);
             //作用：在前端作用显示为调用浏览器下载弹窗
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
             response.setContentType("application/octet-stream");
             BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
             OutputStream outputStream = response.getOutputStream();
