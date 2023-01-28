@@ -24,29 +24,32 @@ class DefaultDownloadExcel implements FileOperation {
 
     /**
      * 开始下载
+     *
      * @param excel
-     * @throws FileNotFoundException
      */
-    public void download(ExcelModel excel) throws FileNotFoundException {
+    public void download(ExcelModel excel) {
+        if (!new File("cache").exists()) {
+            if (!new File("cache").mkdir()) {
+                throw new IORunTimeException("无法创建缓存文件夹");
+            }
+        }
         String fileName = df.format(new Date()) + "-" + fileNameParam + ".xlsx";
         String fileName2 = "cache/" + fileName;
-        FileOutputStream outFile = new FileOutputStream(fileName2);
         try {
+            FileOutputStream outFile = new FileOutputStream(fileName2);
             excel.write(outFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IORunTimeException(e);
         }
         downloadTemplate(response, fileName2);
     }
 
     private static void downloadTemplate(HttpServletResponse response, String path) {
         try {
-
             String fileName = path.substring(path.lastIndexOf("/") + 1);
             File file = new File(path);
             //作用：在前端作用显示为调用浏览器下载弹窗
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
             response.setContentType("application/octet-stream");
             BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
             OutputStream outputStream = response.getOutputStream();
@@ -72,10 +75,6 @@ class DefaultDownloadExcel implements FileOperation {
 
     @Override
     public void run(ExcelModel model) {
-        try {
-            this.download(model);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        this.download(model);
     }
 }
