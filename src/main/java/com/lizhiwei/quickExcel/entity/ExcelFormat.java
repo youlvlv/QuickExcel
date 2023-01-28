@@ -1,6 +1,9 @@
 package com.lizhiwei.quickExcel.entity;
 
-
+/**
+ * excel读取导出拓展点
+ * @param <T>
+ */
 public interface ExcelFormat<T> {
     /**
      * 读取实体类属性至excel值
