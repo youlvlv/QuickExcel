@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * 批量导出excel到zip压缩包
+ */
 public class ExcelFileToZip implements FileOperation {
 
     private List<File> files = new ArrayList<>();

@@ -24,7 +24,17 @@ import java.util.*;
 
 public class ReadExcel {
 
-
+    /**
+     * 读取excel信息
+     * 默认0
+     * @param file excel文件
+     * @param startrow 开始行
+     * @param startcol 开始列
+     * @param sheetnum sheet号
+     * @param entity 实体类
+     * @return 列表信息
+     * @param <T>
+     */
     public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity) {
         List<T> varList = new ArrayList<>();
 
@@ -166,6 +176,12 @@ public class ReadExcel {
         return readExcel(file.getFile(), startrow, startcol, sheetnum, entity);
     }
 
+    /**
+     * 获取单元格值
+     * @param cell 单元格
+     * @param property 值类型
+     * @return 值
+     */
     private static Object getExcelValue(Cell cell, ExcelEntity property) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String cellValue = null;
