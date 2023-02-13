@@ -204,7 +204,7 @@ public class ExcelUtil {
                         sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
                     }
                 }
-            } catch (IllegalAccessException | NoSuchFieldException e) {
+            } catch (Exception e) {
                 throw new ExcelValueError(e);
             }
         }
