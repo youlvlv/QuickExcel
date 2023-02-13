@@ -43,19 +43,48 @@
     </properties>
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.alipay.sofa</groupId>
-                <artifactId>sofa-ark-plugin-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <goals>
-                            <goal>ark-plugin</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <version>1.1.6</version>
+            <!-- <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <overwrite>true</overwrite>
+                </configuration>
+            </plugin> -->
+           <plugin>
+               <groupId>com.alipay.sofa</groupId>
+               <artifactId>sofa-ark-plugin-maven-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <id>default-cli</id>
+                       <goals>
+                           <goal>ark-plugin</goal>
+                       </goals>
+                   </execution>
+               </executions>
+               <version>1.1.6</version>
+           </plugin>
             <!--            <plugin>-->
             <!--                <groupId>com.alipay.sofa</groupId>-->
             <!--                <artifactId>sofa-ark-plugin-maven-plugin</artifactId>-->

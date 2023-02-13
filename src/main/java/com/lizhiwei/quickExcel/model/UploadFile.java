@@ -1,4 +1,4 @@
-package com.lizhiwei.quickExcel.util;
+package com.lizhiwei.quickExcel.model;
 
 
 import java.io.File;
