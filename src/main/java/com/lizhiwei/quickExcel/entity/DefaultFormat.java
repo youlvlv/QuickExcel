@@ -3,9 +3,13 @@ package com.lizhiwei.quickExcel.entity;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class DefaultFormat implements ExcelFormat<Object> {
+
+    public static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
     @Override
@@ -27,6 +31,8 @@ public class DefaultFormat implements ExcelFormat<Object> {
                 } else {
                     return "否";
                 }
+            } else if (v instanceof LocalDateTime) {
+                return ((LocalDateTime) v).format(fmt);
             } else return v.toString();
         }
         return "";
