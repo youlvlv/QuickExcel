@@ -16,9 +16,9 @@ import java.util.Date;
  */
 class DefaultDownloadExcel implements FileOperation {
 
-    private HttpServletResponse response;
+    private final HttpServletResponse response;
 
-    private String fileNameParam;
+    private final String fileNameParam;
 
     private final SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
 

@@ -2,9 +2,9 @@ package com.lizhiwei.quickExcel.entity;
 
 public class Since {
 
-    private int row;
+    private final int row;
 
-    private String title;
+    private final String title;
 
     public int getRow() {
         return row;

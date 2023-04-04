@@ -6,8 +6,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultFormat implements ExcelFormat<Object> {
+
+    public static final Map<Class<?>,ExcelFormatByType<?>> format = new HashMap<>();
 
     public static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -15,6 +19,9 @@ public class DefaultFormat implements ExcelFormat<Object> {
     @Override
     public String WriterToExcel(Object v) {
         if (v != null) {
+            if (format.containsKey(v.getClass())){
+//                return format.get(v.getClass().).WriterToExcel(v);
+            }
             //判断属性的类型
             if (v instanceof String) {
                 //String类型执行toString方法

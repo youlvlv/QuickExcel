@@ -18,31 +18,6 @@ import java.util.List;
  * 下载excel
  */
 public class DownloadExcel extends ExcelUtil {
-    /**
-     * 下载导入模板
-     *
-     * @param response 返回流
-     * @param path     文件地址
-     * @throws IOException 异常
-     */
-    public static void downloadTemplate(HttpServletResponse response, String path) {
-
-        String fileName = path.substring(path.lastIndexOf("/") + 1);
-        File file = new File(path);
-        try (OutputStream outputStream = response.getOutputStream(); BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));) {
-            //作用：在前端作用显示为调用浏览器下载弹窗
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-            /*response.setHeader("Content-disposition", "attachment; filename = " + new String(fileName.getBytes(fileName), "ISO8859-1"));*/
-            response.setContentType("application/octet-stream");
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/
-                outputStream.write(buffer, 0, len);
-            }
-        } catch (IOException e) {
-            throw new IORunTimeException("文件操作失败", e);
-        }
-    }
 
     /**
      * 生成Excel表格以供下载
