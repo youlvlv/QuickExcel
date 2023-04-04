@@ -3,6 +3,7 @@ package com.lizhiwei.quickExcel.model;
 
 import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
+import com.lizhiwei.quickExcel.entity.IndexType;
 import com.lizhiwei.quickExcel.entity.Since;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,6 +15,8 @@ import java.util.List;
 public class SheetModel extends ExcelUtil {
     private final XSSFSheet xSheet;
     private final ExcelModel excel;
+
+    private IndexType type;
 
     protected int rowNum = 0;
 
@@ -36,26 +39,33 @@ public class SheetModel extends ExcelUtil {
         return util.setSheetContent(newSheet, listContent, list, null);
     }
 
+    public SheetModel createSerialNumber(IndexType type) {
+        this.type = type;
+        return this;
+    }
+
     /**
      * 创建数据头
+     *
      * @param entity
-     * @return
      * @param <T>
+     * @return
      */
     public <T> SheetModel createHeader(Class<T> entity) {
-        List<ExcelEntity> list = util.getExcelEntities(entity);
+        List<ExcelEntity> list = getEntities(entity);
         return util.setSheetHeader(this, list);
     }
 
     /**
      * 录入数据信息
-     * @param entity 实体类class
-     * @param content  数据
-     * @return
+     *
+     * @param entity  实体类class
+     * @param content 数据
      * @param <T>
+     * @return
      */
     public <T> SheetModel createContent(Class<T> entity, T content) {
-        List<ExcelEntity> list = util.getExcelEntities(entity);
+        List<ExcelEntity> list = getEntities(entity);
         List<T> first = new ArrayList<>();
         first.add(content);
         return util.setSheetContent(this, first, list, null);
@@ -63,26 +73,38 @@ public class SheetModel extends ExcelUtil {
 
     /**
      * 录入数据信息
-     * @param entity 实体类class
+     *
+     * @param entity      实体类class
      * @param listContent 数据
-     * @return
      * @param <T>
+     * @return
      */
     public <T> SheetModel createContent(Class<T> entity, List<T> listContent) {
-        List<ExcelEntity> list = util.getExcelEntities(entity);
+        List<ExcelEntity> list = getEntities(entity);
         return util.setSheetContent(this, listContent, list, null);
+    }
+
+    private <T> List<ExcelEntity> getEntities(Class<T> entity) {
+        List<ExcelEntity> list;
+        if (type != null) {
+            list = util.getExcelEntities(entity, true, type);
+        } else {
+            list = util.getExcelEntities(entity);
+        }
+        return list;
     }
 
     /**
      * 录入数据信息
-     * @param entity 实体类class
+     *
+     * @param entity      实体类class
      * @param listContent 数据
-     * @param since 合并
-     * @return
+     * @param since       合并
      * @param <T>
+     * @return
      */
     public <T> SheetModel createContent(Class<T> entity, List<T> listContent, Since... since) {
-        List<ExcelEntity> list = util.getExcelEntities(entity);
+        List<ExcelEntity> list = getEntities(entity);
         return util.setSheetContent(this, listContent, list, Arrays.asList(since));
     }
 

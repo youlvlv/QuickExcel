@@ -1,6 +1,7 @@
 package com.lizhiwei.quickExcel.core;
 
 
+import com.lizhiwei.quickExcel.config.ExcelConfig;
 import com.lizhiwei.quickExcel.entity.*;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.model.MoreRowModel;
@@ -14,10 +15,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -55,6 +53,8 @@ public class ExcelUtil {
     public <T> List<ExcelEntity> getExcelEntities(Class<T> entity, boolean hasIndex, IndexType type) {
         Field[] fields = entity.getDeclaredFields();
         List<ExcelEntity> listTitle = new ArrayList<>();
+        // 转换器缓存,默认初始化默认构造器
+        Map<Class<?>, ExcelFormat<?>> formatCache = ExcelConfig.getFormatCache();
         for (Field field : fields) {
             //设置属性默认可访问，防止private阻止访问
             field.setAccessible(true);
@@ -63,13 +63,23 @@ public class ExcelUtil {
                 //获取Excel注解
                 Excel e = field.getDeclaredAnnotation(Excel.class);
                 ExcelEntity excelEntity;
-                try {
-                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), e.format().getDeclaredConstructor().newInstance(), e.index(), e.secondName());
-                } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
-                         NoSuchMethodException ex) {
-                    ex.printStackTrace();
-                    excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), new DefaultFormat(), e.index(), DefaultTopName.class);
+                //判断当前转换器是否存在缓存
+                if (!formatCache.containsKey(e.format())) {
+                    //不存在缓存，则进行实例化
+                    ExcelFormat<?> format;
+                    try {
+                        format = e.format().getDeclaredConstructor().newInstance();
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
+                             NoSuchMethodException ex) {
+                        //实例化失败，则使用默认的转换器
+                        ex.printStackTrace();
+                        format = new DefaultFormat();
+                    }
+                    //放入默认构造器中
+                    formatCache.put(e.format(), format);
                 }
+                //构造excel实体类
+                excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName());
                 listTitle.add(excelEntity);
             }
         }

@@ -7,6 +7,9 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.model.StylesTable;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -18,10 +21,34 @@ import java.util.List;
  * excel模型
  */
 public class ExcelModel extends ExcelUtil implements AutoCloseable {
+
+    /**
+     * 默认的单元格格式
+     */
+    protected final static CellStyle DEFAULT_CELL_STYLE;
+
+    static {
+        DEFAULT_CELL_STYLE = new XSSFCellStyle(new StylesTable());
+        //设置水平、垂直居中
+        DEFAULT_CELL_STYLE.setAlignment(HorizontalAlignment.CENTER);
+        DEFAULT_CELL_STYLE.setVerticalAlignment(VerticalAlignment.CENTER);
+        //设置字体
+        Font headerFont = new XSSFFont();
+        headerFont.setFontHeightInPoints((short) 12);
+        /*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
+        headerFont.setBold(true);
+        headerFont.setFontName("宋体");
+        DEFAULT_CELL_STYLE.setFont(headerFont);
+        DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
+    }
+
     protected XSSFWorkbook xWorkbook;
+
+    protected CellStyle CustomCellStyle;
 
     /**
      * 获取poi模型
+     *
      * @return
      */
     public XSSFWorkbook getWorkbook() {
@@ -58,7 +85,7 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
     /**
      * 创建新 sheet
      *
-     * @param name        sheet 名
+     * @param name sheet 名
      * @return
      */
     public SheetModel newSheet(String name) {
@@ -79,22 +106,15 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
 
     /**
      * 获取默认单元格格式
+     *
      * @return
      */
     public CellStyle getDefaultStyle() {
-        CellStyle cs = xWorkbook.createCellStyle();
-        //设置水平、垂直居中
-        cs.setAlignment(HorizontalAlignment.CENTER);
-        cs.setVerticalAlignment(VerticalAlignment.CENTER);
-        //设置字体
-        Font headerFont = xWorkbook.createFont();
-        headerFont.setFontHeightInPoints((short) 12);
-        /*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
-        headerFont.setBold(true);
-        headerFont.setFontName("宋体");
-        cs.setFont(headerFont);
-        cs.setWrapText(true);//是否自动换行
-        return cs;
+        return DEFAULT_CELL_STYLE;
+    }
+
+    public ExcelModel setDefaultStyle(){
+        return  this;
     }
 
 //    public ExcelModel exportExcel(FileOutputStream stream) {
@@ -108,6 +128,7 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
 
     /**
      * 导出excel
+     *
      * @param operation 文件操作类
      * @return
      */
@@ -118,6 +139,7 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
 
     /**
      * 导出excel并关闭excel
+     *
      * @param operation
      */
     public void exportExcelAndClose(FileOperation operation) {
