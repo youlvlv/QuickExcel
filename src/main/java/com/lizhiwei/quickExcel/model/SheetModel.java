@@ -17,6 +17,10 @@ public class SheetModel extends ExcelUtil {
     private final ExcelModel excel;
 
     private IndexType type;
+    /**
+     * 序号
+     */
+    private int num = 1;
 
     protected int rowNum = 0;
 
@@ -154,5 +158,9 @@ public class SheetModel extends ExcelUtil {
 
     public void addMergedRegion(CellRangeAddress cellRangeAddress) {
         xSheet.addMergedRegion(cellRangeAddress);
+    }
+
+    public int getNum() {
+        return num++;
     }
 }

@@ -183,8 +183,7 @@ public class ExcelUtil {
         int start = sheet.getRowNum();
         if (null != listContent && listContent.size() > 0) {
             try {
-                //排序
-                int num = 1;
+
                 for (T t : listContent) {
                     RowModel xRow = sheet.newRow();
                     //获取类属性
@@ -192,7 +191,7 @@ public class ExcelUtil {
                     int order = 0;
                     for (ExcelEntity excelEntity : listTitle) {
                         if (excelEntity.getParamType() == ParamType.INDEX) {
-                            xRow.setValue(order++, String.valueOf(num), cs);
+                            xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
                         } else {
                             String str = excelEntity.getProperty();
                             //获取该属性
@@ -206,7 +205,7 @@ public class ExcelUtil {
                             xRow.setValue(order++, value, cs);
                         }
                     }
-                    num++;
+
                 }
                 if (since != null) {
                     for (Since s : since) {
