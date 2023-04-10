@@ -1,18 +1,19 @@
 package com.lizhiwei.quickExcel.config;
 
-import com.lizhiwei.quickExcel.entity.DefaultFormat;
-import com.lizhiwei.quickExcel.entity.ExcelFormat;
+import com.lizhiwei.quickExcel.format.DefaultFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ExcelConfig {
-    private static final Map<Class<?>, ExcelFormat<?>> formatCache = new HashMap<>() {{
+    private static final HashMap<Class<?>, ExcelFormat<?>> formatCache = new HashMap<>() {{
         put(DefaultFormat.class, new DefaultFormat());
     }};
 
-    static public Map<Class<?>, ExcelFormat<?>> getFormatCache() {
-        return formatCache;
+    static public HashMap<Class<?>, ExcelFormat<?>> getFormatCache() {
+        return (HashMap<Class<?>, ExcelFormat<?>>) formatCache.clone();
     }
 
     /**
@@ -21,7 +22,24 @@ public class ExcelConfig {
      * @param format 转换器实例
      * @param <T> 转换器
      */
-    public <T> void addFormat(Class<T> clazz,ExcelFormat<T> format){
+    public static <T> void addFormat(Class<T> clazz,ExcelFormat<T> format){
         formatCache.put(clazz,format);
+    }
+
+    /**
+     * 移除转换器
+     * @param clazz
+     */
+    public static void removeFormat(Class<?> clazz){
+        formatCache.remove(clazz);
+    }
+
+
+    public static <T> void addTypeFormat(Class<T> clazz, ExcelFormatByType<T> format) {
+        DefaultFormat.map.put(clazz,format);
+    }
+
+    public static void removeTypeFormat(Class<?> clazz) {
+        DefaultFormat.map.remove(clazz);
     }
 }

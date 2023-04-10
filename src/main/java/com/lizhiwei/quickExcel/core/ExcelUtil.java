@@ -4,6 +4,8 @@ package com.lizhiwei.quickExcel.core;
 import com.lizhiwei.quickExcel.config.ExcelConfig;
 import com.lizhiwei.quickExcel.entity.*;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
+import com.lizhiwei.quickExcel.format.DefaultFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.model.MoreRowModel;
 import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
@@ -75,8 +77,11 @@ public class ExcelUtil {
                         ex.printStackTrace();
                         format = new DefaultFormat();
                     }
-                    //放入默认构造器中
+                    //放入缓存列表中
                     formatCache.put(e.format(), format);
+                } else {
+                    //执行重新初始化命令
+                     formatCache.get(e.format()).init();
                 }
                 //构造excel实体类
                 excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName());

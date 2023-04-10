@@ -1,6 +1,8 @@
 package com.lizhiwei.quickExcel.entity;
 
 
+import com.lizhiwei.quickExcel.format.ExcelFormat;
+
 import java.lang.reflect.InvocationTargetException;
 
 /**

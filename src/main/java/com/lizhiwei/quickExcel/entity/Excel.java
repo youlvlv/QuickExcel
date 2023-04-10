@@ -1,5 +1,8 @@
 package com.lizhiwei.quickExcel.entity;
 
+import com.lizhiwei.quickExcel.format.DefaultFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormat;
+
 import java.lang.annotation.*;
 
 @Target(ElementType.FIELD)

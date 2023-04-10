@@ -1,10 +1,10 @@
 package com.lizhiwei.quickExcel.util;
 
 
-import com.lizhiwei.quickExcel.entity.DefaultFormat;
+import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.entity.Excel;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
-import com.lizhiwei.quickExcel.entity.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.model.UploadFile;
