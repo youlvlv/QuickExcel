@@ -5,6 +5,7 @@ import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 public class BooleanFormat implements ExcelFormatByType<Boolean> {
     @Override
     public String writer(Boolean v) {
+
         if (v) {
             return "是";
         } else {

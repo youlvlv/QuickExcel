@@ -38,7 +38,7 @@ public class DefaultFormat implements ExcelFormat<Object> {
 
     @Override
     public String WriterToExcel(Object v) {
-        return map.get(v.getClass()).WriterToExcel(v);
+        return map.get(v.getClass()).writerToExcel(v);
 //        if (v != null) {
 //
 //            //判断属性的类型
