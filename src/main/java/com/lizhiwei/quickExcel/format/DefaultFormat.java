@@ -5,12 +5,6 @@ import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Set;
 
 public class DefaultFormat implements ExcelFormat<Object> {
@@ -38,7 +32,11 @@ public class DefaultFormat implements ExcelFormat<Object> {
 
     @Override
     public String WriterToExcel(Object v) {
-        return map.get(v.getClass()).writerToExcel(v);
+        if (v != null) {
+            return map.get(v.getClass()).writerToExcel(v);
+        } else {
+            return "";
+        }
 //        if (v != null) {
 //
 //            //判断属性的类型
@@ -71,6 +69,9 @@ public class DefaultFormat implements ExcelFormat<Object> {
 
     public Object ReadToExcel(Class<?> type, String v) {
 //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if (v == null || v.equals("")) {
+            return null;
+        }
         return map.get(type).ReadToExcel(v);
 //        if (v == null || v.equals("")) {
 //            return null;
