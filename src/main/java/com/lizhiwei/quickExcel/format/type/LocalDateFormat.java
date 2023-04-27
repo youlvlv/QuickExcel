@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 
-    public static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public Class<LocalDate> getType() {
@@ -17,11 +17,11 @@ public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 
     @Override
     public String writer(LocalDate v) {
-        return v.format(fmt);
+        return v.format(FMT);
     }
 
     @Override
     public LocalDate ReadToExcel(String v) {
-        return LocalDate.parse(v,fmt);
+        return LocalDate.parse(v,FMT);
     }
 }
