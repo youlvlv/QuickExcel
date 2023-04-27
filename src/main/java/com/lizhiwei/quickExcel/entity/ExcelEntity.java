@@ -124,6 +124,7 @@ public class ExcelEntity {
     public ExcelEntity(ParamType index) {
         if (index == ParamType.INDEX) {
             this.title = "序号";
+            this.property = "";
             this.paramType = index;
             this.type = Integer.class;
         }
