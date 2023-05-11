@@ -12,6 +12,10 @@ public class RowModel {
     protected final int rowNumber;
     protected final XSSFRow row;
     protected final SheetModel sheet;
+    /**
+     * 当前单元格位置
+     */
+    protected Integer order;
 
 
     public RowModel(int rowNumber, XSSFRow row, SheetModel sheetModel) {

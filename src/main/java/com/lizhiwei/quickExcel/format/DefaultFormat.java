@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class DefaultFormat implements ExcelFormat<Object> {
 
-    public static final ClassMap map = new ClassMap();
+    public static final ClassMap CLASS_FORMAT_MAP = new ClassMap();
 
     static {
         Reflections reflections = new Reflections(new ConfigurationBuilder().forPackages("com.lizhiwei.quickExcel.format.type"));
@@ -23,7 +23,7 @@ public class DefaultFormat implements ExcelFormat<Object> {
                 throw new RuntimeException(e);
             }
 
-            map.put(typeFormat.getType(), typeFormat);
+            CLASS_FORMAT_MAP.put(typeFormat.getType(), typeFormat);
         });
     }
 
@@ -33,7 +33,7 @@ public class DefaultFormat implements ExcelFormat<Object> {
     @Override
     public String WriterToExcel(Object v) {
         if (v != null) {
-            return map.get(v.getClass()).writerToExcel(v);
+            return CLASS_FORMAT_MAP.get(v.getClass()).writerToExcel(v);
         } else {
             return "";
         }
@@ -72,7 +72,7 @@ public class DefaultFormat implements ExcelFormat<Object> {
         if (v == null || v.equals("")) {
             return null;
         }
-        return map.get(type).ReadToExcel(v);
+        return CLASS_FORMAT_MAP.get(type).ReadToExcel(v);
 //        if (v == null || v.equals("")) {
 //            return null;
 //        } else {
