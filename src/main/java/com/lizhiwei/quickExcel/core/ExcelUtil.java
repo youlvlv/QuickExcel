@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 /**
  * 核心算法类
+ *
  * @author lizhiwei
  */
 public class ExcelUtil {
@@ -66,7 +67,8 @@ public class ExcelUtil {
 		Map<Class<?>, ExcelFormat<?>> formatCache = ExcelConfig.getFormatCache();
 		//检查所有的方法
 		for (Method method : methods) {
-			if (method.isAnnotationPresent(ExcelMethod.class)) {
+			// 判断是否为get方法且拥有注解
+			if (isGetter(method) && method.isAnnotationPresent(ExcelMethod.class)) {
 				ExcelMethod e = method.getDeclaredAnnotation(ExcelMethod.class);
 				extractedExcelFormat(formatCache, e.format());
 				ExcelEntity excelEntity;
@@ -133,6 +135,23 @@ public class ExcelUtil {
 			//执行重新初始化命令
 			formatCache.get(format).init();
 		}
+	}
+
+	/**
+	 * 判断当前是否为get方法
+	 *
+	 * @param method
+	 * @return
+	 */
+	public static boolean isGetter(Method method) {
+		if (!method.getName().startsWith("get")) {
+			return false;
+		}
+		//get方法肯定没有参数
+		if (method.getParameterTypes().length != 0) {
+			return false;
+		}
+		return !void.class.equals(method.getReturnType());
 	}
 
 	/**
