@@ -68,8 +68,8 @@ public class ExcelUtil {
 		//检查所有的方法
 		for (Method method : methods) {
 			// 判断是否为get方法且拥有注解
-			if (isGetter(method) && method.isAnnotationPresent(ExcelMethod.class)) {
-				ExcelMethod e = method.getDeclaredAnnotation(ExcelMethod.class);
+			if (isGetter(method) && method.isAnnotationPresent(Excel.class)) {
+				Excel e = method.getDeclaredAnnotation(Excel.class);
 				extractedExcelFormat(formatCache, e.format());
 				ExcelEntity excelEntity;
 				//构造excel实体类
