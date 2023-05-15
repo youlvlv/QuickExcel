@@ -1,6 +1,7 @@
 package com.lizhiwei.quickExcel.util;
 
 
+import com.lizhiwei.quickExcel.entity.ReadErrorInfo;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.entity.Excel;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
@@ -24,6 +25,10 @@ import java.util.*;
 
 public class ReadExcel {
 
+    public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity) {
+        return readExcel(file,startrow,startcol,sheetnum,entity,false);
+    }
+
     /**
      * 读取excel信息
      * 默认0
@@ -32,12 +37,14 @@ public class ReadExcel {
      * @param startcol 开始列
      * @param sheetnum sheet号
      * @param entity 实体类
+     * @param safe 是否综合报错
      * @return 列表信息
      * @param <T>
      */
-    public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity) {
+    public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity,boolean safe) {
         List<T> varList = new ArrayList<>();
-
+        boolean error = false;
+        List<ReadErrorInfo> errorInfoList = new ArrayList<>();
         try {
             //读取文件
             FileInputStream fi = new FileInputStream(file);
@@ -127,7 +134,12 @@ public class ReadExcel {
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     } catch (ExcelValueError e) {
-                        throw new ExcelValueError("第" + i + "行", e);
+                        if (safe){
+                            error = true;
+                            errorInfoList.add(new ReadErrorInfo(i,e.getMessage()));
+                        } else {
+                            throw new ExcelValueError("第" + i + "行", e);
+                        }
                     }
                 }
                 //若当前行为空行则将连续空行+1
@@ -144,6 +156,9 @@ public class ReadExcel {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        if (error){
+            throw new ExcelValueError(errorInfoList);
         }
         return varList;
     }
@@ -275,7 +290,9 @@ public class ReadExcel {
      * @return
      */
     public static String getCellValue(Cell cell) {
-        if (cell == null) return "";
+        if (cell == null) {
+            return "";
+        }
         return cell.toString();
     }
 

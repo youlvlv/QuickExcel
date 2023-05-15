@@ -5,7 +5,6 @@ import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class ExcelConfig {
     private static final HashMap<Class<?>, ExcelFormat<?>> formatCache = new HashMap<>() {{
@@ -36,10 +35,10 @@ public class ExcelConfig {
 
 
     public static <T> void addTypeFormat(Class<T> clazz, ExcelFormatByType<T> format) {
-        DefaultFormat.map.put(clazz,format);
+        DefaultFormat.CLASS_FORMAT_MAP.put(clazz,format);
     }
 
     public static void removeTypeFormat(Class<?> clazz) {
-        DefaultFormat.map.remove(clazz);
+        DefaultFormat.CLASS_FORMAT_MAP.remove(clazz);
     }
 }

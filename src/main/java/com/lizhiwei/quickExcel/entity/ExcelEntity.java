@@ -38,7 +38,7 @@ public class ExcelEntity {
      */
     private Class<? extends TopName> topName = DefaultTopName.class;
 
-    private ParamType paramType = ParamType.NORMAL;
+    private ParamType paramType = ParamType.FIELD;
 
     public String getTitle() {
         return title;
@@ -115,12 +115,13 @@ public class ExcelEntity {
         this.format = format;
     }
 
-    public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName) {
+    public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName,ParamType type) {
         this.title = title;
         this.property = value;
         this.format = format;
         this.index = index;
         this.topName = topName;
+        this.paramType = type;
     }
 
     public ExcelEntity(ParamType index) {
