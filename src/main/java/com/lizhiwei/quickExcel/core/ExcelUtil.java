@@ -143,7 +143,7 @@ public class ExcelUtil {
             group.forEach((k, v) -> {
                 try {
                     xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
-                    xRow0.setSecondHeaderValue(v);
+                    xRow0.setSecondHeaderValue(v,cs);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {
                     throw new RuntimeException(e);
