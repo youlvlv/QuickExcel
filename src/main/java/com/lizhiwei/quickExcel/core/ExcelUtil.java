@@ -189,109 +189,89 @@ public class ExcelUtil {
 			Map<Class<? extends TopName>, List<ExcelEntity>> group = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class))
 					.collect(Collectors.groupingBy(ExcelEntity::getTopName));
 //            Map<Integer,TopName> type = new HashMap<>();
-			group.forEach((k, v) -> {
-				try {
-					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
-					xRow0.setSecondHeaderValue(v);
-				} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-				         NoSuchMethodException e) {
-					throw new RuntimeException(e);
-				}
-			});
-			for (ExcelEntity excelEntity : listTitle) {
-				if (excelEntity.getTopName().equals(DefaultTopName.class)) {
-					xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
-				}
-			}
-		} else {
-			//创建一行
-			RowModel xRow0 = sheet.newRow();
-			for (ExcelEntity excelEntity : listTitle) {
-				xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
-			}
-		}
-		return sheet;
-	}
+            group.forEach((k, v) -> {
+                try {
+                    xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
+                    xRow0.setSecondHeaderValue(v,cs);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            for (ExcelEntity excelEntity : listTitle) {
+                if (excelEntity.getTopName().equals(DefaultTopName.class)) {
+                    xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
+                }
+            }
+        } else {
+            //创建一行
+            RowModel xRow0 = sheet.newRow();
+            for (ExcelEntity excelEntity : listTitle) {
+                xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
+            }
+        }
+        return sheet;
+    }
 
-	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle) {
-		return this.setSheetContent(sheet, listContent, listTitle, null);
-	}
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle) {
+        return this.setSheetContent(sheet, listContent, listTitle, null);
+    }
 
 
-	/**
-	 * 配置(赋值)表格内容部分
-	 *
-	 * @param listContent
-	 * @param since
-	 * @throws Exception
-	 */
-	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since) {
+    /**
+     * 配置(赋值)表格内容部分
+     *
+     * @param listContent
+     * @param since
+     * @throws Exception
+     */
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since) {
 
-		//创建内容样式（头部以下的样式）
-		CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
-		cs.setWrapText(true);
+        //创建内容样式（头部以下的样式）
+        CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
+        cs.setWrapText(true);
 
-		//设置水平垂直居中
-		cs.setAlignment(HorizontalAlignment.CENTER);
-		cs.setVerticalAlignment(VerticalAlignment.CENTER);
-		int start = sheet.getRowNum();
-		if (null != listContent && listContent.size() > 0) {
-			try {
-				for (T t : listContent) {
-					RowModel xRow = sheet.newRow();
-					//获取类属性
-					Field field;
-					Method getter;
-					int order = 0;
-					for (ExcelEntity excelEntity : listTitle) {
-						switch (excelEntity.getParamType()) {
-							case INDEX: {
-								xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
-								break;
-							}
-							// 属性
-							case FIELD: {
-								String str = excelEntity.getProperty();
-								//获取该属性
-								field = t.getClass().getDeclaredField(str);
-								field.setAccessible(true);
-								Object o = field.get(t);
-								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
-								value = format.WriterToExcel(o);
-								//循环设置每列的值
-								xRow.setValue(order++, value, cs);
-								break;
-							}
-							// 方法
-							case METHOD: {
-								String str = excelEntity.getProperty();
-								//获取该属性
-								getter = t.getClass().getMethod(str);
-								Object o = getter.invoke(t);
-								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
-								value = format.WriterToExcel(o);
-								//循环设置每列的值
-								xRow.setValue(order++, value, cs);
-								break;
-							}
-						}
+        //设置水平垂直居中
+        cs.setAlignment(HorizontalAlignment.CENTER);
+        cs.setVerticalAlignment(VerticalAlignment.CENTER);
+        int start = sheet.getRowNum();
+        if (null != listContent && listContent.size() > 0) {
+            try {
 
-					}
-				}
-				if (since != null) {
-					for (Since s : since) {
-						int i = listTitle.stream().filter(x -> x.getProperty().equals(s.getTitle())).findFirst().get().getIndex();
-						sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
-					}
-				}
-			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
-			         InvocationTargetException e) {
-				throw new ExcelValueError(e);
-			}
-		}
-		return sheet;
-	}
+                for (T t : listContent) {
+                    RowModel xRow = sheet.newRow();
+                    //获取类属性
+                    Field field;
+                    int order = 0;
+                    for (ExcelEntity excelEntity : listTitle) {
+                        if (excelEntity.getParamType() == ParamType.INDEX) {
+                            xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
+                        } else {
+                            String str = excelEntity.getProperty();
+                            //获取该属性
+                            field = t.getClass().getDeclaredField(str);
+                            field.setAccessible(true);
+                            Object o = field.get(t);
+                            String value = "";
+                            ExcelFormat format = excelEntity.getFormat();
+                            value = format.WriterToExcel(o);
+                            //循环设置每列的值
+                            xRow.setValue(order++, value, cs);
+                        }
+                    }
+
+                }
+                if (since != null) {
+                    for (Since s : since) {
+                        int i = listTitle.stream().filter(x -> x.getProperty().equals(s.getTitle())).findFirst().get().getIndex();
+                        sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
+                    }
+                }
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new ExcelValueError(e);
+            }
+        }
+        return sheet;
+    }
 
 }
