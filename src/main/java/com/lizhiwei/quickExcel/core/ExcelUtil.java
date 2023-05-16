@@ -87,7 +87,9 @@ public class ExcelUtil {
 					}
 				}
 				//构造excel实体类
-				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName(), field.getType(), e.type(), e.isRead(), e.isWrite());
+				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(),
+												formatCache.get(e.format()), e.index(), e.secondName(), field.getType(),
+												e.type(), e.isRead(), e.isWrite(), e.isNotNull());
 				listTitle.add(excelEntity);
 			}
 		}
@@ -205,7 +207,7 @@ public class ExcelUtil {
 					xRow0.setSecondHeaderValue(v, cs);
 
 				} else {
-					xRow0.setValue(v.get(0).getIndex(),va, v.get(0).getTitle(), cs);
+					xRow0.setValue(v.get(0).getIndex(), va, v.get(0).getTitle(), cs);
 //					xRow0.setSecondHeaderValue(v, cs);
 				}
 			});

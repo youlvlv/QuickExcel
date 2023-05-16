@@ -66,4 +66,10 @@ public @interface Excel {
 	 * @return
 	 */
 	ParamType type() default ParamType.FIELD;
+
+	/**
+	 * 导入时，是否允许非空，默认允许为空
+	 * @return
+	 */
+	boolean isNotNull() default false;
 }

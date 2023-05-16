@@ -47,6 +47,9 @@ public class ExcelEntity {
 
 	private boolean isWrite = true;
 
+
+	private boolean isNotNull = false;
+
 	public boolean isRead() {
 		return isRead;
 	}
@@ -132,6 +135,14 @@ public class ExcelEntity {
 		}
 	}
 
+	public boolean isNotNull() {
+		return isNotNull;
+	}
+
+	public void setNotNull(boolean notNull) {
+		isNotNull = notNull;
+	}
+
 	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
 		this.title = title;
 		this.value = value;
@@ -148,7 +159,7 @@ public class ExcelEntity {
 	}
 
 
-	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName,Class clazz ,ParamType type, boolean isRead, boolean isWrite) {
+	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName,Class clazz ,ParamType type, boolean isRead, boolean isWrite,boolean isNotNull) {
 		this.title = title;
 		this.property = value;
 		this.format = format;
@@ -158,6 +169,7 @@ public class ExcelEntity {
 		this.isRead = isRead;
 		this.isWrite = isWrite;
 		this.type = clazz;
+		this.isNotNull = isNotNull;
 	}
 
 	public ExcelEntity(ParamType index) {

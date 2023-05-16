@@ -210,7 +210,6 @@ public class ReadExcel extends ExcelUtil {
 		String cellValue = null;
 		if (null != cell) {
 			if (cell.toString().contains("-") && checkDate(cell.toString())) {
-				String ans = "";
 				cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
 			} else {
 				switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
@@ -242,6 +241,10 @@ public class ReadExcel extends ExcelUtil {
 					case ERROR:
 						cellValue = String.valueOf(cell.getErrorCellValue());
 						break;
+				}
+				// 判断当前字段是否允许非空，并判断非空
+				if (property.isNotNull() && (cellValue == null || "".equals(cellValue.trim()))) {
+					throw new ExcelValueError(property.getTitle() + "为空");
 				}
 				Class<?> type = property.getType();
 				ExcelFormat<?> format = property.getFormat();
