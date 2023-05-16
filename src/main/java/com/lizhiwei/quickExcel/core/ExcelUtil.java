@@ -193,12 +193,20 @@ public class ExcelUtil {
 					.collect(Collectors.groupingBy(ExcelEntity::getTopName));
 //            Map<Integer,TopName> type = new HashMap<>();
 			group.forEach((k, v) -> {
+				String va;
 				try {
-					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k.getDeclaredConstructor().newInstance().value(), cs);
-					xRow0.setSecondHeaderValue(v, cs);
+					va = k.getDeclaredConstructor().newInstance().value();
 				} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
 				         NoSuchMethodException e) {
 					throw new RuntimeException(e);
+				}
+				if (v.size() > 1) {
+					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, va, cs);
+					xRow0.setSecondHeaderValue(v, cs);
+
+				} else {
+					xRow0.setValue(v.get(0).getIndex(), va, cs);
+					xRow0.setSecondHeaderValue(v, cs);
 				}
 			});
 			for (ExcelEntity excelEntity : listTitle) {
