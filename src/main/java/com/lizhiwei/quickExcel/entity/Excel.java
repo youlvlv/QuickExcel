@@ -48,4 +48,22 @@ public @interface Excel {
 	 * @return
 	 */
 	Class<? extends ExcelFormat> format() default DefaultFormat.class;
+
+	/**
+	 * 是否可读
+	 * @return
+	 */
+	boolean isRead() default true;
+
+	/**
+	 * 是否可写
+	 * @return
+	 */
+	boolean isWrite() default true;
+
+	/**
+	 * 当前字段导入方式
+	 * @return
+	 */
+	ParamType type() default ParamType.FIELD;
 }
