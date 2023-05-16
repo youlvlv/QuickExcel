@@ -205,8 +205,8 @@ public class ExcelUtil {
 					xRow0.setSecondHeaderValue(v, cs);
 
 				} else {
-					xRow0.setValue(v.get(0).getIndex(), va, cs);
-					xRow0.setSecondHeaderValue(v, cs);
+					xRow0.setValue(v.get(0).getIndex(),va, v.get(0).getTitle(), cs);
+//					xRow0.setSecondHeaderValue(v, cs);
 				}
 			});
 			for (ExcelEntity excelEntity : listTitle) {
