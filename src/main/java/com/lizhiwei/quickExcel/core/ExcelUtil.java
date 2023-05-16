@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -60,23 +61,11 @@ public class ExcelUtil {
 	 */
 	public <T> List<ExcelEntity> getExcelEntities(Class<T> entity, boolean hasIndex, IndexType type) {
 		Field[] fields = entity.getDeclaredFields();
-		Method[] methods = entity.getMethods();
 		List<ExcelEntity> listTitle = new ArrayList<>();
 
 		// 转换器缓存,默认初始化默认构造器
 		Map<Class<?>, ExcelFormat<?>> formatCache = ExcelConfig.getFormatCache();
-		//检查所有的方法
-		for (Method method : methods) {
-			// 判断是否为get方法且拥有注解
-			if (isGetter(method) && method.isAnnotationPresent(ExcelMethod.class)) {
-				ExcelMethod e = method.getDeclaredAnnotation(ExcelMethod.class);
-				extractedExcelFormat(formatCache, e.format());
-				ExcelEntity excelEntity;
-				//构造excel实体类
-				excelEntity = new ExcelEntity(method.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName(), ParamType.METHOD);
-				listTitle.add(excelEntity);
-			}
-		}
+
 		//检查所有的属性
 		for (Field field : fields) {
 			//设置属性默认可访问，防止private阻止访问
@@ -87,8 +76,18 @@ public class ExcelUtil {
 				Excel e = field.getDeclaredAnnotation(Excel.class);
 				extractedExcelFormat(formatCache, e.format());
 				ExcelEntity excelEntity;
+				if (e.type() == ParamType.METHOD) {
+					String get = "get" + Pattern.compile("^.").matcher(field.getName()).replaceFirst(m -> m.group().toUpperCase());
+					String set = "set" + Pattern.compile("^.").matcher(field.getName()).replaceFirst(m -> m.group().toUpperCase());
+					try {
+						entity.getMethod(get);
+						entity.getMethod(set,field.getType());
+					} catch (NoSuchMethodException ex) {
+						throw new RuntimeException("未找到get/set方法");
+					}
+				}
 				//构造excel实体类
-				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName(), ParamType.FIELD);
+				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName(), e.type(), e.isRead(), e.isWrite());
 				listTitle.add(excelEntity);
 			}
 		}
@@ -181,6 +180,8 @@ public class ExcelUtil {
 		headerFont.setFontName("宋体");
 		cs.setFont(headerFont);
 		cs.setWrapText(true);//是否自动换行
+		//去掉所有禁止导出的字段
+		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		//判断是否有多行头
 		boolean moreRow = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class)).findAny().orElse(null) != null;
 		if (moreRow) {
@@ -230,7 +231,8 @@ public class ExcelUtil {
 		//创建内容样式（头部以下的样式）
 		CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
 		cs.setWrapText(true);
-
+		//去掉所有禁止导出的字段
+		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		//设置水平垂直居中
 		cs.setAlignment(HorizontalAlignment.CENTER);
 		cs.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -266,8 +268,9 @@ public class ExcelUtil {
 							// 方法
 							case METHOD: {
 								String str = excelEntity.getProperty();
+								String get = "get" + Pattern.compile("^.").matcher(str).replaceFirst(m -> m.group().toUpperCase());
 								//获取该属性
-								getter = t.getClass().getMethod(str);
+								getter = t.getClass().getMethod(get);
 								Object o = getter.invoke(t);
 								String value = "";
 								ExcelFormat format = excelEntity.getFormat();

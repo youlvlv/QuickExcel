@@ -17,12 +17,11 @@ public class ExcelConfig {
 
     /**
      * 新增默认的转换器 用于节省内存或存在特殊转换器（如：仅包含带参构造器
-     * @param clazz 转换器类型
      * @param format 转换器实例
      * @param <T> 转换器
      */
-    public static <T> void addFormat(Class<T> clazz,ExcelFormat<T> format){
-        formatCache.put(clazz,format);
+    public static <T> void addFormat(ExcelFormat<T> format){
+        formatCache.put(format.getClass(),format);
     }
 
     /**
