@@ -87,7 +87,7 @@ public class ExcelUtil {
 					}
 				}
 				//构造excel实体类
-				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName(), e.type(), e.isRead(), e.isWrite());
+				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(), formatCache.get(e.format()), e.index(), e.secondName(), field.getType(), e.type(), e.isRead(), e.isWrite());
 				listTitle.add(excelEntity);
 			}
 		}
@@ -181,7 +181,9 @@ public class ExcelUtil {
 		cs.setFont(headerFont);
 		cs.setWrapText(true);//是否自动换行
 		//去掉所有禁止导出的字段
+		AtomicInteger i = new AtomicInteger();
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
+		listTitle.forEach(x -> x.setIndex(i.getAndIncrement()));
 		//判断是否有多行头
 		boolean moreRow = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class)).findAny().orElse(null) != null;
 		if (moreRow) {
@@ -289,7 +291,8 @@ public class ExcelUtil {
 					}
 				}
 
-			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException | InvocationTargetException e) {
+			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
+			         InvocationTargetException e) {
 				throw new ExcelValueError(e);
 			}
 		}

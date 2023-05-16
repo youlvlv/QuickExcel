@@ -148,16 +148,17 @@ public class ExcelEntity {
 	}
 
 
-    public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName, ParamType type,boolean isRead,boolean isWrite) {
-        this.title = title;
-        this.property = value;
-        this.format = format;
-        this.index = index;
-        this.topName = topName;
-        this.paramType = type;
-        this.isRead = isRead;
-        this.isWrite = isWrite;
-    }
+	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName,Class clazz ,ParamType type, boolean isRead, boolean isWrite) {
+		this.title = title;
+		this.property = value;
+		this.format = format;
+		this.index = index;
+		this.topName = topName;
+		this.paramType = type;
+		this.isRead = isRead;
+		this.isWrite = isWrite;
+		this.type = clazz;
+	}
 
 	public ExcelEntity(ParamType index) {
 		if (index == ParamType.INDEX) {
