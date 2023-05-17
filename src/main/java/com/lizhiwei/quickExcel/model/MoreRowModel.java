@@ -63,11 +63,11 @@ public class MoreRowModel extends RowModel {
     }
 
 
-    public void setSecondHeaderValue(List<ExcelEntity> v) {
+    public void setSecondHeaderValue(List<ExcelEntity> v,CellStyle style) {
         for (ExcelEntity excelEntity : v) {
             XSSFCell cell = secondRow.createCell(excelEntity.getIndex());
             cell.setCellValue(excelEntity.getTitle());
-            cell.setCellStyle(sheet.getExcel().getDefaultStyle());
+            cell.setCellStyle(style);
         }
     }
 }

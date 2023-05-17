@@ -7,9 +7,13 @@ public enum ParamType {
     /**
      * 普通参数
      */
-    NORMAL,
+    FIELD,
     /**
      * 序号
      */
-    INDEX
+    INDEX,
+    /**
+     * 普通方法
+     */
+    METHOD
 }

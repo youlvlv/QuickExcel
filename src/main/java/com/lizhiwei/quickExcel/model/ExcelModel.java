@@ -25,22 +25,7 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
     /**
      * 默认的单元格格式
      */
-    protected final static CellStyle DEFAULT_CELL_STYLE;
-
-    static {
-        DEFAULT_CELL_STYLE = new XSSFCellStyle(new StylesTable());
-        //设置水平、垂直居中
-        DEFAULT_CELL_STYLE.setAlignment(HorizontalAlignment.CENTER);
-        DEFAULT_CELL_STYLE.setVerticalAlignment(VerticalAlignment.CENTER);
-        //设置字体
-        Font headerFont = new XSSFFont();
-        headerFont.setFontHeightInPoints((short) 12);
-        /*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
-        headerFont.setBold(true);
-        headerFont.setFontName("宋体");
-        DEFAULT_CELL_STYLE.setFont(headerFont);
-        DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
-    }
+    protected  CellStyle DEFAULT_CELL_STYLE;
 
     protected XSSFWorkbook xWorkbook;
 
@@ -159,6 +144,18 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
 
     public ExcelModel() {
         xWorkbook = new XSSFWorkbook();
+        DEFAULT_CELL_STYLE = xWorkbook.createCellStyle();
+        //设置水平、垂直居中
+        DEFAULT_CELL_STYLE.setAlignment(HorizontalAlignment.CENTER);
+        DEFAULT_CELL_STYLE.setVerticalAlignment(VerticalAlignment.CENTER);
+        //设置字体
+        Font headerFont = new XSSFFont();
+        headerFont.setFontHeightInPoints((short) 12);
+        /*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
+        headerFont.setBold(true);
+        headerFont.setFontName("宋体");
+        DEFAULT_CELL_STYLE.setFont(headerFont);
+        DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
     }
 }
 
