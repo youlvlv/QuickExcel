@@ -1,6 +1,8 @@
 package com.lizhiwei.quickExcel.entity;
 
 /**
+ * 读取错误信息列表
+ *
  * @author lizhiwei
  */
 public class ReadErrorInfo {

@@ -1,5 +1,8 @@
 package com.lizhiwei.quickExcel.entity;
 
+/**
+ * 纵向数据合并
+ */
 public class Since {
 
     private final int row;

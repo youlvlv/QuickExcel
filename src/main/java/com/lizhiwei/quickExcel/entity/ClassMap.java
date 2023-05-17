@@ -5,6 +5,9 @@ import com.lizhiwei.quickExcel.format.type.NullFormat;
 
 import java.util.HashMap;
 
+/**
+ * 类型转换器存储
+ */
 public class ClassMap extends HashMap<Class<?>, ExcelFormatByType<?>> {
 
 

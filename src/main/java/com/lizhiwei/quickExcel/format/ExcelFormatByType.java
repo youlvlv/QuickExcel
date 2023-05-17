@@ -1,5 +1,9 @@
 package com.lizhiwei.quickExcel.format;
 
+/**
+ * 类型转换器接口
+ * @author lizhiwei
+ */
 public interface ExcelFormatByType<T> extends ExcelFormat<T>{
     Class<T> getType();
 

@@ -1,5 +1,10 @@
 package com.lizhiwei.quickExcel.entity;
 
+/**
+ * 导出列表序号位置
+ * @author lizhiwei
+ */
+
 public enum IndexType {
     /**
      * 开头

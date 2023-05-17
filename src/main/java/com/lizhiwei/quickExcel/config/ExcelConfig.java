@@ -6,6 +6,9 @@ import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 
 import java.util.HashMap;
 
+/**
+ * 全局配置项
+ */
 public class ExcelConfig {
     private static final HashMap<Class<?>, ExcelFormat<?>> formatCache = new HashMap<>() {{
         put(DefaultFormat.class, new DefaultFormat());

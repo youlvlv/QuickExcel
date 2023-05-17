@@ -75,7 +75,7 @@ public class ReadExcel extends ExcelUtil {
 			}
 			List<ExcelEntity> list = util.getExcelEntities(entity);
 			for (ExcelEntity excelEntity : list) {
-				if (cellName.containsKey(excelEntity.getTitle())) {
+				if (cellName.containsKey(excelEntity.getTitle()) && excelEntity.isRead()) {
 					excelEntity.setValue(cellName.get(excelEntity.getTitle()));
 					//实体类中该属性类型
 					properties.add(excelEntity);
@@ -98,56 +98,55 @@ public class ReadExcel extends ExcelUtil {
 					t = entity.getDeclaredConstructor().newInstance();
 				} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
 				         NoSuchMethodException e) {
-					throw new RuntimeException(e);
+					throw new RuntimeException("构建实体类失败！请检查实体类", e);
 				}
 				//获取需要读取的数量
 				int size = properties.size();
 				for (ExcelEntity property : properties) {
 					// 查看该字段是否允许导入
-					if (property.isRead()) {
-						Field field = null;
-						Method method = null;
+					Field field = null;
+					Method method = null;
 
-						try {
-							//若为属性
-							if (property.getParamType() == ParamType.FIELD) {
-								//实例化字段
-								field = entity.getDeclaredField(property.getProperty());
-								field.setAccessible(true);
-								//读取当前字段在excel中的值
-								Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
-								//若当前字段为空，则读取数量减1
-								if (o == null || o.toString().equals("")) {
-									--size;
-								}
-								//赋值
-								field.set(t, o);
+					try {
+						//若为属性
+						if (property.getParamType() == ParamType.FIELD) {
+							//实例化字段
+							field = entity.getDeclaredField(property.getProperty());
+							field.setAccessible(true);
+							//读取当前字段在excel中的值
+							Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+							//若当前字段为空，则读取数量减1
+							if (o == null || o.toString().equals("")) {
+								--size;
 							}
-							//若为方法
-							if (property.getParamType() == ParamType.METHOD) {
-								String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
-								method = entity.getMethod(set);
-								//读取当前字段在excel中的值
-								Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
-								//若当前字段为空，则读取数量减1
-								if (o == null || o.toString().equals("")) {
-									--size;
-								}
-								//赋值
-								method.invoke(t, o);
+							//赋值
+							field.set(t, o);
+						}
+						//若为方法
+						if (property.getParamType() == ParamType.METHOD) {
+							String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
+							method = entity.getMethod(set);
+							//读取当前字段在excel中的值
+							Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+							//若当前字段为空，则读取数量减1
+							if (o == null || o.toString().equals("")) {
+								--size;
 							}
-						} catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
-						         InvocationTargetException e) {
-							throw new RuntimeException(e);
-						} catch (ExcelValueError e) {
-							if (safe) {
-								error = true;
-								errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
-							} else {
-								throw new ExcelValueError("第" + i + "行", e);
-							}
+							//赋值
+							method.invoke(t, o);
+						}
+					} catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
+					         InvocationTargetException e) {
+						throw new RuntimeException(e);
+					} catch (ExcelValueError e) {
+						if (safe) {
+							error = true;
+							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
+						} else {
+							throw new ExcelValueError("第" + i + "行", e);
 						}
 					}
+
 				}
 				//若当前行为空行则将连续空行+1
 				if (size == 0) {

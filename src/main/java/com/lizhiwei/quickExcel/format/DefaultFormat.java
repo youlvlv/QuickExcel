@@ -7,6 +7,12 @@ import org.reflections.util.ConfigurationBuilder;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
+/**
+ * 默认转换器，默认扫描format.type包下所有的类型转换器
+ * 可以使用ExcelConfig加载类型转换器
+ *
+ * @author lizhiwei
+ */
 public class DefaultFormat implements ExcelFormat<Object> {
 
     public static final ClassMap CLASS_FORMAT_MAP = new ClassMap();
