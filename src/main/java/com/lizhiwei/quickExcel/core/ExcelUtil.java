@@ -205,7 +205,6 @@ public class ExcelUtil {
 				if (v.size() > 1) {
 					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, va, cs);
 					xRow0.setSecondHeaderValue(v, cs);
-
 				} else {
 					xRow0.setValue(v.get(0).getIndex(), va, v.get(0).getTitle(), cs);
 //					xRow0.setSecondHeaderValue(v, cs);
