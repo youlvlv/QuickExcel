@@ -5,6 +5,7 @@ import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.ParamType;
 import com.lizhiwei.quickExcel.entity.ReadErrorInfo;
+import com.lizhiwei.quickExcel.exception.ExcelReadException;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
@@ -106,19 +107,18 @@ public class ReadExcel extends ExcelUtil {
 					// 查看该字段是否允许导入
 					Field field = null;
 					Method method = null;
-
+					//读取当前字段在excel中的值
+					Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+					//若当前字段为空，则读取数量减1
+					if (o == null || o.toString().equals("")) {
+						--size;
+					}
 					try {
 						//若为属性
 						if (property.getParamType() == ParamType.FIELD) {
 							//实例化字段
 							field = entity.getDeclaredField(property.getProperty());
 							field.setAccessible(true);
-							//读取当前字段在excel中的值
-							Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
-							//若当前字段为空，则读取数量减1
-							if (o == null || o.toString().equals("")) {
-								--size;
-							}
 							//赋值
 							field.set(t, o);
 						}
@@ -126,12 +126,6 @@ public class ReadExcel extends ExcelUtil {
 						if (property.getParamType() == ParamType.METHOD) {
 							String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
 							method = entity.getMethod(set);
-							//读取当前字段在excel中的值
-							Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
-							//若当前字段为空，则读取数量减1
-							if (o == null || o.toString().equals("")) {
-								--size;
-							}
 							//赋值
 							method.invoke(t, o);
 						}
@@ -143,7 +137,7 @@ public class ReadExcel extends ExcelUtil {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelValueError("第" + i + "行", e);
+							throw new ExcelReadException("第" + i + "行", e);
 						}
 					}
 
@@ -164,7 +158,10 @@ public class ReadExcel extends ExcelUtil {
 			throw new RuntimeException(e);
 		}
 		if (error) {
-			throw new ExcelValueError(errorInfoList);
+			throw new ExcelReadException(errorInfoList);
+		}
+		if (varList.size() == 0) {
+			throw new ExcelReadException("当前表格为空");
 		}
 		return varList;
 	}
