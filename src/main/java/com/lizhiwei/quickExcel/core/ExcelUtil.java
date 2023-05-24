@@ -87,9 +87,7 @@ public class ExcelUtil {
 					}
 				}
 				//构造excel实体类
-				excelEntity = new ExcelEntity(field.getName(), e.name().isEmpty() ? e.value() : e.name(),
-												formatCache.get(e.format()), e.index(), e.secondName(), field.getType(),
-												e.type(), e.isRead(), e.isWrite(), e.isNotNull());
+				excelEntity = new ExcelEntity(e, formatCache.get(e.format()), field.getName(), field.getType());
 				listTitle.add(excelEntity);
 			}
 		}

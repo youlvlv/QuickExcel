@@ -41,13 +41,17 @@ public class ExcelEntity {
 	 * 字段类型
 	 */
 	private ParamType paramType = ParamType.FIELD;
-
+	/**
+	 * 是否可读
+	 */
 	private boolean isRead = true;
-
-
+	/**
+	 * 是否可写
+	 */
 	private boolean isWrite = true;
-
-
+	/**
+	 * 读取时是否允许为空
+	 */
 	private boolean isNotNull = false;
 
 	public boolean isRead() {
@@ -159,7 +163,7 @@ public class ExcelEntity {
 	}
 
 
-	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName,Class clazz ,ParamType type, boolean isRead, boolean isWrite,boolean isNotNull) {
+	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName, Class clazz, ParamType type, boolean isRead, boolean isWrite, boolean isNotNull) {
 		this.title = title;
 		this.property = value;
 		this.format = format;
@@ -170,6 +174,19 @@ public class ExcelEntity {
 		this.isWrite = isWrite;
 		this.type = clazz;
 		this.isNotNull = isNotNull;
+	}
+
+	public ExcelEntity(Excel e, ExcelFormat<?> format, String value, Class clazz) {
+		this.title = e.value();
+		this.property = value;
+		this.format = format;
+		this.index = e.index();
+		this.topName = e.secondName();
+		this.paramType = e.type();
+		this.isRead = e.isRead();
+		this.isWrite = e.isWrite();
+		this.type = clazz;
+		this.isNotNull = e.isNotNull();
 	}
 
 	public ExcelEntity(ParamType index) {
