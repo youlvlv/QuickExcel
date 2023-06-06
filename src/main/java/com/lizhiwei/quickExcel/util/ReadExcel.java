@@ -203,61 +203,52 @@ public class ReadExcel extends ExcelUtil {
 	 */
 	private static Object getExcelValue(Cell cell, ExcelEntity property) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String cellValue = null;
-		if (null != cell) {
-			if (cell.toString().contains("-") && checkDate(cell.toString())) {
-				cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
-			} else {
-				switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(cell)) {
-							//判断是否为日期类型
-							cellValue = sdf.format(cell.getDateCellValue());
-						} else {
-							String msg = String.valueOf(cell.getNumericCellValue());
-							if (msg.contains(".0")) {
-								cellValue = checkNumber(String.valueOf(cell.getNumericCellValue()));
-							} else {
-								cellValue = String.valueOf(cell.getNumericCellValue());
-							}
-						}
-						break;
-					case STRING:
-						cellValue = cell.getStringCellValue();
-//									 Short info=((HSSFWorkbook)cell).getCellStyle().getFont().getFontHeight();
-//									cellValue=info+"";
-						break;
-//								cellValue = cell.getNumericCellValue() + "";
-					case BLANK:
-						cellValue = "";
-						break;
-					case BOOLEAN:
-						cellValue = String.valueOf(cell.getBooleanCellValue());
-						break;
-					case ERROR:
-						cellValue = String.valueOf(cell.getErrorCellValue());
-						break;
-				}
-				// 判断当前字段是否允许非空，并判断非空
-				if (property.isNotNull() && (cellValue == null || "".equals(cellValue.trim()))) {
-					throw new ExcelValueError(property.getTitle() + "为空");
-				}
-				Class<?> type = property.getType();
-				ExcelFormat<?> format = property.getFormat();
-				try {
-					if (format instanceof DefaultFormat) {
-						return ((DefaultFormat) format).ReadToExcel(type, cellValue);
-					}
-					return format.ReadToExcel(cellValue);
-				} catch (Exception e) {
-					throw new ExcelValueError(property.getTitle() + "错误", e);
-				}
+        String cellValue = "";
+        if (null != cell) {
+            switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
+                case NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        //判断是否为日期类型
+                        cellValue = sdf.format(cell.getDateCellValue());
+                    } else {
+                        String msg = String.valueOf(cell.getNumericCellValue());
+                        if (msg.contains(".0")) {
+                            cellValue = checkNumber(String.valueOf(cell.getNumericCellValue()));
+                        } else {
+                            cellValue = String.valueOf(cell.getNumericCellValue());
+                        }
+                    }
+                    break;
+                case STRING:
+                    cellValue = cell.getStringCellValue();
+                    break;
+                case BLANK:
+                    cellValue = "";
+                    break;
+                case BOOLEAN:
+                    cellValue = String.valueOf(cell.getBooleanCellValue());
+                    break;
+                case ERROR:
+                    cellValue = String.valueOf(cell.getErrorCellValue());
+                    break;
+            }
+            // 判断当前字段是否允许非空，并判断非空
+            if (property.isNotNull() && (cellValue == null || "".equals(cellValue.trim()))) {
+                throw new ExcelValueError(property.getTitle() + "为空");
+            }
+            Class<?> type = property.getType();
+            ExcelFormat<?> format = property.getFormat();
+            try {
+                if (format instanceof DefaultFormat) {
+                    return ((DefaultFormat) format).ReadToExcel(type, cellValue);
+                }
+                return format.ReadToExcel(cellValue);
+            } catch (Exception e) {
+                throw new ExcelValueError(property.getTitle() + "错误", e);
+            }
 
-			}
-		} else {
-			cellValue = "";
-		}
-		return cellValue;
+        }
+        return cellValue;
 	}
 
 
