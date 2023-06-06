@@ -22,6 +22,7 @@ public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 
     @Override
     public LocalDate ReadToExcel(String v) {
+        v=v.substring(0,10);
         return LocalDate.parse(v,FMT);
     }
 }
