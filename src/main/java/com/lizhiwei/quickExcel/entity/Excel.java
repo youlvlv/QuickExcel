@@ -30,9 +30,10 @@ public @interface Excel {
 
 	/**
 	 * 导出EXCEL时 匹配名称 非必填
-	 *
+	 *  已废弃
 	 * @return
 	 */
+	@Deprecated
 	String name() default "";
 
 	/**

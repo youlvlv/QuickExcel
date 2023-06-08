@@ -125,7 +125,7 @@ public class ReadExcel extends ExcelUtil {
 						//若为方法
 						if (property.getParamType() == ParamType.METHOD) {
 							String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
-							method = entity.getMethod(set);
+							method = entity.getMethod(set, property.getType());
 							//赋值
 							method.invoke(t, o);
 						}
@@ -203,59 +203,53 @@ public class ReadExcel extends ExcelUtil {
 	 */
 	private static Object getExcelValue(Cell cell, ExcelEntity property) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String cellValue = null;
+		String cellValue = "";
 		if (null != cell) {
-			if (cell.toString().contains("-") && checkDate(cell.toString())) {
-				cellValue = new SimpleDateFormat("yyyy/MM/dd").format(cell.getDateCellValue());
-			} else {
-				switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(cell)) {
-							//判断是否为日期类型
-							cellValue = sdf.format(cell.getDateCellValue());
+			switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
+				case NUMERIC:
+					if (DateUtil.isCellDateFormatted(cell)) {
+						//判断是否为日期类型
+						cellValue = sdf.format(cell.getDateCellValue());
+					} else {
+						String msg = String.valueOf(cell.getNumericCellValue());
+						if (msg.contains(".0")) {
+							cellValue = checkNumber(String.valueOf(cell.getNumericCellValue()));
 						} else {
-							String msg = String.valueOf(cell.getNumericCellValue());
-							if (msg.contains(".0")) {
-								cellValue = checkNumber(String.valueOf(cell.getNumericCellValue()));
-							} else {
-								cellValue = String.valueOf(cell.getNumericCellValue());
-							}
+							cellValue = String.valueOf(cell.getNumericCellValue());
 						}
-						break;
-					case STRING:
-						cellValue = cell.getStringCellValue();
-//									 Short info=((HSSFWorkbook)cell).getCellStyle().getFont().getFontHeight();
-//									cellValue=info+"";
-						break;
-//								cellValue = cell.getNumericCellValue() + "";
-					case BLANK:
-						cellValue = "";
-						break;
-					case BOOLEAN:
-						cellValue = String.valueOf(cell.getBooleanCellValue());
-						break;
-					case ERROR:
-						cellValue = String.valueOf(cell.getErrorCellValue());
-						break;
-				}
-				// 判断当前字段是否允许非空，并判断非空
-				if (property.isNotNull() && (cellValue == null || "".equals(cellValue.trim()))) {
-					throw new ExcelValueError(property.getTitle() + "为空");
-				}
-				Class<?> type = property.getType();
-				ExcelFormat<?> format = property.getFormat();
-				try {
-					if (format instanceof DefaultFormat) {
-						return ((DefaultFormat) format).ReadToExcel(type, cellValue);
 					}
-					return format.ReadToExcel(cellValue);
-				} catch (Exception e) {
-					throw new ExcelValueError(property.getTitle() + "错误", e);
-				}
-
+					break;
+				case STRING:
+					cellValue = cell.getStringCellValue();
+					break;
+				case BLANK:
+					cellValue = "";
+					break;
+				case BOOLEAN:
+					cellValue = String.valueOf(cell.getBooleanCellValue());
+					break;
+				case FORMULA:
+					cellValue = cell.getCellFormula();
+					break;
+				case ERROR:
+					cellValue = String.valueOf(cell.getErrorCellValue());
+					break;
 			}
-		} else {
-			cellValue = "";
+			// 判断当前字段是否允许非空，并判断非空
+			if (property.isNotNull() && (cellValue == null || "".equals(cellValue.trim()))) {
+				throw new ExcelValueError(property.getTitle() + "为空");
+			}
+			Class<?> type = property.getType();
+			ExcelFormat<?> format = property.getFormat();
+			try {
+				if (format instanceof DefaultFormat) {
+					return ((DefaultFormat) format).ReadToExcel(type, cellValue);
+				}
+				return format.ReadToExcel(cellValue);
+			} catch (Exception e) {
+				throw new ExcelValueError(property.getTitle() + "错误", e);
+			}
+
 		}
 		return cellValue;
 	}
