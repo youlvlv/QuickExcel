@@ -5,6 +5,7 @@ import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.IndexType;
 import com.lizhiwei.quickExcel.entity.Since;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -61,6 +62,18 @@ public class SheetModel extends ExcelUtil {
     }
 
     /**
+     * 创建表头带样式的
+     * @param entity
+     * @param cellStyle
+     * @return
+     * @param <T>
+     */
+    public <T> SheetModel createHeader(Class<T> entity, CellStyle cellStyle,short s) {
+        List<ExcelEntity> list = getEntities(entity);
+        return util.setSheetHeader(this, list,cellStyle,s);
+    }
+
+    /**
      * 录入数据信息
      *
      * @param entity  实体类class
@@ -74,6 +87,8 @@ public class SheetModel extends ExcelUtil {
         first.add(content);
         return util.setSheetContent(this, first, list, null);
     }
+
+
 
     /**
      * 录入数据信息

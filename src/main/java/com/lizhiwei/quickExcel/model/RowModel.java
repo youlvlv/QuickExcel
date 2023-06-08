@@ -41,6 +41,15 @@ public class RowModel {
         return this;
     }
 
+    public RowModel setMergerValue(int start, int end, String value, CellStyle style,short s) {
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
+        XSSFCell cell = createCell(start);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+        cell.getRow().setHeight(s);
+        return this;
+    }
+
     /**
      * 设置合并单元格
      *
@@ -69,6 +78,15 @@ public class RowModel {
         XSSFCell cell = createCell(i);
         cell.setCellValue(value);
         cell.setCellStyle(style);
+        return this;
+    }
+
+
+    public RowModel setValue(int i, String value, CellStyle style,short s) {
+        XSSFCell cell = createCell(i);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+        cell.getRow().setHeight(s);
         return this;
     }
 
