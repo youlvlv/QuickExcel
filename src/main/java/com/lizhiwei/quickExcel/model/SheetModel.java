@@ -103,6 +103,20 @@ public class SheetModel extends ExcelUtil {
         return util.setSheetContent(this, listContent, list, null);
     }
 
+    /**
+     * 录入数据信息
+     *
+     * @param entity      实体类class
+     * @param listContent 数据
+     * @param <T>
+     * @return
+     */
+    public <T> SheetModel createContent(Class<T> entity, List<T> listContent,CellStyle style,short s) {
+        List<ExcelEntity> list = getEntities(entity);
+        return util.setSheetContent(this, listContent, list, null,style,s);
+    }
+
+
     private <T> List<ExcelEntity> getEntities(Class<T> entity) {
         List<ExcelEntity> list;
         if (type != null) {

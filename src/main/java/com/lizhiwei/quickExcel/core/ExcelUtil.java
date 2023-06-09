@@ -368,4 +368,81 @@ public class ExcelUtil {
 
 
 	}
+
+
+	/**
+	 *
+	 * @param sheet 工作表
+	 * @param listContent 内容
+	 * @param listTitle 表头
+	 * @param since
+	 * @param cs 样式
+	 * @param ss 行高
+	 * @return 返回
+	 * @param <T> 实体类
+	 */
+	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since,CellStyle cs,short ss) {
+
+		int start = sheet.getRowNum();
+		if (null != listContent && listContent.size() > 0) {
+			try {
+				for (T t : listContent) {
+					RowModel xRow = sheet.newRow();
+					//获取类属性
+					Field field;
+					Method getter;
+					int order = 0;
+					for (ExcelEntity excelEntity : listTitle) {
+						switch (excelEntity.getParamType()) {
+							case INDEX: {
+								xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
+								break;
+							}
+							// 属性
+							case FIELD: {
+								String str = excelEntity.getProperty();
+								//获取该属性
+								field = t.getClass().getDeclaredField(str);
+								field.setAccessible(true);
+								Object o = field.get(t);
+								String value = "";
+								ExcelFormat format = excelEntity.getFormat();
+								value = format.WriterToExcel(o);
+								//循环设置每列的值
+								xRow.setValue(order++, value, cs,ss);
+								break;
+							}
+							// 方法
+							case METHOD: {
+								String str = excelEntity.getProperty();
+								String get = "get" + Pattern.compile("^.").matcher(str).replaceFirst(m -> m.group().toUpperCase());
+								//获取该属性
+								getter = t.getClass().getMethod(get);
+								Object o = getter.invoke(t);
+								String value = "";
+								ExcelFormat format = excelEntity.getFormat();
+								value = format.WriterToExcel(o);
+								//循环设置每列的值
+								xRow.setValue(order++, value, cs,ss);
+								break;
+							}
+						}
+					}
+				}
+				if (since != null) {
+					for (Since s : since) {
+						int i = listTitle.stream().filter(x -> x.getProperty().equals(s.getTitle())).findFirst().get().getIndex();
+						sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
+					}
+				}
+
+			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
+					 InvocationTargetException e) {
+				throw new ExcelValueError(e);
+			}
+		}
+		return sheet;
+
+
+	}
 }
