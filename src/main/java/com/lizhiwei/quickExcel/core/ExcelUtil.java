@@ -220,6 +220,9 @@ public class ExcelUtil {
 				xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
 			}
 		}
+		for (ExcelEntity excelEntity : listTitle) {
+			sheet.getSheet().setColumnWidth(excelEntity.getIndex(),excelEntity.getWidth());
+		}
 		return sheet;
 	}
 

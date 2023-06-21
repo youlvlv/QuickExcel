@@ -44,6 +44,12 @@ public @interface Excel {
 	int index() default -1;
 
 	/**
+	 * 默认此列宽度
+	 * @return
+	 */
+	int width() default 70;
+
+	/**
 	 * 转换工具
 	 *
 	 * @return

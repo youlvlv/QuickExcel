@@ -54,6 +54,8 @@ public class ExcelEntity {
 	 */
 	private boolean isNotNull = false;
 
+	private int width;
+
 	public boolean isRead() {
 		return isRead;
 	}
@@ -147,6 +149,14 @@ public class ExcelEntity {
 		isNotNull = notNull;
 	}
 
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
 	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
 		this.title = title;
 		this.value = value;
@@ -178,6 +188,7 @@ public class ExcelEntity {
 
 	public ExcelEntity(Excel e, ExcelFormat<?> format, String value, Class clazz) {
 		this.title = e.value();
+		this.width = e.width();
 		this.property = value;
 		this.format = format;
 		this.index = e.index();
