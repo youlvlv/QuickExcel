@@ -167,6 +167,7 @@ public class ExcelUtil {
         xSheet.setColumnWidth(2, 15 * 256);
         xSheet.setColumnWidth(3, 20 * 256);*/
 
+
 		//创建表格的样式
 		CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
 		//设置水平、垂直居中
@@ -226,9 +227,69 @@ public class ExcelUtil {
 		return sheet;
 	}
 
+	/**
+	 * 生成数据头
+	 *
+	 * @param sheet
+	 * @param listTitle
+	 * @return
+	 */
+	public SheetModel setSheetHeader(SheetModel sheet, List<ExcelEntity> listTitle,CellStyle cs,short s) {
+		//去掉所有禁止导出的字段
+		AtomicInteger i = new AtomicInteger();
+		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
+		listTitle.forEach(x -> x.setIndex(i.getAndIncrement()));
+		//判断是否有多行头
+		boolean moreRow = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class)).findAny().orElse(null) != null;
+		if (moreRow) {
+			MoreRowModel xRow0 = sheet.newMoreRow();
+			//获取所有非默认头的字段
+			Map<Class<? extends TopName>, List<ExcelEntity>> group = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class))
+					.collect(Collectors.groupingBy(ExcelEntity::getTopName));
+//            Map<Integer,TopName> type = new HashMap<>();
+			group.forEach((k, v) -> {
+				String va;
+				try {
+					va = k.getDeclaredConstructor().newInstance().value();
+				} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+						 NoSuchMethodException e) {
+					throw new RuntimeException(e);
+				}
+				if (v.size() > 1) {
+					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, va, cs);
+					xRow0.setSecondHeaderValue(v, cs);
+				} else {
+					xRow0.setValue(v.get(0).getIndex(), va, v.get(0).getTitle(), cs);
+//					xRow0.setSecondHeaderValue(v, cs);
+				}
+			});
+			for (ExcelEntity excelEntity : listTitle) {
+				if (excelEntity.getTopName().equals(DefaultTopName.class)) {
+					xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
+				}
+			}
+		} else {
+			//创建一行
+			RowModel xRow0 = sheet.newRow();
+			if(s==0) {
+				for (ExcelEntity excelEntity : listTitle) {
+					xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
+				}
+			}else {
+				for (ExcelEntity excelEntity : listTitle) {
+					xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs,s);
+				}
+			}
+		}
+		return sheet;
+	}
+
+
 	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle) {
 		return this.setSheetContent(sheet, listContent, listTitle, null);
 	}
+
+
 
 
 	/**
@@ -303,6 +364,83 @@ public class ExcelUtil {
 
 			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
 			         InvocationTargetException e) {
+				throw new ExcelValueError(e);
+			}
+		}
+		return sheet;
+
+
+	}
+
+
+	/**
+	 *
+	 * @param sheet 工作表
+	 * @param listContent 内容
+	 * @param listTitle 表头
+	 * @param since
+	 * @param cs 样式
+	 * @param ss 行高
+	 * @return 返回
+	 * @param <T> 实体类
+	 */
+	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since,CellStyle cs,short ss) {
+
+		int start = sheet.getRowNum();
+		if (null != listContent && listContent.size() > 0) {
+			try {
+				for (T t : listContent) {
+					RowModel xRow = sheet.newRow();
+					//获取类属性
+					Field field;
+					Method getter;
+					int order = 0;
+					for (ExcelEntity excelEntity : listTitle) {
+						switch (excelEntity.getParamType()) {
+							case INDEX: {
+								xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
+								break;
+							}
+							// 属性
+							case FIELD: {
+								String str = excelEntity.getProperty();
+								//获取该属性
+								field = t.getClass().getDeclaredField(str);
+								field.setAccessible(true);
+								Object o = field.get(t);
+								String value = "";
+								ExcelFormat format = excelEntity.getFormat();
+								value = format.WriterToExcel(o);
+								//循环设置每列的值
+								xRow.setValue(order++, value, cs,ss);
+								break;
+							}
+							// 方法
+							case METHOD: {
+								String str = excelEntity.getProperty();
+								String get = "get" + Pattern.compile("^.").matcher(str).replaceFirst(m -> m.group().toUpperCase());
+								//获取该属性
+								getter = t.getClass().getMethod(get);
+								Object o = getter.invoke(t);
+								String value = "";
+								ExcelFormat format = excelEntity.getFormat();
+								value = format.WriterToExcel(o);
+								//循环设置每列的值
+								xRow.setValue(order++, value, cs,ss);
+								break;
+							}
+						}
+					}
+				}
+				if (since != null) {
+					for (Since s : since) {
+						int i = listTitle.stream().filter(x -> x.getProperty().equals(s.getTitle())).findFirst().get().getIndex();
+						sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
+					}
+				}
+
+			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
+					 InvocationTargetException e) {
 				throw new ExcelValueError(e);
 			}
 		}
