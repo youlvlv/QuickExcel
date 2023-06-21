@@ -47,7 +47,7 @@ public @interface Excel {
 	 * 默认此列宽度
 	 * @return
 	 */
-	int width() default 70;
+	int width() default 256*15;
 
 	/**
 	 * 转换工具
