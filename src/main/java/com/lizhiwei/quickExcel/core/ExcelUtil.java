@@ -31,14 +31,34 @@ import java.util.stream.Collectors;
  *
  * @author lizhiwei
  */
-public class ExcelUtil {
-
-	protected static final ExcelUtil util = new ExcelUtil();
+public abstract class ExcelUtil {
 
 	/**
 	 * 序号
 	 */
 	private static final ExcelEntity index = new ExcelEntity(ParamType.INDEX);
+
+	/**
+	 * 直接获取属性值
+	 * @param excelEntity
+	 * @param t
+	 * @return
+	 * @param <T>
+	 * @throws NoSuchFieldException
+	 * @throws IllegalAccessException
+	 */
+	protected static <T> String getParamString(ExcelEntity excelEntity, T t) throws NoSuchFieldException, IllegalAccessException {
+		Field field;
+		String str = excelEntity.getProperty();
+		//获取该属性
+		field = t.getClass().getDeclaredField(str);
+		field.setAccessible(true);
+		Object o = field.get(t);
+		String value = "";
+		ExcelFormat format = excelEntity.getFormat();
+		value = format.WriterToExcel(o);
+		return value;
+	}
 
 	/**
 	 * 根据 实体类生成 excel实体类
@@ -247,8 +267,8 @@ public class ExcelUtil {
 			sheet.getSheet().setColumnWidth(excelEntity.getIndex(), excelEntity.getWidth());
 		}
 		return sheet;
-
 	}
+
 
 
 	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle) {
@@ -300,69 +320,5 @@ public class ExcelUtil {
 	 * @param <T>         实体类
 	 * @return 返回
 	 */
-	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
-		//去掉所有禁止导出的字段
-		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
-		int start = sheet.getRowNum();
-		if (null != listContent && listContent.size() > 0) {
-			try {
-				for (T t : listContent) {
-					RowModel xRow = sheet.newRow();
-					//获取类属性
-					Field field;
-					Method getter;
-					int order = 0;
-					for (ExcelEntity excelEntity : listTitle) {
-						switch (excelEntity.getParamType()) {
-							case INDEX: {
-								xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
-								break;
-							}
-							// 属性
-							case FIELD: {
-								String str = excelEntity.getProperty();
-								//获取该属性
-								field = t.getClass().getDeclaredField(str);
-								field.setAccessible(true);
-								Object o = field.get(t);
-								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
-								value = format.WriterToExcel(o);
-								//循环设置每列的值
-								xRow.setValue(order++, value, cs);
-								break;
-							}
-							// 方法
-							case METHOD: {
-								String str = excelEntity.getProperty();
-								String get = "get" + Pattern.compile("^.").matcher(str).replaceFirst(m -> m.group().toUpperCase());
-								//获取该属性
-								getter = t.getClass().getMethod(get);
-								Object o = getter.invoke(t);
-								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
-								value = format.WriterToExcel(o);
-								//循环设置每列的值
-								xRow.setValue(order++, value, cs);
-								break;
-							}
-						}
-					}
-				}
-				if (since != null) {
-					for (Since s : since) {
-						int i = listTitle.stream().filter(x -> x.getProperty().equals(s.getTitle())).findFirst().get().getIndex();
-						sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
-					}
-				}
-
-			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
-			         InvocationTargetException e) {
-				throw new ExcelValueError(e);
-			}
-		}
-		return sheet;
-
-
-	}
+	public abstract  <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss);
 }

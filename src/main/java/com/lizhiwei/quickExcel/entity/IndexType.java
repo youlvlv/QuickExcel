@@ -13,5 +13,9 @@ public enum IndexType {
 	/**
 	 * 结尾
 	 */
-	FINALLY
+	FINALLY,
+	/**
+	 * 无序号
+	 */
+	NULL
 }

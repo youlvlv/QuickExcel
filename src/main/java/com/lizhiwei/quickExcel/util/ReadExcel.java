@@ -10,6 +10,7 @@ import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.model.ExcelBaseModel;
 import com.lizhiwei.quickExcel.model.UploadFile;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -27,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class ReadExcel extends ExcelUtil {
+public class ReadExcel extends ExcelBaseModel {
 
 	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity) {
 		return readExcel(file, startrow, startcol, sheetnum, entity, false);
@@ -74,7 +75,7 @@ public class ReadExcel extends ExcelUtil {
 			for (int j = startcol; j < cellNum; j++) { // 列循环开始
 				cellName.put(getCellValue(getMergedRegionValue(sheet, startrow - 1, j)), j);
 			}
-			List<ExcelEntity> list = util.getExcelEntities(entity);
+			List<ExcelEntity> list = getExcelEntities(entity);
 			for (ExcelEntity excelEntity : list) {
 				if (cellName.containsKey(excelEntity.getTitle()) && excelEntity.isRead()) {
 					excelEntity.setValue(cellName.get(excelEntity.getTitle()));
@@ -165,6 +166,7 @@ public class ReadExcel extends ExcelUtil {
 		}
 		return varList;
 	}
+
 
 	/**
 	 * 读取excel
