@@ -20,12 +20,12 @@ import java.util.List;
 /**
  * excel模型
  */
-public class ExcelModel extends ExcelUtil implements AutoCloseable {
+public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 
     /**
      * 默认的单元格格式
      */
-    protected  CellStyle DEFAULT_CELL_STYLE;
+    protected CellStyle DEFAULT_CELL_STYLE;
 
     protected XSSFWorkbook xWorkbook;
 
@@ -61,9 +61,9 @@ public class ExcelModel extends ExcelUtil implements AutoCloseable {
      */
     public <T> ExcelModel newSheet(String name, Class<T> entity, List<T> listContent) {
         SheetModel sheet = this.newSheet(name);
-        List<ExcelEntity> list = util.getExcelEntities(entity);
-        util.setSheetHeader(sheet, list);
-        util.setSheetContent(sheet, listContent, list);
+        List<ExcelEntity> list = util().getExcelEntities(entity);
+        util().setSheetHeader(sheet, list);
+        util().setSheetContent(sheet, listContent, list);
         return this;
     }
 

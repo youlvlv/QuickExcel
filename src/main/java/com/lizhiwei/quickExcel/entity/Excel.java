@@ -30,7 +30,7 @@ public @interface Excel {
 
 	/**
 	 * 导出EXCEL时 匹配名称 非必填
-	 *  已废弃
+	 * 已废弃
 	 * @return
 	 */
 	@Deprecated
@@ -42,6 +42,12 @@ public @interface Excel {
 	 * @return
 	 */
 	int index() default -1;
+
+	/**
+	 * 默认此列宽度
+	 * @return
+	 */
+	int width() default 256*15;
 
 	/**
 	 * 转换工具
