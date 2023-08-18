@@ -111,7 +111,7 @@ public class ReadExcel extends ExcelBaseModel {
 					//读取当前字段在excel中的值
 					Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
 					//若当前字段为空，则读取数量减1
-					if (o == null || o.toString().equals("")) {
+					if (o == null || o.toString().isEmpty()) {
 						--size;
 					}
 					try {
@@ -161,7 +161,7 @@ public class ReadExcel extends ExcelBaseModel {
 		if (error) {
 			throw new ExcelReadException(errorInfoList);
 		}
-		if (varList.size() == 0) {
+		if (varList.isEmpty()) {
 			throw new ExcelReadException("当前表格为空");
 		}
 		return varList;
