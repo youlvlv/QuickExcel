@@ -238,7 +238,7 @@ public class ReadExcel extends ExcelBaseModel {
 					break;
 			}
 			// 判断当前字段是否允许非空，并判断非空
-			if (property.isNotNull() && (cellValue == null || "".equals(cellValue.trim()))) {
+			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueError(property.getTitle() + "为空");
 			}
 			Class<?> type = property.getType();
