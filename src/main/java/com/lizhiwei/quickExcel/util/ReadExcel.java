@@ -1,7 +1,6 @@
 package com.lizhiwei.quickExcel.util;
 
 
-import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.ParamType;
 import com.lizhiwei.quickExcel.entity.ReadErrorInfo;
@@ -108,13 +107,13 @@ public class ReadExcel extends ExcelBaseModel {
 					// 查看该字段是否允许导入
 					Field field = null;
 					Method method = null;
-					//读取当前字段在excel中的值
-					Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
-					//若当前字段为空，则读取数量减1
-					if (o == null || o.toString().isEmpty()) {
-						--size;
-					}
 					try {
+						//读取当前字段在excel中的值
+						Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+						//若当前字段为空，则读取数量减1
+						if (o == null || o.toString().isEmpty()) {
+							--size;
+						}
 						//若为属性
 						if (property.getParamType() == ParamType.FIELD) {
 							//实例化字段
@@ -240,20 +239,22 @@ public class ReadExcel extends ExcelBaseModel {
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueError(property.getTitle() + "为空");
-			}
-			Class<?> type = property.getType();
-			ExcelFormat<?> format = property.getFormat();
-			try {
-				if (format instanceof DefaultFormat) {
-					return ((DefaultFormat) format).ReadToExcel(type, cellValue);
+			} else if (!cellValue.trim().isEmpty()) {
+				Class<?> type = property.getType();
+				ExcelFormat<?> format = property.getFormat();
+				try {
+					if (format instanceof DefaultFormat) {
+						return ((DefaultFormat) format).ReadToExcel(type, cellValue);
+					}
+					return format.ReadToExcel(cellValue);
+				} catch (Exception e) {
+					throw new ExcelValueError(property.getTitle() + "错误", e);
 				}
-				return format.ReadToExcel(cellValue);
-			} catch (Exception e) {
-				throw new ExcelValueError(property.getTitle() + "错误", e);
+			} else {
+				return null;
 			}
-
 		}
-		return cellValue;
+		return null;
 	}
 
 
