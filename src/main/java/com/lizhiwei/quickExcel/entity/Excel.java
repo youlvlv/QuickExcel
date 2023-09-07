@@ -79,4 +79,10 @@ public @interface Excel {
 	 * @return
 	 */
 	boolean isNotNull() default false;
+
+	/**
+	 * 别名
+	 * @return
+	 */
+	String alias() default "";
 }

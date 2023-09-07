@@ -14,6 +14,10 @@ public class ExcelEntity {
 	 */
 	private String title;
 	/**
+	 * 别名
+	 */
+	private String alias;
+	/**
 	 * 值
 	 */
 	private Integer value;
@@ -157,6 +161,14 @@ public class ExcelEntity {
 		this.width = width;
 	}
 
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
 	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
 		this.title = title;
 		this.value = value;
@@ -197,6 +209,7 @@ public class ExcelEntity {
 		this.isRead = e.isRead();
 		this.isWrite = e.isWrite();
 		this.type = clazz;
+		this.alias = e.alias();
 		this.isNotNull = e.isNotNull();
 	}
 
