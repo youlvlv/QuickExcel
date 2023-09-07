@@ -76,7 +76,7 @@ public class ReadExcel extends ExcelBaseModel {
 			}
 			List<ExcelEntity> list = getExcelEntities(entity);
 			for (ExcelEntity excelEntity : list) {
-				if (cellName.containsKey(excelEntity.getTitle()) && excelEntity.isRead()) {
+				if ((cellName.containsKey(excelEntity.getTitle()) || (excelEntity.getAlias().isEmpty() && cellName.containsKey(excelEntity.getAlias()))) && excelEntity.isRead()) {
 					excelEntity.setValue(cellName.get(excelEntity.getTitle()));
 					//实体类中该属性类型
 					properties.add(excelEntity);
@@ -137,7 +137,7 @@ public class ReadExcel extends ExcelBaseModel {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelReadException("第" + i + "行", e);
+							throw new ExcelReadException("第" + i + "行"+" "+e.getMessage(), e);
 						}
 					}
 
