@@ -230,6 +230,7 @@ public class ExcelEntity {
 			this.property = "";
 			this.paramType = index;
 			this.type = Integer.class;
+			this.topName = "";
 		}
 	}
 
