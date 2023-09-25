@@ -221,31 +221,24 @@ public abstract class ExcelUtil {
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		listTitle.forEach(x -> x.setIndex(i.getAndIncrement()));
 		//判断是否有多行头
-		boolean moreRow = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class)).findAny().orElse(null) != null;
+		boolean moreRow = listTitle.stream().filter(x -> !x.getTopName().isEmpty()).findAny().orElse(null) != null;
 		if (moreRow) {
 			MoreRowModel xRow0 = sheet.newMoreRow();
 			//获取所有非默认头的字段
-			Map<Class<? extends TopName>, List<ExcelEntity>> group = listTitle.stream().filter(x -> !x.getTopName().equals(DefaultTopName.class))
+			Map<String, List<ExcelEntity>> group = listTitle.stream().filter(x -> !x.getTopName().isEmpty())
 					.collect(Collectors.groupingBy(ExcelEntity::getTopName));
 //            Map<Integer,TopName> type = new HashMap<>();
 			group.forEach((k, v) -> {
-				String va;
-				try {
-					va = k.getDeclaredConstructor().newInstance().value();
-				} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-				         NoSuchMethodException e) {
-					throw new RuntimeException(e);
-				}
 				if (v.size() > 1) {
-					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, va, cs);
+					xRow0.setHeaderValue(v.get(0).getIndex(), v.get(0).getIndex() + v.size() - 1, k, cs);
 					xRow0.setSecondHeaderValue(v, cs);
 				} else {
-					xRow0.setValue(v.get(0).getIndex(), va, v.get(0).getTitle(), cs);
+					xRow0.setValue(v.get(0).getIndex(), k, v.get(0).getTitle(), cs);
 //					xRow0.setSecondHeaderValue(v, cs);
 				}
 			});
 			for (ExcelEntity excelEntity : listTitle) {
-				if (excelEntity.getTopName().equals(DefaultTopName.class)) {
+				if (excelEntity.getTopName().isEmpty()) {
 					xRow0.setValue(excelEntity.getIndex(), excelEntity.getTitle(), cs);
 				}
 			}
