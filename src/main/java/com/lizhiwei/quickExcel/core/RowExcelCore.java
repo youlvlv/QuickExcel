@@ -32,6 +32,9 @@ public class RowExcelCore extends ExcelUtil {
 	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
 		//去掉所有禁止导出的字段
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
+		for (int i = 0; i < listTitle.size(); i++) {
+			listTitle.get(i).setIndex(i);
+		}
 		int start = sheet.getRowNum();
 		if (null != listContent && listContent.size() > 0) {
 			try {
