@@ -36,7 +36,7 @@ public class RowExcelCore extends ExcelUtil {
 			listTitle.get(i).setIndex(i);
 		}
 		int start = sheet.getRowNum();
-		if (null != listContent && listContent.size() > 0) {
+		if (null != listContent && !listContent.isEmpty()) {
 			try {
 				for (T t : listContent) {
 					RowModel xRow = sheet.newRow();
