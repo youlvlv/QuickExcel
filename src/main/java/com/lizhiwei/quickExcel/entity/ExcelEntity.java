@@ -40,7 +40,7 @@ public class ExcelEntity {
 	/**
 	 * 顶部名称
 	 */
-	private Class<? extends TopName> topName = DefaultTopName.class;
+	private String topName;
 	/**
 	 * 字段类型
 	 */
@@ -124,8 +124,12 @@ public class ExcelEntity {
 		this.index = index;
 	}
 
-	public Class<? extends TopName> getTopName() {
+	public String getTopName() {
 		return topName;
+	}
+
+	public void setTopName(String topName) {
+		this.topName = topName;
 	}
 
 	public ParamType getParamType() {
@@ -136,7 +140,7 @@ public class ExcelEntity {
 		this.paramType = paramType;
 	}
 
-	public TopName getTopNameInt() {
+	public TopName getTopNameInt(Class<? extends TopName> topName) {
 		try {
 			return topName.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
@@ -169,6 +173,10 @@ public class ExcelEntity {
 		this.alias = alias;
 	}
 
+	public String getEntityType(){
+		return "normal";
+	}
+
 	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
 		this.title = title;
 		this.value = value;
@@ -180,7 +188,7 @@ public class ExcelEntity {
 		this.property = value;
 		this.format = format;
 		this.index = index;
-		this.topName = topName;
+		this.topName = getTopNameInt(topName).value();
 		this.paramType = type;
 	}
 
@@ -190,7 +198,7 @@ public class ExcelEntity {
 		this.property = value;
 		this.format = format;
 		this.index = index;
-		this.topName = topName;
+		this.topName = getTopNameInt(topName).value();
 		this.paramType = type;
 		this.isRead = isRead;
 		this.isWrite = isWrite;
@@ -204,7 +212,10 @@ public class ExcelEntity {
 		this.property = value;
 		this.format = format;
 		this.index = e.index();
-		this.topName = e.secondName();
+		this.topName = e.topName();
+		if (e.secondName() != DefaultTopName.class){
+			this.topName = getTopNameInt(e.secondName()).value();
+		}
 		this.paramType = e.type();
 		this.isRead = e.isRead();
 		this.isWrite = e.isWrite();
@@ -219,6 +230,7 @@ public class ExcelEntity {
 			this.property = "";
 			this.paramType = index;
 			this.type = Integer.class;
+			this.topName = "";
 		}
 	}
 

@@ -27,7 +27,7 @@ public class ColumnExcelCore extends ExcelUtil {
 		//去掉所有禁止导出的字段
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		int start = sheet.getRowNum();
-		if (null != listContent && listContent.size() > 0) {
+		if (null != listContent && !listContent.isEmpty()) {
 			try {
 				for (ExcelEntity excelEntity : listTitle) {
 					boolean merger = since.stream().anyMatch(x -> excelEntity.getProperty().equals(x.getTitle()));

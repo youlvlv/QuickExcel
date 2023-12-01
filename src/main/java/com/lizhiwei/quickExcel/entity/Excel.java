@@ -22,11 +22,19 @@ public @interface Excel {
 	String value();
 
 	/**
+	 * 导出excel时显示的第二名称 该方式存在性能问题 <br>
+	 * 推荐使用 topName 属性
+	 * @return
+	 */
+	@Deprecated
+	Class<? extends TopName> secondName() default DefaultTopName.class;
+
+	/**
 	 * 导出excel时显示的第二名称
 	 *
 	 * @return
 	 */
-	Class<? extends TopName> secondName() default DefaultTopName.class;
+	String topName() default "";
 
 	/**
 	 * 导出EXCEL时 匹配名称 非必填

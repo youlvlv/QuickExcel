@@ -4,6 +4,8 @@ package com.lizhiwei.quickExcel.entity;
  * 纵向数据合并
  */
 public class Since {
+
+    private final int startRow;
     /**
      * 合并的行数
      */
@@ -21,7 +23,12 @@ public class Since {
         return title;
     }
 
-    public Since(int row, String title) {
+    public int getStartRow() {
+        return startRow;
+    }
+
+    public Since(int startRow, int row, String title) {
+        this.startRow = startRow;
         this.row = row;
         this.title = title;
     }
