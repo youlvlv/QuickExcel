@@ -3,18 +3,16 @@ package com.lizhiwei.quickExcel.model;
 
 import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -88,7 +86,6 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
         XSSFSheet xSheet = xWorkbook.createSheet();
         return new SheetModel(xSheet, this);
     }
-
     /**
      * 获取默认单元格格式
      *
@@ -156,6 +153,35 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
         headerFont.setFontName("宋体");
         DEFAULT_CELL_STYLE.setFont(headerFont);
         DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
+    }
+
+
+    /**
+     *
+     * @param imagePath 图片路径
+     * @param sheetModel 工作表
+     * @param col1 // 图片起始列
+     * @param row1 // 图片起始行
+     * @param col2 // 图片结束列
+     * @param row2 // 图片结束行
+     * @throws IOException 异常
+     */
+    public void addPicture(String imagePath,SheetModel sheetModel,int col1,int row1,int col2,int row2) throws IOException {
+        InputStream inputStream = new FileInputStream(imagePath);
+        byte[] imageBytes = IOUtils.toByteArray(inputStream);
+        inputStream.close();
+        int pictureIdx=xWorkbook.addPicture(imageBytes, XSSFWorkbook.PICTURE_TYPE_JPEG);
+        CreationHelper helper = xWorkbook.getCreationHelper();
+        Drawing drawing = sheetModel.createDrawingPatriarch();
+        //添加位置
+        ClientAnchor anchor = helper.createClientAnchor();
+        anchor.setCol1(col1); // 图片起始列
+        anchor.setRow1(row1); // 图片起始行
+        anchor.setCol2(col2); // 图片结束列
+        anchor.setRow2(row2); // 图片结束行
+        // 创建图片并设置锚点
+        Picture picture = drawing.createPicture(anchor, pictureIdx);
+//        picture.resize();//自适应大小
     }
 }
 

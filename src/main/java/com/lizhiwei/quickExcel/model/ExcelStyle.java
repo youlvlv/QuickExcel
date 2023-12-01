@@ -1,9 +1,16 @@
 package com.lizhiwei.quickExcel.model;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.IndexedColorMap;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 
 public class ExcelStyle {
 
+    /**
+     * 表头设置
+     * @param sheetModel
+     * @return
+     */
     public static CellStyle styleTitle(SheetModel sheetModel) {
         //创建表格的样式
         CellStyle cs = sheetModel.getExcel().getWorkbook().createCellStyle();
@@ -15,11 +22,13 @@ public class ExcelStyle {
 //        headerFont.setFontHeightInPoints((short) 11);
         headerFont.setBold(true);
         headerFont.setFontName("宋体");
+        headerFont.setFontHeightInPoints((short) 20);
         cs.setFont(headerFont);
-        cs.setBorderBottom(BorderStyle.valueOf((short) 1));//边框
-        cs.setBorderLeft(BorderStyle.valueOf((short) 1));
-        cs.setBorderRight(BorderStyle.valueOf((short) 1));
-        cs.setBorderTop(BorderStyle.valueOf((short) 1));
+//        cs.setBorderBottom(BorderStyle.valueOf((short) 1));//边框
+//        cs.setBorderLeft(BorderStyle.valueOf((short) 1));
+//        cs.setBorderRight(BorderStyle.valueOf((short) 1));
+//        cs.setBorderTop(BorderStyle.valueOf((short) 1));
+        cs.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         cs.setWrapText(true);//是否自动换行
         return cs;
     }

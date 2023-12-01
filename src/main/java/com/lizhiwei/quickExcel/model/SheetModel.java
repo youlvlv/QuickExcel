@@ -6,6 +6,8 @@ import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.IndexType;
 import com.lizhiwei.quickExcel.entity.Since;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -218,5 +220,12 @@ public class SheetModel extends ExcelBaseModel {
 
 	public int getNum() {
 		return num++;
+	}
+
+	/**
+	 * 创建一共绘图对象
+	 */
+	public Drawing createDrawingPatriarch() {
+		return xSheet.createDrawingPatriarch();
 	}
 }
