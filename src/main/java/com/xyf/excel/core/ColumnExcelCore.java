@@ -1,0 +1,76 @@
+package com.xyf.excel.core;
+
+import com.xyf.excel.entity.ExcelEntity;
+import com.xyf.excel.entity.Since;
+import com.xyf.excel.exception.ExcelValueError;
+import com.xyf.excel.format.ExcelFormat;
+import com.xyf.excel.model.ColumnModel;
+import com.xyf.excel.model.SheetModel;
+import org.apache.poi.ss.usermodel.CellStyle;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+/**
+ * 列模式运行下的算法
+ */
+public class ColumnExcelCore extends ExcelUtil {
+
+
+	@Override
+	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
+		//去掉所有禁止导出的字段
+		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
+		if (null != listContent && !listContent.isEmpty()) {
+			try {
+				for (ExcelEntity excelEntity : listTitle) {
+					boolean merger = since.stream().anyMatch(x -> excelEntity.getProperty().equals(x.getTitle()));
+					ColumnModel column = sheet.newColumn();
+					//获取类属性
+					Method getter;
+					List<String> values = new ArrayList<>();
+					for (T t : listContent) {
+						switch (excelEntity.getParamType()) {
+							case INDEX: {
+								column.setValue(String.valueOf(sheet.getNum()), cs);
+								break;
+							}
+							// 属性
+							case FIELD: {
+								String value = getParamString(excelEntity, t);
+								//循环设置每列的值
+								values.add(value);
+								break;
+							}
+							// 方法
+							case METHOD: {
+								String str = excelEntity.getProperty();
+								String get = "get" + Pattern.compile("^.").matcher(str).replaceFirst(m -> m.group().toUpperCase());
+								//获取该属性
+								getter = t.getClass().getMethod(get);
+								Object o = getter.invoke(t);
+								String value = "";
+								ExcelFormat format = excelEntity.getFormat();
+								values.add(format.WriterToExcel(o));
+								//循环设置每列的值
+								break;
+							}
+						}
+					}
+					column.setValues(values, cs, merger);
+				}
+			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
+			         InvocationTargetException e) {
+				throw new ExcelValueError(e);
+			}
+			sheet.setOverRowNum(sheet.getRowNum() + listContent.size());
+		}
+		return sheet;
+	}
+
+
+}
