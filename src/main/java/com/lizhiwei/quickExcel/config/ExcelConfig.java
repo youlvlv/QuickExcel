@@ -15,7 +15,7 @@ public class ExcelConfig {
     }};
 
     static public HashMap<Class<?>, ExcelFormat<?>> getFormatCache() {
-        return (HashMap<Class<?>, ExcelFormat<?>>) formatCache.clone();
+        return new HashMap<>(formatCache);
     }
 
     /**
