@@ -231,6 +231,7 @@ public class ExcelEntity {
 			this.paramType = index;
 			this.type = Integer.class;
 			this.topName = "";
+			this.width=256*15;
 		}
 	}
 
