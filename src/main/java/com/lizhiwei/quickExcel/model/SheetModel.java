@@ -5,12 +5,15 @@ import com.lizhiwei.quickExcel.core.ExcelUtil;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.IndexType;
 import com.lizhiwei.quickExcel.entity.Since;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.Units;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -117,18 +120,18 @@ public class SheetModel extends ExcelBaseModel {
 		return util().setSheetContent(this, listContent, list, null);
 	}
 
-    /**
-     * 录入数据信息
-     *
-     * @param entity      实体类class
-     * @param listContent 数据
-     * @param <T>
-     * @return
-     */
-    public <T> SheetModel createContent(Class<T> entity, List<T> listContent,CellStyle style,short s) {
-        List<ExcelEntity> list = getEntities(entity);
-        return util().setSheetContent(this, listContent, list, null,style,s);
-    }
+	/**
+	 * 录入数据信息
+	 *
+	 * @param entity      实体类class
+	 * @param listContent 数据
+	 * @param <T>
+	 * @return
+	 */
+	public <T> SheetModel createContent(Class<T> entity, List<T> listContent, CellStyle style, short s) {
+		List<ExcelEntity> list = getEntities(entity);
+		return util().setSheetContent(this, listContent, list, null, style, s);
+	}
 
 
 	private <T> List<ExcelEntity> getEntities(Class<T> entity) {
@@ -228,4 +231,44 @@ public class SheetModel extends ExcelBaseModel {
 	public Drawing createDrawingPatriarch() {
 		return xSheet.createDrawingPatriarch();
 	}
+
+
+	/**
+	 * 创建画图 Helper
+	 */
+	public ClientAnchor createHelper() {
+		return xSheet.getWorkbook().getCreationHelper().createClientAnchor();
+	}
+
+	/**
+	 * 添加图片
+	 * @param imagePath 图片路径
+	 * @param sheet  工作表
+	 * @return 图片索引
+	 */
+	public static void addPicture(String imagePath, Sheet sheet) throws IOException {
+		InputStream inputStream = new FileInputStream(imagePath);
+		byte[] imageBytes = IOUtils.toByteArray(inputStream);
+		inputStream.close();
+
+		Workbook workbook = sheet.getWorkbook(); // 获取工作簿实例
+		int pictureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG); // 根据图片类型添加到工作簿
+
+		CreationHelper createHelper = workbook.getCreationHelper();
+		ClientAnchor anchor = createHelper.createClientAnchor();
+
+		// 设置图片在单元格的位置，例如图片从A1单元格开始
+		anchor.setCol1(0);
+		anchor.setRow1(0);
+		// 可以根据需要设置其他位置参数
+
+		Drawing<?> drawing = sheet.createDrawingPatriarch(); // 创建绘图 patriarch 对象
+		Picture pict = drawing.createPicture(anchor, pictureIdx); // 在指定位置创建图片
+
+		// 如果需要统一设置图片宽度，可以进行如下操作：
+		float scale = 1; // 定义缩放比例
+		int widthPx = 42; // 图片的像素宽度
+		pict.resize(widthPx * Units.EMU_PER_PIXEL / scale, -1); // -1 表示自动计算高度以保持纵横比
+	}
+
 }
