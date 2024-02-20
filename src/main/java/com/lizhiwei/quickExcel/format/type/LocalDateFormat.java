@@ -5,13 +5,18 @@ import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 
-	private static final DateTimeFormatter FMT1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-
-	private static final DateTimeFormatter FMT2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+	private static final Map<String, DateTimeFormatter> FMT = new HashMap<>() {{
+		put("-", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		put("/", DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+		put(".", DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+		put("年", DateTimeFormatter.ofPattern("yyyyn年MM月dd日"));
+	}};
 
 	@Override
 	public Class<LocalDate> getType() {
@@ -20,26 +25,27 @@ public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 
 	@Override
 	public String writer(LocalDate v) {
-		return v.format(FMT1);
+		return v.format(FMT.get("-"));
 	}
 
 	@Override
 	public LocalDate ReadToExcel(String v) {
-		if (v.length() >= 10){
+		if (v.length() >= 10) {
 			v = v.substring(0, 10);
 		}
-		DateTimeFormatter formatter;
+		AtomicReference<DateTimeFormatter> formatter = new AtomicReference<>();
+		String finalV = v;
 		// 判断当前的解析方法
-		if (v.contains("-")) {
-			formatter = FMT1;
-		} else if (v.contains("/")) {
-			formatter = FMT2;
-		} else {
-			// 存在无法匹配的方案，直接返回 null
+		FMT.forEach((k, f) -> {
+			if (finalV.contains(k)) {
+				formatter.set(f);
+			}
+		});
+		if (formatter.get() == null) {
 			return null;
 		}
 		try {
-			return LocalDate.parse(v, formatter);
+			return LocalDate.parse(v, formatter.get());
 		} catch (DateTimeParseException e) {
 			// 当前无法正常解析日期
 			return null;
