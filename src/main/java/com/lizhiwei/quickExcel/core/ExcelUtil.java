@@ -142,6 +142,7 @@ public abstract class ExcelUtil {
 			ExcelFormat<?> excelFormat;
 			try {
 				excelFormat = format.getDeclaredConstructor().newInstance();
+				excelFormat.init();
 			} catch (InvocationTargetException | InstantiationException | IllegalAccessException |
 			         NoSuchMethodException ex) {
 				//实例化失败，则使用默认的转换器
