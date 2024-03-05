@@ -9,6 +9,7 @@ import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.ExcelBaseModel;
 import com.lizhiwei.quickExcel.model.UploadFile;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -241,7 +242,7 @@ public class ReadExcel extends ExcelBaseModel {
 				throw new ExcelValueError(property.getTitle() + "为空");
 			} else if (!cellValue.trim().isEmpty()) {
 				Class<?> type = property.getType();
-				ExcelFormat<?> format = property.getFormat();
+				ExcelFormatBase<?> format = property.getFormat();
 				try {
 					if (format instanceof DefaultFormat) {
 						return ((DefaultFormat) format).ReadToExcel(type, cellValue);

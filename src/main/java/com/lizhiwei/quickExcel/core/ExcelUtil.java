@@ -6,6 +6,7 @@ import com.lizhiwei.quickExcel.entity.*;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.MoreRowModel;
 import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
@@ -52,7 +53,7 @@ public abstract class ExcelUtil {
 		field.setAccessible(true);
 		Object o = field.get(t);
 		String value = "";
-		ExcelFormat format = excelEntity.getFormat();
+		ExcelFormatBase format = excelEntity.getFormat();
 		value = format.WriterToExcel(o);
 		return value;
 	}
@@ -81,7 +82,7 @@ public abstract class ExcelUtil {
 		List<ExcelEntity> listTitle = new ArrayList<>();
 
 		// 转换器缓存,默认初始化默认构造器
-		Map<Class<?>, ExcelFormat<?>> formatCache = ExcelConfig.getFormatCache();
+		Map<Class<?>, ExcelFormatBase<?>> formatCache = ExcelConfig.getFormatCache();
 
 		//检查所有的属性
 		for (Field field : fields) {
@@ -132,7 +133,7 @@ public abstract class ExcelUtil {
 	 * @param formatCache 转换器缓存
 	 * @param format      转换器
 	 */
-	private static void extractedExcelFormat(Map<Class<?>, ExcelFormat<?>> formatCache, Class<? extends ExcelFormat> format) {
+	private static void extractedExcelFormat(Map<Class<?>, ExcelFormatBase<?>> formatCache, Class<? extends ExcelFormat> format) {
 		//判断当前转换器是否存在缓存
 		if (!formatCache.containsKey(format)) {
 			//不存在缓存，则进行实例化
@@ -150,7 +151,7 @@ public abstract class ExcelUtil {
 			formatCache.put(format, excelFormat);
 		} else {
 			//执行重新初始化命令
-			formatCache.put(format,formatCache.get(format).init());
+			formatCache.put(format,formatCache.get(format).initFormat());
 		}
 	}
 

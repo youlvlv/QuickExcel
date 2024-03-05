@@ -2,6 +2,7 @@ package com.lizhiwei.quickExcel.config;
 
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 
 import java.util.HashMap;
@@ -10,11 +11,11 @@ import java.util.HashMap;
  * 全局配置项
  */
 public class ExcelConfig {
-    private static final HashMap<Class<?>, ExcelFormat<?>> formatCache = new HashMap<>() {{
+    private static final HashMap<Class<?>, ExcelFormatBase<?>> formatCache = new HashMap<>() {{
         put(DefaultFormat.class, new DefaultFormat());
     }};
 
-    static public HashMap<Class<?>, ExcelFormat<?>> getFormatCache() {
+    static public HashMap<Class<?>, ExcelFormatBase<?>> getFormatCache() {
         return new HashMap<>(formatCache);
     }
 

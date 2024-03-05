@@ -6,6 +6,7 @@ import com.lizhiwei.quickExcel.entity.Since;
 import com.lizhiwei.quickExcel.entity.TopName;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.MoreRowModel;
 import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
@@ -65,7 +66,7 @@ public class RowExcelCore extends ExcelUtil {
 								getter = t.getClass().getMethod(get);
 								Object o = getter.invoke(t);
 								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
+								ExcelFormatBase format = excelEntity.getFormat();
 								value = format.WriterToExcel(o);
 								//循环设置每列的值
 								xRow.setValue(order++, value, cs);
