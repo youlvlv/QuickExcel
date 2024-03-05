@@ -18,10 +18,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -142,6 +139,7 @@ public abstract class ExcelUtil {
 			ExcelFormat<?> excelFormat;
 			try {
 				excelFormat = format.getDeclaredConstructor().newInstance();
+				excelFormat.init();
 			} catch (InvocationTargetException | InstantiationException | IllegalAccessException |
 			         NoSuchMethodException ex) {
 				//实例化失败，则使用默认的转换器
@@ -152,7 +150,7 @@ public abstract class ExcelUtil {
 			formatCache.put(format, excelFormat);
 		} else {
 			//执行重新初始化命令
-			formatCache.get(format).init();
+			formatCache.put(format,formatCache.get(format).init());
 		}
 	}
 
