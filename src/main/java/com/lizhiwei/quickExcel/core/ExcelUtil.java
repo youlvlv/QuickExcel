@@ -6,6 +6,7 @@ import com.lizhiwei.quickExcel.entity.*;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.MoreRowModel;
 import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
@@ -18,10 +19,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,7 +53,7 @@ public abstract class ExcelUtil {
 		field.setAccessible(true);
 		Object o = field.get(t);
 		String value = "";
-		ExcelFormat format = excelEntity.getFormat();
+		ExcelFormatBase format = excelEntity.getFormat();
 		value = format.WriterToExcel(o);
 		return value;
 	}
@@ -84,7 +82,7 @@ public abstract class ExcelUtil {
 		List<ExcelEntity> listTitle = new ArrayList<>();
 
 		// 转换器缓存,默认初始化默认构造器
-		Map<Class<?>, ExcelFormat<?>> formatCache = ExcelConfig.getFormatCache();
+		Map<Class<?>, ExcelFormatBase<?>> formatCache = ExcelConfig.getFormatCache();
 
 		//检查所有的属性
 		for (Field field : fields) {
@@ -135,13 +133,14 @@ public abstract class ExcelUtil {
 	 * @param formatCache 转换器缓存
 	 * @param format      转换器
 	 */
-	private static void extractedExcelFormat(Map<Class<?>, ExcelFormat<?>> formatCache, Class<? extends ExcelFormat> format) {
+	private static void extractedExcelFormat(Map<Class<?>, ExcelFormatBase<?>> formatCache, Class<? extends ExcelFormat> format) {
 		//判断当前转换器是否存在缓存
 		if (!formatCache.containsKey(format)) {
 			//不存在缓存，则进行实例化
 			ExcelFormat<?> excelFormat;
 			try {
 				excelFormat = format.getDeclaredConstructor().newInstance();
+				excelFormat.init();
 			} catch (InvocationTargetException | InstantiationException | IllegalAccessException |
 			         NoSuchMethodException ex) {
 				//实例化失败，则使用默认的转换器
@@ -152,7 +151,7 @@ public abstract class ExcelUtil {
 			formatCache.put(format, excelFormat);
 		} else {
 			//执行重新初始化命令
-			formatCache.get(format).init();
+			formatCache.put(format,formatCache.get(format).initFormat());
 		}
 	}
 

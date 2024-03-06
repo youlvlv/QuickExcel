@@ -2,6 +2,7 @@ package com.lizhiwei.quickExcel.entity;
 
 
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -32,7 +33,7 @@ public class ExcelEntity {
 	/**
 	 * 转换器
 	 */
-	private ExcelFormat<?> format;
+	private ExcelFormatBase<?> format;
 	/**
 	 * 排序
 	 */
@@ -108,7 +109,7 @@ public class ExcelEntity {
 		this.type = type;
 	}
 
-	public ExcelFormat<?> getFormat() {
+	public ExcelFormatBase<?> getFormat() {
 		return format;
 	}
 
@@ -206,7 +207,7 @@ public class ExcelEntity {
 		this.isNotNull = isNotNull;
 	}
 
-	public ExcelEntity(Excel e, ExcelFormat<?> format, String value, Class clazz) {
+	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
 		this.title = e.value();
 		this.width = e.width();
 		this.property = value;

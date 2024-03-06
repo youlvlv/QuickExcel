@@ -4,6 +4,7 @@ import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.Since;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.ColumnModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -57,7 +58,7 @@ public class ColumnExcelCore extends ExcelUtil {
 								getter = t.getClass().getMethod(get);
 								Object o = getter.invoke(t);
 								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
+								ExcelFormatBase format = excelEntity.getFormat();
 								values.add(format.WriterToExcel(o));
 								//循环设置每列的值
 								break;
