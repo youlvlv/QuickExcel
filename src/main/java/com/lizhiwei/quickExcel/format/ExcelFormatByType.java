@@ -4,7 +4,7 @@ package com.lizhiwei.quickExcel.format;
  * 类型转换器接口
  * @author lizhiwei
  */
-public interface ExcelFormatByType<T> extends ExcelFormat<T>{
+public interface ExcelFormatByType<T> extends ExcelFormatBase<T>{
     Class<T> getType();
 
     default String writerToExcel(Object v){
