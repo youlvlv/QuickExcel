@@ -10,6 +10,9 @@ import java.lang.reflect.InvocationTargetException;
  * 导出Excel实体类
  */
 public class ExcelEntity {
+
+	private static final String ALIAS_DEFAULT = "";
+
 	/**
 	 * 名称
 	 */
@@ -17,7 +20,7 @@ public class ExcelEntity {
 	/**
 	 * 别名
 	 */
-	private String alias;
+	private String alias = ALIAS_DEFAULT;
 	/**
 	 * 值
 	 */
@@ -113,7 +116,7 @@ public class ExcelEntity {
 		return format;
 	}
 
-	public void setFormat(ExcelFormat<?> format) {
+	public void setFormat(ExcelFormatBase<?> format) {
 		this.format = format;
 	}
 
