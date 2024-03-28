@@ -140,13 +140,14 @@ public class ReadExcelImg {
 		put("image/gif", ".gif");
 		put("image/bmp", ".bmp");
 		put("image/x-emf", ".emf");
+		put("image/unknown",".jpg");
 		// 添加其他需要支持的MIME类型和后缀对应关系
 	}};
 
 	// 获取图片的MIME类型并转换为文件后缀
 	public static String getPictureExtension(XSSFPicture picture) {
 		String mimeType = picture.getPictureData().getMimeType();
-		return MIME_TYPE_TO_EXTENSION.getOrDefault(mimeType, "");
+		return MIME_TYPE_TO_EXTENSION.getOrDefault(mimeType, ".jpg");
 	}
 
 	/**
