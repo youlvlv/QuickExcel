@@ -8,9 +8,7 @@ import com.lizhiwei.quickExcel.exception.ExcelReadException;
 import com.lizhiwei.quickExcel.exception.ExcelValueError;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
-import com.lizhiwei.quickExcel.format.type.StringFormat;
 import com.lizhiwei.quickExcel.model.ExcelBaseModel;
 import com.lizhiwei.quickExcel.model.UploadFile;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -75,7 +73,7 @@ public class ReadExcel extends ExcelBaseModel {
 					Method method = null;
 					try {
 						//读取当前字段在excel中的值
-						String o = getExcelStringValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+						String o = getExcelStringValue(wb, getMergedRegionValue(sheet, i, property.getValue()), property);
 						//若当前字段为空，则读取数量减1
 						if (o == null || o.toString().isEmpty()) {
 							--size;
@@ -152,7 +150,8 @@ public class ReadExcel extends ExcelBaseModel {
 					Method method = null;
 					try {
 						//读取当前字段在excel中的值
-						Object o = getExcelValue(getMergedRegionValue(sheet, i, property.getValue()), property);
+						Cell cell = getMergedRegionValue(sheet, i, property.getValue());
+						Object o = getExcelValue(wb, cell, property);
 						//若当前字段为空，则读取数量减1
 						if (o == null || o.toString().isEmpty()) {
 							--size;
@@ -300,11 +299,11 @@ public class ReadExcel extends ExcelBaseModel {
 		return readExcel(file.getFile(), startrow, startcol, sheetnum, entity);
 	}
 
-	private static String getExcelStringValue(Cell cell,ExcelEntity property) {
+	private static String getExcelStringValue(Workbook workbook, Cell cell, ExcelEntity property) {
 		String cellValue = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (null != cell) {
-			cellValue = getCellValue(cell, cellValue, sdf);
+			cellValue = getCellValue(workbook, cell, cellValue, sdf);
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueError(property.getTitle() + "为空");
@@ -333,11 +332,11 @@ public class ReadExcel extends ExcelBaseModel {
 	 * @param property 值类型
 	 * @return 值
 	 */
-	private static Object getExcelValue(Cell cell, ExcelEntity property) {
+	private static Object getExcelValue(Workbook workbook, Cell cell, ExcelEntity property) {
 		String cellValue = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (null != cell) {
-			cellValue = getCellValue(cell, cellValue, sdf);
+			cellValue = getCellValue(workbook, cell, cellValue, sdf);
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueError(property.getTitle() + "为空");
@@ -359,7 +358,7 @@ public class ReadExcel extends ExcelBaseModel {
 		return null;
 	}
 
-	private static String getCellValue(Cell cell, String cellValue, SimpleDateFormat sdf) {
+	private static String getCellValue(Workbook workbook, Cell cell, String cellValue, SimpleDateFormat sdf) {
 		switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
 			case NUMERIC:
 				if (DateUtil.isCellDateFormatted(cell)) {
@@ -384,7 +383,16 @@ public class ReadExcel extends ExcelBaseModel {
 				cellValue = String.valueOf(cell.getBooleanCellValue());
 				break;
 			case FORMULA:
-				cellValue = cell.getCellFormula();
+				FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
+				CellValue evaluate = formulaEvaluator.evaluate(cell);
+				switch (evaluate.getCellType()) {
+					case NUMERIC:
+						cellValue = String.valueOf(evaluate.getNumberValue());
+						break;
+					case STRING:
+						cellValue = evaluate.getStringValue();
+						break;
+				}
 				break;
 			case ERROR:
 				cellValue = String.valueOf(cell.getErrorCellValue());
