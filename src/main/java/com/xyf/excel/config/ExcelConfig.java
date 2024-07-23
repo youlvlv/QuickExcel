@@ -3,19 +3,19 @@ package com.xyf.excel.config;
 import com.xyf.excel.format.DefaultFormat;
 import com.xyf.excel.format.ExcelFormat;
 import com.xyf.excel.format.ExcelFormatByType;
-
+import com.xyf.excel.format.ExcelFormatBase;
 import java.util.HashMap;
 
 /**
  * 全局配置项
  */
 public class ExcelConfig {
-    private static final HashMap<Class<?>, ExcelFormat<?>> formatCache = new HashMap<>() {{
+    private static final HashMap<Class<?>, ExcelFormatBase<?>> formatCache = new HashMap<>() {{
         put(DefaultFormat.class, new DefaultFormat());
     }};
 
-    static public HashMap<Class<?>, ExcelFormat<?>> getFormatCache() {
-        return (HashMap<Class<?>, ExcelFormat<?>>) formatCache.clone();
+    static public HashMap<Class<?>, ExcelFormatBase<?>> getFormatCache() {
+        return new HashMap<>(formatCache);
     }
 
     /**

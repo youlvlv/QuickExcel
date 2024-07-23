@@ -151,6 +151,29 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
         DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
     }
 
+    /**
+     * 设置对角线
+     * @param startRow 开始行
+     * @param endRow 结束行
+     * @param sheetModel sheetModel
+     */
+    public  void diagonalLine(int startRow,int endRow,SheetModel sheetModel){
+        Drawing patriarch = sheetModel.createDrawingPatriarch();
+        XSSFSimpleShape line = ((XSSFDrawing)patriarch).createSimpleShape(new XSSFClientAnchor(0, 0, 0, 100, (short)0, startRow, (short)0, endRow));
+        line.setShapeType(ShapeTypes.LINE); // 设置形状类型为线条
+        line.setLineWidth(1.0); // 设置线条宽度
+        line.setLineStyleColor(0,0,0); // 设置线条颜色为黑色
+        // 设置线条的起始和终止坐标，这里仅作示例，请根据实际需求调整
+        int x1 = 1; // 左上角x坐标（EMU单位）
+        int y1 = 50; // 左上角y坐标（EMU单位）
+        int x2 = 150; // 右下角x坐标（EMU单位）
+        int y2 = 100; // 右下角y坐标（EMU单位）
+        line.getAnchor().setDx1(x1 * Units.EMU_PER_PIXEL);
+        line.getAnchor().setDy1(y1 * Units.EMU_PER_PIXEL);
+        line.getAnchor().setDx2(x2 * Units.EMU_PER_PIXEL);
+        line.getAnchor().setDy2(y2 * Units.EMU_PER_PIXEL);
+
+    }
 
     /**
      *

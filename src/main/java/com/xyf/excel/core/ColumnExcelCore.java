@@ -54,7 +54,7 @@ public class ColumnExcelCore extends ExcelUtil {
 								getter = t.getClass().getMethod(get);
 								Object o = getter.invoke(t);
 								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
+								ExcelFormatBase format = excelEntity.getFormat();
 								values.add(format.WriterToExcel(o));
 								//循环设置每列的值
 								break;

@@ -2,6 +2,7 @@ package com.xyf.excel.entity;
 
 
 import com.xyf.excel.format.ExcelFormat;
+import com.xyf.excel.format.ExcelFormatBase;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -9,6 +10,9 @@ import java.lang.reflect.InvocationTargetException;
  * 导出Excel实体类
  */
 public class ExcelEntity {
+
+	private static final String ALIAS_DEFAULT = "";
+
 	/**
 	 * 名称
 	 */
@@ -16,7 +20,7 @@ public class ExcelEntity {
 	/**
 	 * 别名
 	 */
-	private String alias;
+	private String alias = ALIAS_DEFAULT;
 	/**
 	 * 值
 	 */
@@ -32,7 +36,7 @@ public class ExcelEntity {
 	/**
 	 * 转换器
 	 */
-	private com.xyf.excel.format.ExcelFormat<?> format;
+	private ExcelFormatBase<?> format;
 	/**
 	 * 排序
 	 */
@@ -108,11 +112,11 @@ public class ExcelEntity {
 		this.type = type;
 	}
 
-	public com.xyf.excel.format.ExcelFormat<?> getFormat() {
+	public ExcelFormatBase<?> getFormat() {
 		return format;
 	}
 
-	public void setFormat(com.xyf.excel.format.ExcelFormat<?> format) {
+	public void setFormat(ExcelFormatBase<?> format) {
 		this.format = format;
 	}
 
@@ -206,7 +210,7 @@ public class ExcelEntity {
 		this.isNotNull = isNotNull;
 	}
 
-	public ExcelEntity(Excel e, ExcelFormat<?> format, String value, Class clazz) {
+	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
 		this.title = e.value();
 		this.width = e.width();
 		this.property = value;

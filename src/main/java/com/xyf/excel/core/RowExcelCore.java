@@ -1,9 +1,13 @@
 package com.xyf.excel.core;
 
+import com.xyf.excel.entity.DefaultTopName;
 import com.xyf.excel.entity.ExcelEntity;
 import com.xyf.excel.entity.Since;
+import com.xyf.excel.entity.TopName;
 import com.xyf.excel.exception.ExcelValueError;
 import com.xyf.excel.format.ExcelFormat;
+import com.xyf.excel.format.ExcelFormatBase;
+import com.xyf.excel.model.MoreRowModel;
 import com.xyf.excel.model.RowModel;
 import com.xyf.excel.model.SheetModel;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -60,7 +64,7 @@ public class RowExcelCore extends ExcelUtil {
 								getter = t.getClass().getMethod(get);
 								Object o = getter.invoke(t);
 								String value = "";
-								ExcelFormat format = excelEntity.getFormat();
+								ExcelFormatBase format = excelEntity.getFormat();
 								value = format.WriterToExcel(o);
 								//循环设置每列的值
 								xRow.setValue(order++, value, cs);
