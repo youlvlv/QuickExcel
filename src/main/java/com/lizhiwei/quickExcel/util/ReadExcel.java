@@ -44,8 +44,8 @@ public class ReadExcel extends ExcelBaseModel {
 		return readExcel(file, startrow, startcol, sheetnum, entity, safe);
 	}
 
-	public static List<Map<String,String>> readExcel(File file, int startrow, int startcol, int sheetnum, boolean safe, List<ExcelEntity> propertieList) {
-		List<Map<String,String>> varList = new ArrayList<>();
+	public static List<Map<String, String>> readExcel(File file, int startrow, int startcol, int sheetnum, boolean safe, List<ExcelEntity> propertieList) {
+		List<Map<String, String>> varList = new ArrayList<>();
 		boolean error = false;
 		List<ReadErrorInfo> errorInfoList = new ArrayList<>();
 		try {
@@ -64,7 +64,7 @@ public class ReadExcel extends ExcelBaseModel {
 				if (row == null) {
 					break;
 				}
-				Map<String,String> t = new HashMap<>();
+				Map<String, String> t = new HashMap<>();
 				//获取需要读取的数量
 				int size = properties.size();
 				for (ExcelEntity property : properties) {
@@ -78,13 +78,13 @@ public class ReadExcel extends ExcelBaseModel {
 						if (o == null || o.toString().isEmpty()) {
 							--size;
 						}
-						t.put(property.getProperty(),o);
+						t.put(property.getProperty(), o);
 					} catch (ExcelValueError e) {
 						if (safe) {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelReadException("第" + i + "行"+" "+e.getMessage(), e);
+							throw new ExcelReadException("第" + i + "行" + " " + e.getMessage(), e);
 						}
 					}
 
@@ -179,7 +179,7 @@ public class ReadExcel extends ExcelBaseModel {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelReadException("第" + i + "行"+" "+e.getMessage(), e);
+							throw new ExcelReadException("第" + i + "行" + " " + e.getMessage(), e);
 						}
 					}
 
@@ -226,6 +226,7 @@ public class ReadExcel extends ExcelBaseModel {
 
 	/**
 	 * 匹配头生成 ExcelEntity
+	 *
 	 * @param startrow
 	 * @param startcol
 	 * @param propertieList
@@ -267,7 +268,7 @@ public class ReadExcel extends ExcelBaseModel {
 	 * @return 列表信息
 	 */
 	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity, boolean safe) {
-		return readExcel( file,  startrow,  startcol,  sheetnum,  entity,  safe,getExcelEntities(entity));
+		return readExcel(file, startrow, startcol, sheetnum, entity, safe, getExcelEntities(entity));
 	}
 
 
