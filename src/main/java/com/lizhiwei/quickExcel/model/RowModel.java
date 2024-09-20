@@ -3,9 +3,7 @@ package com.lizhiwei.quickExcel.model;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,7 +18,7 @@ public class RowModel {
 	 * 当前行数
 	 */
 	protected final int rowNumber;
-	protected final XSSFRow row;
+	protected final Row row;
 	protected final SheetModel sheet;
 	/**
 	 * 当前单元格位置
@@ -28,13 +26,13 @@ public class RowModel {
 	protected Integer order = 0;
 
 
-	public RowModel(int rowNumber, XSSFRow row, SheetModel sheetModel) {
+	public RowModel(int rowNumber, Row row, SheetModel sheetModel) {
 		this.rowNumber = rowNumber;
 		this.row = row;
 		this.sheet = sheetModel;
 	}
 
-	protected XSSFCell createCell(int i) {
+	protected Cell createCell(int i) {
 		return row.createCell(i);
 	}
 
@@ -45,7 +43,7 @@ public class RowModel {
 	 */
 	public RowModel setMergerValue(int start, int end, String value, CellStyle style) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
-		XSSFCell cell = createCell(start);
+		Cell cell = createCell(start);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		return this;
@@ -53,11 +51,10 @@ public class RowModel {
 
 	/**
 	 * 设置合并单元格(添加样式)
-	 *
 	 */
 	public RowModel setMergerValue(int start, int end, String value, CellStyle style, short s) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
-		XSSFCell cell = createCell(start);
+		Cell cell = createCell(start);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		cell.getRow().setHeight(s);
@@ -66,11 +63,10 @@ public class RowModel {
 
 	/**
 	 * 设置合并单元格
-	 *
 	 */
 	public RowModel setMergerValue(int start, int end, String value) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
-		XSSFCell cell = createCell(start);
+		Cell cell = createCell(start);
 		cell.setCellValue(value);
 		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
 		return this;
@@ -88,7 +84,7 @@ public class RowModel {
 	 * @return
 	 */
 	public RowModel setValue(int i, String value, CellStyle style) {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		return this;
@@ -104,7 +100,7 @@ public class RowModel {
 	 * @return 返回
 	 */
 	public RowModel setValue(int i, String value, CellStyle style, short s) {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		cell.getRow().setHeight(s);
@@ -119,7 +115,7 @@ public class RowModel {
 	 * @return 返回
 	 */
 	public RowModel setValue(int i, String value) {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
 		return this;
@@ -133,7 +129,7 @@ public class RowModel {
 	 * @param sheetModel 工作表类
 	 */
 	public RowModel setValue(int i, String filePath, SheetModel sheetModel) throws IOException {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
 		addPicture(filePath, sheetModel, i, cell.getRowIndex(), cell);
 		return this;
@@ -147,7 +143,7 @@ public class RowModel {
 	 * @param sheetModel 工作表类
 	 */
 	public RowModel setValue(int i, List<String> filePath, SheetModel sheetModel) throws IOException {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
 		addPicture(filePath, sheetModel, i, cell.getRowIndex(), cell);
 		return this;
@@ -180,15 +176,15 @@ public class RowModel {
 		// 创建图片
 		drawing.createPicture(anchor, workbook.addPicture(
 				imageBytes, Workbook.PICTURE_TYPE_PNG));
-        //设置图片大小，未设置成功
+		//设置图片大小，未设置成功
 		// drawing.createPicture(anchor, pictureIdx).resize(scaleX, scaleY);
 	}
 
 	/**
-	 * @param imagePathList  多条图片路径
-	 * @param sheetModel 工作表
-	 * @param col1       // 图片起始列
-	 * @param row1       // 图片起始行
+	 * @param imagePathList 多条图片路径
+	 * @param sheetModel    工作表
+	 * @param col1          // 图片起始列
+	 * @param row1          // 图片起始行
 	 * @throws IOException 异常
 	 */
 	public void addPicture(List<String> imagePathList, SheetModel sheetModel, int col1, int row1, Cell cell) throws IOException {
@@ -197,7 +193,7 @@ public class RowModel {
 		Workbook workbook = sheetModel.getSheet().getWorkbook();
 		ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, col1, row1, col1 + 1, row1 + 1);
 		anchor.setAnchorType(MOVE_AND_RESIZE);
-		for (String  imagePath:imagePathList) {
+		for (String imagePath : imagePathList) {
 			File imageFile = new File(imagePath);
 			if (!imageFile.exists()) {
 				System.out.println("警告：文件 " + imagePath + " 不存在，跳过此图片插入操作！");
@@ -212,7 +208,7 @@ public class RowModel {
 			double originalHeight = outputImage.getHeight();
 //			sheetModel.getSheet().setColumnWidth(col1, (int) (originalWidth/100*255));
 //			sheetModel.getSheet().getRow(row1).setHeight((short)(originalHeight/100*255));
-						// 创建图片
+			// 创建图片
 			drawing.createPicture(anchor, workbook.addPicture(
 					imageBytes, Workbook.PICTURE_TYPE_PNG));
 		}
@@ -227,7 +223,7 @@ public class RowModel {
 	 * @return 返回
 	 */
 	public RowModel setValue(String value) {
-		XSSFCell cell = createCell(order++);
+		Cell cell = createCell(order++);
 		cell.setCellValue(value);
 		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
 		return this;

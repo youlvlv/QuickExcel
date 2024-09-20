@@ -10,6 +10,7 @@ import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.ExcelBaseModel;
+import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.UploadFile;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -33,6 +34,14 @@ public class ReadExcel extends ExcelBaseModel {
 		return readExcel(file, startrow, startcol, sheetnum, entity, false);
 	}
 
+	public static ExcelModel readExcel(File file) {
+		try {
+			return new ExcelModel(getWorkbook(file));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public static <T> List<T> readExcel(File file, int startrow, int startcol, String sheetName, Class<T> entity, boolean safe) {
 		int sheetnum = 0;
 		try {
@@ -44,8 +53,8 @@ public class ReadExcel extends ExcelBaseModel {
 		return readExcel(file, startrow, startcol, sheetnum, entity, safe);
 	}
 
-	public static List<Map<String,String>> readExcel(File file, int startrow, int startcol, int sheetnum, boolean safe, List<ExcelEntity> propertieList) {
-		List<Map<String,String>> varList = new ArrayList<>();
+	public static List<Map<String, String>> readExcel(File file, int startrow, int startcol, int sheetnum, boolean safe, List<ExcelEntity> propertieList) {
+		List<Map<String, String>> varList = new ArrayList<>();
 		boolean error = false;
 		List<ReadErrorInfo> errorInfoList = new ArrayList<>();
 		try {
@@ -64,7 +73,7 @@ public class ReadExcel extends ExcelBaseModel {
 				if (row == null) {
 					break;
 				}
-				Map<String,String> t = new HashMap<>();
+				Map<String, String> t = new HashMap<>();
 				//获取需要读取的数量
 				int size = properties.size();
 				for (ExcelEntity property : properties) {
@@ -78,13 +87,13 @@ public class ReadExcel extends ExcelBaseModel {
 						if (o == null || o.toString().isEmpty()) {
 							--size;
 						}
-						t.put(property.getProperty(),o);
+						t.put(property.getProperty(), o);
 					} catch (ExcelValueError e) {
 						if (safe) {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelReadException("第" + i + "行"+" "+e.getMessage(), e);
+							throw new ExcelReadException("第" + i + "行" + " " + e.getMessage(), e);
 						}
 					}
 
@@ -179,7 +188,7 @@ public class ReadExcel extends ExcelBaseModel {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelReadException("第" + i + "行"+" "+e.getMessage(), e);
+							throw new ExcelReadException("第" + i + "行" + " " + e.getMessage(), e);
 						}
 					}
 
@@ -208,6 +217,54 @@ public class ReadExcel extends ExcelBaseModel {
 		return varList;
 	}
 
+	public static List<Map<Integer, String>> readExcel(File file, int startrow, int startcol, int sheetnum) {
+		List<Map<Integer, String>> varList = new ArrayList<>();
+		boolean error = false;
+		List<ReadErrorInfo> errorInfoList = new ArrayList<>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Workbook wb = getWorkbook(file);
+			Sheet sheet = wb.getSheetAt(sheetnum); // sheet 从0开始
+			Row row;
+			//循环实体类所有属性
+			int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
+			//空行数
+			int emptySize = 0;
+			/*--------------数据行-----------------------*/
+			for (int i = startrow; i < rowNum; i++) { // 行循环开始
+				row = sheet.getRow(i); // 行
+				if (row == null) {
+					break;
+				}
+				int size = row.getLastCellNum();
+				Map<Integer, String> t = new HashMap<>();
+				for (int i1 = 0; i1 < size; i1++) {
+					Cell cell = getMergedRegionValue(sheet, i, i1);
+					String value = getCellValue(wb, cell, "", sdf);
+					t.put(i1, value);
+				}
+				varList.add(t);
+				//获取需要读取的数量
+				if (size == 0) {
+					//连续三行都是空行，则认定当前为excel结尾
+					if (++emptySize > 3) {
+						break;
+					}
+				} else {
+					//若不为空行，则清空连续空行数
+					emptySize = 0;
+					varList.add(t);
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		if (varList.isEmpty()) {
+			throw new ExcelReadException("当前表格为空");
+		}
+		return varList;
+	}
+
 	private static Workbook getWorkbook(File file) throws IOException {
 		//读取文件
 		FileInputStream fi = new FileInputStream(file);
@@ -226,6 +283,7 @@ public class ReadExcel extends ExcelBaseModel {
 
 	/**
 	 * 匹配头生成 ExcelEntity
+	 *
 	 * @param startrow
 	 * @param startcol
 	 * @param propertieList
@@ -267,7 +325,7 @@ public class ReadExcel extends ExcelBaseModel {
 	 * @return 列表信息
 	 */
 	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity, boolean safe) {
-		return readExcel( file,  startrow,  startcol,  sheetnum,  entity,  safe,getExcelEntities(entity));
+		return readExcel(file, startrow, startcol, sheetnum, entity, safe, getExcelEntities(entity));
 	}
 
 
