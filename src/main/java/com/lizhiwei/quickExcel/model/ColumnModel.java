@@ -1,8 +1,8 @@
 package com.lizhiwei.quickExcel.model;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ public class ColumnModel {
 	}
 
 
-	private XSSFCell createCell() {
+	private Cell createCell() {
 		return createCell(rowNum++);
 	}
 
-	private XSSFCell createCell(int i) {
+	private Cell createCell(int i) {
 		return sheetModel.getSheet().createRow(i).createCell(columnNum);
 	}
 
@@ -48,7 +48,7 @@ public class ColumnModel {
 	 * @return
 	 */
 	public ColumnModel setValue(int i, String value, CellStyle style) {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		return this;
@@ -65,7 +65,7 @@ public class ColumnModel {
 	 * @return 返回
 	 */
 	public ColumnModel setValue(int i, String value, CellStyle style, short s) {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		cell.getRow().setHeight(s);
@@ -73,7 +73,7 @@ public class ColumnModel {
 	}
 
 	public ColumnModel setValue(int i, String value) {
-		XSSFCell cell = createCell(i);
+		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(sheetModel.getExcel().getDefaultStyle());
 		return this;
@@ -119,7 +119,7 @@ public class ColumnModel {
 	 * @return
 	 */
 	public ColumnModel setValue(String value, CellStyle style) {
-		XSSFCell cell = createCell();
+		Cell cell = createCell();
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		return this;
@@ -135,7 +135,7 @@ public class ColumnModel {
 	 * @return 返回
 	 */
 	public ColumnModel setValue(String value, CellStyle style, short s) {
-		XSSFCell cell = createCell();
+		Cell cell = createCell();
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
 		cell.getRow().setHeight(s);
@@ -143,7 +143,7 @@ public class ColumnModel {
 	}
 
 	public ColumnModel setValue(String value) {
-		XSSFCell cell = createCell();
+		Cell cell = createCell();
 		cell.setCellValue(value);
 		cell.setCellStyle(sheetModel.getExcel().getDefaultStyle());
 		return this;
