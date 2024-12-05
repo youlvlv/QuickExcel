@@ -3,7 +3,7 @@ package com.lizhiwei.quickExcel.util;
 
 import com.lizhiwei.quickExcel.model.ExcelModel;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 通过链式方式构建Excel
