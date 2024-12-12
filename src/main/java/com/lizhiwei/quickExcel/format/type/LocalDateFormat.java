@@ -15,7 +15,7 @@ public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 		put("-", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		put("/", DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 		put(".", DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-		put("年", DateTimeFormatter.ofPattern("yyyyn年MM月dd日"));
+		put("年", DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
 	}};
 
 	@Override

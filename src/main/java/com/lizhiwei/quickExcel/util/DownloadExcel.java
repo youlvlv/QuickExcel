@@ -1,17 +1,12 @@
 package com.lizhiwei.quickExcel.util;
 
-import com.lizhiwei.quickExcel.core.ExcelUtil;
-import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.IndexType;
-import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.model.ExcelBaseModel;
 import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.FileOperation;
 import com.lizhiwei.quickExcel.model.SheetModel;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -37,7 +32,7 @@ public class DownloadExcel extends ExcelBaseModel {
 			//创建一个新表格
 //            XSSFSheet xSheet = xWorkbook.createSheet(fileNameParam);
 			SheetModel sheet = excel.newSheet();
-			if (indexType != IndexType.NULL){
+			if (indexType != IndexType.NULL) {
 				sheet.createSerialNumber(indexType);
 			}
 			//set Sheet页头部

@@ -6,9 +6,10 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import java.io.IOException;
 import java.util.List;
 
-public class MoreRowModel extends RowModel {
+public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 
 	/**
 	 * 结束行数
@@ -21,12 +22,53 @@ public class MoreRowModel extends RowModel {
 
 	public MoreRowModel(int rowNumber, int endRowNumber, Row row, Row secondRow, SheetModel sheetModel) {
 		super(rowNumber, row, sheetModel);
+		super.chain = this;
 		this.endRowNumber = endRowNumber;
 		this.secondRow = secondRow;
 	}
 
+	public RowModelSeparation getRow(int i) {
+		if (i == 0) {
+			return new RowModelSeparation(rowNumber, row, sheet, this);
+		} else if (i == 1) {
+			return new RowModelSeparation(i + 1, secondRow, sheet, this);
+		} else {
+			throw new RuntimeException("超出范围");
+		}
 
-	public RowModel setValue(int i, String firstValue, String secondValue, CellStyle style) {
+	}
+
+	@Override
+	public MoreRowModel setValue(int i, String value, CellStyle style, short s) {
+		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
+		return super.setValue(i, value, style, s);
+	}
+
+	@Override
+	public MoreRowModel setValue(int i, String value) {
+		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
+		return super.setValue(i, value);
+	}
+
+	@Override
+	public MoreRowModel setValue(int i, String filePath, SheetModel sheetModel) throws IOException {
+		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
+		return super.setValue(i, filePath, sheetModel);
+	}
+
+	@Override
+	public MoreRowModel setValue(int i, List<String> filePath, SheetModel sheetModel) throws IOException {
+		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
+		return super.setValue(i, filePath, sheetModel);
+	}
+
+	@Override
+	public MoreRowModel setValue(String value) {
+		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, order, order));
+		return super.setValue(value);
+	}
+
+	public MoreRowModel setValue(int i, String firstValue, String secondValue, CellStyle style) {
 		Cell cell = row.createCell(i);
 		cell.setCellValue(firstValue);
 		cell.setCellStyle(style);
@@ -36,7 +78,7 @@ public class MoreRowModel extends RowModel {
 		return this;
 	}
 
-	public RowModel setHeaderValue(int i, int end, String value, CellStyle cs) {
+	public MoreRowModel setHeaderValue(int i, int end, String value, CellStyle cs) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, i, end));
 		Cell cell = row.createCell(i);
 		cell.setCellValue(value);
@@ -45,7 +87,7 @@ public class MoreRowModel extends RowModel {
 	}
 
 	@Override
-	public RowModel setValue(int i, String value, CellStyle style) {
+	public MoreRowModel setValue(int i, String value, CellStyle style) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
 		Cell cell = createCell(i);
 		cell.setCellValue(value);
@@ -54,7 +96,7 @@ public class MoreRowModel extends RowModel {
 	}
 
 	@Override
-	public RowModel setMergerValue(int start, int end, String value) {
+	public MoreRowModel setMergerValue(int start, int end, String value) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, start, end));
 		Cell cell = createCell(start);
 		cell.setCellValue(value);
@@ -68,6 +110,21 @@ public class MoreRowModel extends RowModel {
 			Cell cell = secondRow.createCell(excelEntity.getIndex());
 			cell.setCellValue(excelEntity.getTitle());
 			cell.setCellStyle(style);
+		}
+	}
+
+	public static class RowModelSeparation extends RowBaseModel<RowModelSeparation> {
+
+		protected final MoreRowModel moreRowModel;
+
+		public RowModelSeparation(int rowNumber, Row row, SheetModel sheetModel, MoreRowModel moreRowModel) {
+			super(rowNumber, row, sheetModel);
+			super.chain = this;
+			this.moreRowModel = moreRowModel;
+		}
+
+		public MoreRowModel overSignRow() {
+			return moreRowModel;
 		}
 	}
 }
