@@ -15,4 +15,9 @@ public class RowModel extends RowBaseModel<RowModel> {
 		super.chain = this;
 	}
 
+	public RowModel setHigh(short high) {
+		row.setHeight(high);
+		return this;
+	}
+
 }
