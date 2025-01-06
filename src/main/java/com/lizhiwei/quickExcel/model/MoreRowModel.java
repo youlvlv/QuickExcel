@@ -30,7 +30,7 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 	public RowModelSeparation getRow(int i) {
 		if (i == 0) {
 			return new RowModelSeparation(rowNumber, row, sheet, this);
-		} else if (i == 1) {
+		} else if (i > 0 && i + rowNumber <= endRowNumber) {
 			return new RowModelSeparation(i + 1, secondRow, sheet, this);
 		} else {
 			throw new RuntimeException("超出范围");

@@ -404,6 +404,15 @@ public class SheetModel extends ExcelBaseModel {
 		return new MoreRowModel(rowNum, rowNum + 1, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
 	}
 
+	/**
+	 * 新生成多行
+	 *
+	 * @return
+	 */
+	public MoreRowModel newMoreRow(int rowSize) {
+		return new MoreRowModel(rowNum, rowNum + rowSize, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
+	}
+
 	private Font createEquivalentFont(Font sourceFont, Workbook targetWorkbook) {
 		if (sourceFont == null) {
 			return targetWorkbook.createFont();
