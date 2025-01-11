@@ -2,8 +2,7 @@ package com.lizhiwei.quickExcel.core;
 
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.Since;
-import com.lizhiwei.quickExcel.exception.ExcelValueError;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.exception.ExcelValueException;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.ColumnModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
@@ -69,7 +68,7 @@ public class ColumnExcelCore extends ExcelUtil {
 				}
 			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
 			         InvocationTargetException e) {
-				throw new ExcelValueError(e);
+				throw new ExcelValueException(e);
 			}
 		}
 		return sheet;

@@ -5,7 +5,7 @@ import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.ParamType;
 import com.lizhiwei.quickExcel.entity.ReadErrorInfo;
 import com.lizhiwei.quickExcel.exception.ExcelReadException;
-import com.lizhiwei.quickExcel.exception.ExcelValueError;
+import com.lizhiwei.quickExcel.exception.ExcelValueException;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
@@ -88,7 +88,7 @@ public class ReadExcel extends ExcelBaseModel {
 							--size;
 						}
 						t.put(property.getProperty(), o);
-					} catch (ExcelValueError e) {
+					} catch (ExcelValueException e) {
 						if (safe) {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
@@ -183,7 +183,7 @@ public class ReadExcel extends ExcelBaseModel {
 					} catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
 					         InvocationTargetException e) {
 						throw new RuntimeException(e);
-					} catch (ExcelValueError e) {
+					} catch (ExcelValueException e) {
 						if (safe) {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
@@ -364,7 +364,7 @@ public class ReadExcel extends ExcelBaseModel {
 			cellValue = getCellValue(workbook, cell, cellValue, sdf);
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
-				throw new ExcelValueError(property.getTitle() + "为空");
+				throw new ExcelValueException(property.getTitle() + "为空");
 			} else if (!cellValue.trim().isEmpty()) {
 				if (property.getFormat() != null) {
 					ExcelFormatBase<?> format = property.getFormat();
@@ -374,7 +374,7 @@ public class ReadExcel extends ExcelBaseModel {
 						}
 						return format.ReadToExcel(cellValue).toString();
 					} catch (Exception e) {
-						throw new ExcelValueError(property.getTitle() + "错误", e);
+						throw new ExcelValueException(property.getTitle() + "错误", e);
 					}
 				}
 				return cellValue;
@@ -397,7 +397,7 @@ public class ReadExcel extends ExcelBaseModel {
 			cellValue = getCellValue(workbook, cell, cellValue, sdf);
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
-				throw new ExcelValueError(property.getTitle() + "为空");
+				throw new ExcelValueException(property.getTitle() + "为空");
 			} else if (!cellValue.trim().isEmpty()) {
 				Class<?> type = property.getType();
 				ExcelFormatBase<?> format = property.getFormat();
@@ -407,7 +407,7 @@ public class ReadExcel extends ExcelBaseModel {
 					}
 					return format.ReadToExcel(cellValue);
 				} catch (Exception e) {
-					throw new ExcelValueError(property.getTitle() + "错误", e);
+					throw new ExcelValueException(property.getTitle() + "错误", e);
 				}
 			} else {
 				return null;

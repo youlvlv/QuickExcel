@@ -1,13 +1,9 @@
 package com.lizhiwei.quickExcel.core;
 
-import com.lizhiwei.quickExcel.entity.DefaultTopName;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.Since;
-import com.lizhiwei.quickExcel.entity.TopName;
-import com.lizhiwei.quickExcel.exception.ExcelValueError;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.exception.ExcelValueException;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
-import com.lizhiwei.quickExcel.model.MoreRowModel;
 import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -17,8 +13,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -84,7 +78,7 @@ public class RowExcelCore extends ExcelUtil {
 
 			} catch (IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
 			         InvocationTargetException e) {
-				throw new ExcelValueError(e);
+				throw new ExcelValueException(e);
 			}
 		}
 		return sheet;

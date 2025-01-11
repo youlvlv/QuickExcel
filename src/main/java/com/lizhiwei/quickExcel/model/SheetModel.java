@@ -90,6 +90,17 @@ public class SheetModel extends ExcelBaseModel {
 	}
 
 	/**
+	 * 创建数据头
+	 *
+	 * @param entity
+	 * @param <T>
+	 * @return
+	 */
+	public <T> SheetModel createHeader(List<ExcelEntity> entity) {
+		return util().setSheetHeader(this, entity);
+	}
+
+	/**
 	 * 创建表头带样式的
 	 *
 	 * @param entity
@@ -129,6 +140,18 @@ public class SheetModel extends ExcelBaseModel {
 	public <T> SheetModel createContent(Class<T> entity, List<T> listContent) {
 		List<ExcelEntity> list = getEntities(entity);
 		return util().setSheetContent(this, listContent, list, null);
+	}
+
+	/**
+	 * 录入数据信息
+	 *
+	 * @param entity      实体类class
+	 * @param listContent 数据
+	 * @param <T>
+	 * @return
+	 */
+	public <T> SheetModel createContent(List<ExcelEntity> entity, List<T> listContent) {
+		return util().setSheetContent(this, listContent, entity, null);
 	}
 
 	/**
@@ -402,6 +425,15 @@ public class SheetModel extends ExcelBaseModel {
 	 */
 	public MoreRowModel newMoreRow() {
 		return new MoreRowModel(rowNum, rowNum + 1, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
+	}
+
+	/**
+	 * 新生成多行
+	 *
+	 * @return
+	 */
+	public MoreRowModel newMoreRow(int rowSize) {
+		return new MoreRowModel(rowNum, rowNum + rowSize, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
 	}
 
 	private Font createEquivalentFont(Font sourceFont, Workbook targetWorkbook) {

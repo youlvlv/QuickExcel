@@ -8,19 +8,19 @@ import java.util.List;
 /**
  * @author lizhiwei
  */
-public class ExcelValueError extends ExcelBaseException {
+public class ExcelValueException extends ExcelBaseException {
 
 
-	public ExcelValueError(String message) {
+	public ExcelValueException(String message) {
 		super(message);
 	}
 
-	public ExcelValueError(String message, Throwable cause) {
+	public ExcelValueException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 
-	public ExcelValueError(Throwable cause) {
+	public ExcelValueException(Throwable cause) {
 		super(cause);
 	}
 
