@@ -51,7 +51,7 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 	}
 
 	@Override
-	public MoreRowModel setValue(int i, String filePath, SheetModel sheetModel) throws IOException {
+	public MoreRowModel setValue(int i, String filePath, SheetModel sheetModel) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
 		return super.setValue(i, filePath, sheetModel);
 	}
@@ -80,27 +80,21 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 
 	public MoreRowModel setHeaderValue(int i, int end, String value, CellStyle cs) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, i, end));
-		Cell cell = row.createCell(i);
-		cell.setCellValue(value);
-		cell.setCellStyle(cs);
+		super.setValue(i, value, cs);
 		return this;
 	}
 
 	@Override
 	public MoreRowModel setValue(int i, String value, CellStyle style) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, i, i));
-		Cell cell = createCell(i);
-		cell.setCellValue(value);
-		cell.setCellStyle(style);
+		super.setValue(i, value, style);
 		return this;
 	}
 
 	@Override
 	public MoreRowModel setMergerValue(int start, int end, String value) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, start, end));
-		Cell cell = createCell(start);
-		cell.setCellValue(value);
-		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
+		super.setValue(start, value);
 		return this;
 	}
 
