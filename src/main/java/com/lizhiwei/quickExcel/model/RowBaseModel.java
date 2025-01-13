@@ -1,5 +1,6 @@
 package com.lizhiwei.quickExcel.model;
 
+import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -53,9 +54,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 */
 	public T setMergerValue(int start, int end, String value, CellStyle style) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
-		Cell cell = createCell(start);
-		cell.setCellValue(value);
-		cell.setCellStyle(style);
+		this.setValue(start, value, style);
 		return chain;
 	}
 
@@ -64,10 +63,8 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 */
 	public T setMergerValue(int start, int end, String value, CellStyle style, short s) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
-		Cell cell = createCell(start);
-		cell.setCellValue(value);
-		cell.setCellStyle(style);
-		cell.getRow().setHeight(s);
+		this.setValue(start, value, style);
+		row.setHeight(s);
 		return chain;
 	}
 
@@ -76,9 +73,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 */
 	public T setMergerValue(int start, int end, String value) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
-		Cell cell = createCell(start);
-		cell.setCellValue(value);
-		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
+		this.setValue(start, value, sheet.getExcel().getDefaultStyle());
 		return chain;
 	}
 
@@ -88,12 +83,16 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 
 	/**
 	 * 设置值
+	 * 最基础的设置值
 	 *
 	 * @param i
 	 * @param value
 	 * @return
 	 */
 	public T setValue(int i, String value, CellStyle style) {
+		if (value.contains("DRAW_IMAGE::")) {
+			setValue(i, value.replace("DRAW_IMAGE::", ""), this.sheet);
+		}
 		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
@@ -110,10 +109,8 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 * @return 返回
 	 */
 	public T setValue(int i, String value, CellStyle style, short s) {
-		Cell cell = createCell(i);
-		cell.setCellValue(value);
-		cell.setCellStyle(style);
-		cell.getRow().setHeight(s);
+		this.setValue(i, value, style);
+		row.setHeight(s);
 		return chain;
 	}
 
@@ -125,9 +122,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 * @return 返回
 	 */
 	public T setValue(int i, String value) {
-		Cell cell = createCell(i);
-		cell.setCellValue(value);
-		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
+		this.setValue(i, value, sheet.getExcel().getDefaultStyle());
 		return chain;
 	}
 
@@ -138,10 +133,15 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 * @param filePath   路径
 	 * @param sheetModel 工作表类
 	 */
-	public T setValue(int i, String filePath, SheetModel sheetModel) throws IOException {
+	public T setValue(int i, String filePath, SheetModel sheetModel) {
 		Cell cell = createCell(i);
 		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
-		addPicture(filePath, sheetModel, i, cell.getRowIndex(), cell);
+		try {
+			addPicture(filePath, sheetModel, i, cell.getRowIndex(), cell);
+		} catch (IOException e) {
+			throw new IORunTimeException(e);
+		}
+
 		return chain;
 	}
 
@@ -233,9 +233,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 * @return 返回
 	 */
 	public T setValue(String value) {
-		Cell cell = createCell(order++);
-		cell.setCellValue(value);
-		cell.setCellStyle(sheet.getExcel().getDefaultStyle());
+		this.setValue(order++, value,sheet.getExcel().getDefaultStyle());
 		return chain;
 	}
 }
