@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class DownloadExcel extends ExcelBaseModel {
 
+	private static final SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
+
 	/**
 	 * 生成EXCEL表
 	 *
@@ -25,7 +27,6 @@ public class DownloadExcel extends ExcelBaseModel {
 	 * @param <T>         实体类
 	 */
 	public static <T> void setExcelProperty(FileOperation operation, Class<T> entity, List<T> listContent, IndexType indexType) {
-		SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
 		//列表排序
 		try {
 			//创建表格工作空间
@@ -50,7 +51,6 @@ public class DownloadExcel extends ExcelBaseModel {
 
 	public static <T> void setExcelProperty(FileOperation operation, List<ExcelEntity> entity, List<T> listContent,
 	                                        IndexType indexType) {
-		SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
 		//列表排序
 		try {
 			//创建表格工作空间
