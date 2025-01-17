@@ -1,5 +1,6 @@
 package com.lizhiwei.quickExcel.format.type;
 
+import com.lizhiwei.quickExcel.exception.ExcelValueException;
 import com.lizhiwei.quickExcel.format.ExcelFormatByType;
 
 import java.time.LocalDate;
@@ -48,7 +49,7 @@ public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 			return LocalDate.parse(v, formatter.get());
 		} catch (DateTimeParseException e) {
 			// 当前无法正常解析日期
-			return null;
+			throw new ExcelValueException("当前日期不正确");
 		}
 
 	}
