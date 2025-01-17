@@ -93,4 +93,10 @@ public @interface Excel {
 	 * @return
 	 */
 	String alias() default "";
+
+	/**
+	 * 精度
+	 * @return
+	 */
+	int accuracy() default -1;
 }

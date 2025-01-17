@@ -62,6 +62,8 @@ public class ExcelEntity {
 	 */
 	private boolean isNotNull = false;
 
+	private int accuracy = -1;
+
 	private int width;
 
 	public boolean isRead() {
@@ -177,6 +179,14 @@ public class ExcelEntity {
 		this.alias = alias;
 	}
 
+	public int getAccuracy() {
+		return accuracy;
+	}
+
+	public void setAccuracy(int accuracy) {
+		this.accuracy = accuracy;
+	}
+
 	public String getEntityType(){
 		return "normal";
 	}
@@ -226,6 +236,7 @@ public class ExcelEntity {
 		this.type = clazz;
 		this.alias = e.alias();
 		this.isNotNull = e.isNotNull();
+		this.accuracy = e.accuracy();
 	}
 
 	public ExcelEntity(ParamType index) {
