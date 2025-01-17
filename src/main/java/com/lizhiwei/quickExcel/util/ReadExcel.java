@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -217,53 +219,6 @@ public class ReadExcel extends ExcelBaseModel {
 		return varList;
 	}
 
-	public static List<Map<Integer, String>> readExcel(File file, int startrow, int startcol, int sheetnum) {
-		List<Map<Integer, String>> varList = new ArrayList<>();
-		boolean error = false;
-		List<ReadErrorInfo> errorInfoList = new ArrayList<>();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			Workbook wb = getWorkbook(file);
-			Sheet sheet = wb.getSheetAt(sheetnum); // sheet 从0开始
-			Row row;
-			//循环实体类所有属性
-			int rowNum = sheet.getLastRowNum() + 1; // 取得最后一行的行号
-			//空行数
-			int emptySize = 0;
-			/*--------------数据行-----------------------*/
-			for (int i = startrow; i < rowNum; i++) { // 行循环开始
-				row = sheet.getRow(i); // 行
-				if (row == null) {
-					break;
-				}
-				int size = row.getLastCellNum();
-				Map<Integer, String> t = new HashMap<>();
-				for (int i1 = 0; i1 < size; i1++) {
-					Cell cell = getMergedRegionValue(sheet, i, i1);
-					String value = getCellValue(wb, cell, "", sdf);
-					t.put(i1, value);
-				}
-				varList.add(t);
-				//获取需要读取的数量
-				if (size == 0) {
-					//连续三行都是空行，则认定当前为excel结尾
-					if (++emptySize > 3) {
-						break;
-					}
-				} else {
-					//若不为空行，则清空连续空行数
-					emptySize = 0;
-					varList.add(t);
-				}
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		if (varList.isEmpty()) {
-			throw new ExcelReadException("当前表格为空");
-		}
-		return varList;
-	}
 
 	private static Workbook getWorkbook(File file) throws IOException {
 		//读取文件
@@ -361,7 +316,7 @@ public class ReadExcel extends ExcelBaseModel {
 		String cellValue = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (null != cell) {
-			cellValue = getCellValue(workbook, cell, cellValue, sdf);
+			cellValue = getCellValue(workbook, cell, cellValue, sdf, property.getAccuracy());
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueException(property.getTitle() + "为空");
@@ -394,7 +349,7 @@ public class ReadExcel extends ExcelBaseModel {
 		String cellValue = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (null != cell) {
-			cellValue = getCellValue(workbook, cell, cellValue, sdf);
+			cellValue = getCellValue(workbook, cell, cellValue, sdf, property.getAccuracy());
 			// 判断当前字段是否允许非空，并判断非空
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueException(property.getTitle() + "为空");
@@ -416,7 +371,7 @@ public class ReadExcel extends ExcelBaseModel {
 		return null;
 	}
 
-	private static String getCellValue(Workbook workbook, Cell cell, String cellValue, SimpleDateFormat sdf) {
+	private static String getCellValue(Workbook workbook, Cell cell, String cellValue, SimpleDateFormat sdf, int accuracy) {
 		switch (cell.getCellType()) { // 判断excel单元格内容的格式，并对其进行转换，以便插入数据库
 			case NUMERIC:
 				if (DateUtil.isCellDateFormatted(cell)) {
@@ -427,7 +382,11 @@ public class ReadExcel extends ExcelBaseModel {
 					if (msg.contains(".0")) {
 						cellValue = checkNumber(String.valueOf(cell.getNumericCellValue()));
 					} else {
-						cellValue = String.valueOf(cell.getNumericCellValue());
+						if (accuracy == -1) {
+							cellValue = String.valueOf(cell.getNumericCellValue());
+						} else {
+							cellValue = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(accuracy, RoundingMode.HALF_UP).toString();
+						}
 					}
 				}
 				break;
