@@ -61,9 +61,13 @@ public class ExcelEntity {
 	 * 读取时是否允许为空
 	 */
 	private boolean isNotNull = false;
-
+	/**
+	 * 精度
+	 */
 	private int accuracy = -1;
-
+	/**
+	 * 宽度
+	 */
 	private int width;
 
 	public boolean isRead() {
@@ -187,8 +191,27 @@ public class ExcelEntity {
 		this.accuracy = accuracy;
 	}
 
-	public String getEntityType(){
-		return "normal";
+	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
+		this.title = e.value();
+		this.width = e.width();
+		this.property = value;
+		this.format = format;
+		this.index = e.index();
+		this.topName = e.topName();
+		if (e.secondName() != DefaultTopName.class) {
+			this.topName = getTopNameInt(e.secondName()).value();
+		}
+		if (!e.isPicture()) {
+			this.paramType = e.type();
+		} else {
+			this.paramType = ParamType.IMAGE;
+		}
+		this.isRead = e.isRead();
+		this.isWrite = e.isWrite();
+		this.type = clazz;
+		this.alias = e.alias();
+		this.isNotNull = e.isNotNull();
+		this.accuracy = e.accuracy();
 	}
 
 	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
@@ -220,25 +243,6 @@ public class ExcelEntity {
 		this.isNotNull = isNotNull;
 	}
 
-	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
-		this.title = e.value();
-		this.width = e.width();
-		this.property = value;
-		this.format = format;
-		this.index = e.index();
-		this.topName = e.topName();
-		if (e.secondName() != DefaultTopName.class){
-			this.topName = getTopNameInt(e.secondName()).value();
-		}
-		this.paramType = e.type();
-		this.isRead = e.isRead();
-		this.isWrite = e.isWrite();
-		this.type = clazz;
-		this.alias = e.alias();
-		this.isNotNull = e.isNotNull();
-		this.accuracy = e.accuracy();
-	}
-
 	public ExcelEntity(ParamType index) {
 		if (index == ParamType.INDEX) {
 			this.title = "序号";
@@ -246,8 +250,12 @@ public class ExcelEntity {
 			this.paramType = index;
 			this.type = Integer.class;
 			this.topName = "";
-			this.width=256*15;
+			this.width = 256 * 15;
 		}
+	}
+
+	public String getEntityType() {
+		return "normal";
 	}
 
 	public ExcelEntity(Integer value, String title) {
