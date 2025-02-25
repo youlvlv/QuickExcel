@@ -141,13 +141,7 @@ public class ReadExcel extends ExcelBaseModel {
 			PictureMap pictureMap = new PictureMap();
 			// 获取绘图 patriarch 对象
 			if (readImage) {
-//				if (wb instanceof XSSFWorkbook xssfWorkbook) {
-//					// 获取第一个工作表
-//					XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(0);
-//
-//					// 获取绘图 patriarch 对象
-//					XSSFDrawing drawing = xssfSheet.getDrawingPatriarch();
-//				}
+
 				Drawing<?> drawing = sheet.getDrawingPatriarch();
 				Optional.ofNullable(drawing).ifPresent(draw -> {
 					for (Object o : draw) {

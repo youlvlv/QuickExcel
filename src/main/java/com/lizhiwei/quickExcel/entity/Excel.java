@@ -110,7 +110,8 @@ public @interface Excel {
 	int accuracy() default -1;
 
 	/**
-	 * 当前是否为图片
+	 * 当前是否为图片</p>
+	 * ⚠️请注意：当前仅支持图片浮动在单元格上的图片，不支持图片嵌入在单元格中。
 	 *
 	 * @return
 	 */
