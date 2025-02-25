@@ -59,6 +59,6 @@ public class ExcelConfig {
 
 
 	public static BiFunction<InputStream, String, String> getImageFileFunction() {
-		return Optional.ofNullable(imageFileFunction).orElse((imageFilePath, type) -> null);
+		return Optional.ofNullable(imageFileFunction).orElse((imageFilePath, type) -> "");
 	}
 }

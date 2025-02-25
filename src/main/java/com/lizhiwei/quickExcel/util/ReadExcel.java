@@ -17,6 +17,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+//import org.apache.poi.xssf.usermodel.XSSFDrawing;
+//import org.apache.poi.xssf.usermodel.XSSFSheet;
+//import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,10 +31,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class ReadExcel extends ExcelBaseModel {
@@ -141,13 +141,23 @@ public class ReadExcel extends ExcelBaseModel {
 			PictureMap pictureMap = new PictureMap();
 			// 获取绘图 patriarch 对象
 			if (readImage) {
+//				if (wb instanceof XSSFWorkbook xssfWorkbook) {
+//					// 获取第一个工作表
+//					XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(0);
+//
+//					// 获取绘图 patriarch 对象
+//					XSSFDrawing drawing = xssfSheet.getDrawingPatriarch();
+//				}
 				Drawing<?> drawing = sheet.getDrawingPatriarch();
-				for (Object o : drawing) {
-					if (drawing instanceof Picture picture) {
-						ClientAnchor ca = picture.getClientAnchor();
-						pictureMap.put(ca.getRow1(), picture);
+				Optional.ofNullable(drawing).ifPresent(draw -> {
+					for (Object o : draw) {
+						if (o instanceof Picture picture) {
+							ClientAnchor ca = picture.getClientAnchor();
+							pictureMap.put(ca.getRow1(), picture);
+						}
 					}
-				}
+				});
+
 			}
 
 
@@ -196,6 +206,7 @@ public class ReadExcel extends ExcelBaseModel {
 								field.setAccessible(true);
 								//赋值
 								field.set(t, o);
+								break;
 							}
 							//若为方法
 							case METHOD: {
@@ -203,15 +214,17 @@ public class ReadExcel extends ExcelBaseModel {
 								method = entity.getMethod(set, property.getType());
 								//赋值
 								method.invoke(t, o);
+								break;
 							}
 
 							case IMAGE: {
-								Picture picture = pictureMap.get(rowNum, pictureIndex++);
+								Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
 								field = entity.getDeclaredField(property.getProperty());
 								field.setAccessible(true);
 								//赋值
 								field.set(t, formatValue(property,
 										ExcelConfig.getImageFileFunction().apply(new ByteArrayInputStream(picture.getPictureData().getData()), getPictureExtension(picture))));
+								break;
 							}
 
 						}
@@ -346,6 +359,11 @@ public class ReadExcel extends ExcelBaseModel {
 	 */
 	public static <T> List<T> readExcel(UploadFile file, int startrow, int startcol, int sheetnum, Class<T> entity) {
 		return readExcel(file.getFile(), startrow, startcol, sheetnum, entity);
+	}
+
+	public static <T> List<T> readExcel(UploadFile file, int startrow, int startcol, int sheetnum, Class<T> entity,
+	                                    boolean safe, boolean readImage) {
+		return readExcel(file.getFile(), startrow, startcol, sheetnum,entity, safe,readImage);
 	}
 
 	private static String getExcelStringValue(Workbook workbook, Cell cell, ExcelEntity property) {
