@@ -74,6 +74,9 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	public T setMergerValue(int start, int end, String value) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, start, end));
 		this.setValue(start, value, sheet.getExcel().getDefaultStyle());
+		for (int i = ++start; i <= end; i++) {
+			this.setValue(i, "", sheet.getExcel().getDefaultStyle());
+		}
 		return chain;
 	}
 
