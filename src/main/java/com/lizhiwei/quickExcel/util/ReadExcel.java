@@ -213,6 +213,9 @@ public class ReadExcel extends ExcelBaseModel {
 
 							case IMAGE: {
 								Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
+								if (picture == null){
+									break;
+								}
 								field = entity.getDeclaredField(property.getProperty());
 								field.setAccessible(true);
 								//赋值

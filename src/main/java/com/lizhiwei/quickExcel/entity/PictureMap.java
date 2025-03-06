@@ -2,8 +2,10 @@ package com.lizhiwei.quickExcel.entity;
 
 import org.apache.poi.ss.usermodel.Picture;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class PictureMap extends HashMap<Integer, List<Picture>> {
 
@@ -22,6 +24,12 @@ public class PictureMap extends HashMap<Integer, List<Picture>> {
 	}
 
 	public Picture get(Integer key, Integer index) {
-		return super.get(key).get(index);
+		if (super.get(key) == null) {
+			return null;
+		}
+		if (super.get(key).size() <= index) {
+			return null;
+		}
+		return Optional.ofNullable(super.get(key)).orElse(new ArrayList<>()).get(index);
 	}
 }
