@@ -43,7 +43,6 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 		Font headerFont = xWorkbook.createFont();
 		headerFont.setFontHeightInPoints((short) 12);
 		/*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
-		headerFont.setBold(true);
 		headerFont.setFontName("宋体");
 		DEFAULT_CELL_STYLE.setFont(headerFont);
 		DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行

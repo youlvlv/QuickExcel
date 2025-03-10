@@ -89,6 +89,9 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 
 	public MoreRowModel setHeaderValue(int i, int end, String value, CellStyle cs) {
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, i, end));
+		for (int j = i; j <= end; j++) {
+			super.setValue(j, "", cs);
+		}
 		super.setValue(i, value, cs);
 		return this;
 	}
