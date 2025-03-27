@@ -72,6 +72,29 @@ public class DownloadExcel extends ExcelBaseModel {
 		}
 	}
 
+	public static <T> void setExcelProperty(FileOperation operation, List<ExcelEntity> entity, List<T> listContent,
+											IndexType indexType,List<String> imgList) {
+		//列表排序
+		try {
+			//创建表格工作空间
+			ExcelModel excel = new ExcelModel();
+			//创建一个新表格
+//            XSSFSheet xSheet = xWorkbook.createSheet(fileNameParam);
+			SheetModel sheet = excel.newSheet();
+			if (indexType != IndexType.NULL) {
+				sheet.createSerialNumber(indexType);
+			}
+			//set Sheet页头部
+			sheet.createHeader(entity);
+			//set Sheet页内容
+			sheet.createContent(entity, listContent);
+			excel.exportExcel(operation).close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("导出表格时出现异常...请联系管理员", e);
+		}
+	}
+
 	/**
 	 * 生成EXCEL表
 	 *
