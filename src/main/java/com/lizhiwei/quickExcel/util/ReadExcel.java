@@ -422,6 +422,8 @@ public class ReadExcel extends ExcelBaseModel {
 			} else {
 				return null;
 			}
+		} else if (property.isNotNull()) {
+			throw new ExcelValueException(property.getTitle() + "为空");
 		}
 		return null;
 	}

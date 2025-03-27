@@ -109,7 +109,10 @@ public class SheetModel extends ExcelBaseModel {
 		List<ExcelEntity> list = getEntities(entity);
 		return util().setSheetHeader(this, list, cellStyle, s);
 	}
-
+	public SheetModel setColWidth(int colNum, int colWidth) {
+		xSheet.setColumnWidth(colNum, colWidth);
+		return this;
+	}
 	/**
 	 * 录入数据信息
 	 *
