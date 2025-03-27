@@ -5,16 +5,13 @@ import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.IndexType;
 import com.lizhiwei.quickExcel.entity.Since;
 import com.lizhiwei.quickExcel.exception.ExcelReadException;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.util.Units;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 public class SheetModel extends ExcelBaseModel {
@@ -242,7 +239,7 @@ public class SheetModel extends ExcelBaseModel {
 	 */
 	public static void addPicture(String imagePath, Sheet sheet) throws IOException {
 		InputStream inputStream = new FileInputStream(imagePath);
-		byte[] imageBytes = IOUtils.toByteArray(inputStream);
+		byte[] imageBytes = inputStream.readAllBytes();
 		inputStream.close();
 
 		Workbook workbook = sheet.getWorkbook(); // 获取工作簿实例
@@ -330,7 +327,6 @@ public class SheetModel extends ExcelBaseModel {
 	 *
 	 * @param oldCell
 	 * @param newCell
-	 * @param styleMap
 	 */
 	public void copyCell(Cell oldCell, Cell newCell, SheetModel goalSheet) {
 

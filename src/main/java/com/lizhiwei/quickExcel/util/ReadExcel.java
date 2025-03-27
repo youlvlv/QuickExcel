@@ -1,8 +1,9 @@
 package com.lizhiwei.quickExcel.util;
 
 
+import com.lizhiwei.quickExcel.config.ExcelConfig;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
-import com.lizhiwei.quickExcel.entity.ParamType;
+import com.lizhiwei.quickExcel.entity.PictureMap;
 import com.lizhiwei.quickExcel.entity.ReadErrorInfo;
 import com.lizhiwei.quickExcel.exception.ExcelReadException;
 import com.lizhiwei.quickExcel.exception.ExcelValueException;
@@ -16,7 +17,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+//import org.apache.poi.xssf.usermodel.XSSFDrawing;
+//import org.apache.poi.xssf.usermodel.XSSFSheet;
+//import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,7 +30,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -33,7 +37,7 @@ import java.util.regex.Pattern;
 public class ReadExcel extends ExcelBaseModel {
 
 	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity) {
-		return readExcel(file, startrow, startcol, sheetnum, entity, false);
+		return readExcel(file, startrow, startcol, sheetnum, entity, false, false);
 	}
 
 	public static ExcelModel readExcel(File file) {
@@ -44,7 +48,8 @@ public class ReadExcel extends ExcelBaseModel {
 		}
 	}
 
-	public static <T> List<T> readExcel(File file, int startrow, int startcol, String sheetName, Class<T> entity, boolean safe) {
+	public static <T> List<T> readExcel(File file, int startrow, int startcol, String sheetName, Class<T> entity,
+	                                    boolean safe, boolean readImage) {
 		int sheetnum = 0;
 		try {
 			Workbook wb = getWorkbook(file);
@@ -52,7 +57,7 @@ public class ReadExcel extends ExcelBaseModel {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return readExcel(file, startrow, startcol, sheetnum, entity, safe);
+		return readExcel(file, startrow, startcol, sheetnum, entity, safe, readImage);
 	}
 
 	public static List<Map<String, String>> readExcel(File file, int startrow, int startcol, int sheetnum, boolean safe, List<ExcelEntity> propertieList) {
@@ -86,7 +91,7 @@ public class ReadExcel extends ExcelBaseModel {
 						//读取当前字段在excel中的值
 						String o = getExcelStringValue(wb, getMergedRegionValue(sheet, i, property.getValue()), property);
 						//若当前字段为空，则读取数量减1
-						if (o == null || o.toString().isEmpty()) {
+						if (o == null || o.isEmpty()) {
 							--size;
 						}
 						t.put(property.getProperty(), o);
@@ -125,13 +130,31 @@ public class ReadExcel extends ExcelBaseModel {
 
 	}
 
-	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity, boolean safe, List<ExcelEntity> propertieList) {
+	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity,
+	                                    boolean safe, boolean readImage, List<ExcelEntity> propertieList) {
 		List<T> varList = new ArrayList<>();
 		boolean error = false;
 		List<ReadErrorInfo> errorInfoList = new ArrayList<>();
 		try {
 			Workbook wb = getWorkbook(file);
 			Sheet sheet = wb.getSheetAt(sheetnum); // sheet 从0开始
+			PictureMap pictureMap = new PictureMap();
+			// 获取绘图 patriarch 对象
+			if (readImage) {
+
+				Drawing<?> drawing = sheet.getDrawingPatriarch();
+				Optional.ofNullable(drawing).ifPresent(draw -> {
+					for (Object o : draw) {
+						if (o instanceof Picture picture) {
+							ClientAnchor ca = picture.getClientAnchor();
+							pictureMap.put(ca.getRow1(), picture);
+						}
+					}
+				});
+
+			}
+
+
 			List<ExcelEntity> properties = getExcelEntities(startrow, startcol, propertieList, sheet);
 			Row row;
 			//循环实体类所有属性
@@ -145,6 +168,7 @@ public class ReadExcel extends ExcelBaseModel {
 				if (row == null) {
 					break;
 				}
+
 				T t = null;
 				try {
 					//创建新的实体类
@@ -153,6 +177,7 @@ public class ReadExcel extends ExcelBaseModel {
 				         NoSuchMethodException e) {
 					throw new RuntimeException("构建实体类失败！请检查实体类", e);
 				}
+				int pictureIndex = 0;
 				//获取需要读取的数量
 				int size = properties.size();
 				for (ExcelEntity property : properties) {
@@ -167,21 +192,41 @@ public class ReadExcel extends ExcelBaseModel {
 						if (o == null || o.toString().isEmpty()) {
 							--size;
 						}
-						//若为属性
-						if (property.getParamType() == ParamType.FIELD) {
-							//实例化字段
-							field = entity.getDeclaredField(property.getProperty());
-							field.setAccessible(true);
-							//赋值
-							field.set(t, o);
+						switch (property.getParamType()) {
+							//若为属性
+							case FIELD: {
+								//实例化字段
+								field = entity.getDeclaredField(property.getProperty());
+								field.setAccessible(true);
+								//赋值
+								field.set(t, o);
+								break;
+							}
+							//若为方法
+							case METHOD: {
+								String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
+								method = entity.getMethod(set, property.getType());
+								//赋值
+								method.invoke(t, o);
+								break;
+							}
+
+							case IMAGE: {
+								Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
+								if (picture == null){
+									break;
+								}
+								field = entity.getDeclaredField(property.getProperty());
+								field.setAccessible(true);
+								//赋值
+								field.set(t, formatValue(property,
+										ExcelConfig.getImageFileFunction().apply(new ByteArrayInputStream(picture.getPictureData().getData()), getPictureExtension(picture))));
+								break;
+							}
+
 						}
-						//若为方法
-						if (property.getParamType() == ParamType.METHOD) {
-							String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
-							method = entity.getMethod(set, property.getType());
-							//赋值
-							method.invoke(t, o);
-						}
+
+
 					} catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
 					         InvocationTargetException e) {
 						throw new RuntimeException(e);
@@ -279,8 +324,9 @@ public class ReadExcel extends ExcelBaseModel {
 	 * @param <T>
 	 * @return 列表信息
 	 */
-	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity, boolean safe) {
-		return readExcel(file, startrow, startcol, sheetnum, entity, safe, getExcelEntities(entity));
+	public static <T> List<T> readExcel(File file, int startrow, int startcol, int sheetnum, Class<T> entity,
+	                                    boolean safe, boolean readImage) {
+		return readExcel(file, startrow, startcol, sheetnum, entity, safe, readImage, getExcelEntities(entity));
 	}
 
 
@@ -312,6 +358,11 @@ public class ReadExcel extends ExcelBaseModel {
 		return readExcel(file.getFile(), startrow, startcol, sheetnum, entity);
 	}
 
+	public static <T> List<T> readExcel(UploadFile file, int startrow, int startcol, int sheetnum, Class<T> entity,
+	                                    boolean safe, boolean readImage) {
+		return readExcel(file.getFile(), startrow, startcol, sheetnum,entity, safe,readImage);
+	}
+
 	private static String getExcelStringValue(Workbook workbook, Cell cell, ExcelEntity property) {
 		String cellValue = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -321,21 +372,25 @@ public class ReadExcel extends ExcelBaseModel {
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueException(property.getTitle() + "为空");
 			} else if (!cellValue.trim().isEmpty()) {
-				if (property.getFormat() != null) {
-					ExcelFormatBase<?> format = property.getFormat();
-					try {
-						if (format instanceof DefaultFormat) {
-							return ((DefaultFormat) format).ReadToExcel(String.class, cellValue).toString();
-						}
-						return format.ReadToExcel(cellValue).toString();
-					} catch (Exception e) {
-						throw new ExcelValueException(property.getTitle() + "错误", e);
-					}
-				}
-				return cellValue;
+				return formatValue(property, cellValue);
 			}
 		}
 		return null;
+	}
+
+	private static String formatValue(ExcelEntity property, String cellValue) {
+		if (property.getFormat() != null) {
+			ExcelFormatBase<?> format = property.getFormat();
+			try {
+				if (format instanceof DefaultFormat) {
+					return ((DefaultFormat) format).ReadToExcel(String.class, cellValue).toString();
+				}
+				return format.ReadToExcel(cellValue).toString();
+			} catch (Exception e) {
+				throw new ExcelValueException(property.getTitle() + "错误", e);
+			}
+		}
+		return cellValue;
 	}
 
 	/**
@@ -367,6 +422,8 @@ public class ReadExcel extends ExcelBaseModel {
 			} else {
 				return null;
 			}
+		} else if (property.isNotNull()) {
+			throw new ExcelValueException(property.getTitle() + "为空");
 		}
 		return null;
 	}
@@ -462,70 +519,11 @@ public class ReadExcel extends ExcelBaseModel {
 	}
 
 
-	/**
-	 * 判断是否是“02-十一月-2006”格式的日期类型
-	 */
-	private static boolean checkDate(String str) {
-		String[] dataArr = str.split("-");
-		try {
-			if (dataArr.length == 3) {
-				int x = Integer.parseInt(dataArr[0]);
-				String y = dataArr[1];
-				int z = Integer.parseInt(dataArr[2]);
-				if (x > 0 && x < 32 && z > 0 && z < 10000 && y.endsWith("月")) {
-					return true;
-				}
-			}
-		} catch (Exception e) {
-			return false;
-		}
-		return false;
+	// 获取图片的MIME类型并转换为文件后缀
+	public static String getPictureExtension(Picture picture) {
+		String mimeType = picture.getPictureData().getMimeType();
+		return MIME_TYPE_TO_EXTENSION.getOrDefault(mimeType, "");
 	}
-
-
-	public static Date getDate(String time) {
-		SimpleDateFormat s1 = new SimpleDateFormat("yyyy/MM/dd");
-		SimpleDateFormat s2 = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			return s1.parse(time);
-		} catch (ParseException e) {
-			try {
-				return s2.parse(time);
-			} catch (ParseException e2) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-	}
-
-	public static Date getClock(String time) {
-		SimpleDateFormat s = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		SimpleDateFormat s2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		try {
-			return s.parse(time);
-		} catch (ParseException e) {
-			try {
-				return s2.parse(time);
-			} catch (ParseException e2) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-	}
-
-
-//    public static String checkNumber(String number) {
-//
-//        String a = null;
-//        if (number.contains(".0")) {
-//            a = number.substring(0, number.length() - 2);
-//        }else if(number.contains("-0")){
-//            a= number;
-//        } else {
-//            a = number;
-//        }
-//        return a;
-//    }
 
 	// 工资条问题  上面的是原版的
 	public static String checkNumber(String number) {
