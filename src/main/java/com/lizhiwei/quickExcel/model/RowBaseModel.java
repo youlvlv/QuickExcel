@@ -19,6 +19,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	/**
 	 * 当前行数
 	 */
+
 	protected final int rowNumber;
 	protected final Row row;
 	protected final SheetModel sheet;

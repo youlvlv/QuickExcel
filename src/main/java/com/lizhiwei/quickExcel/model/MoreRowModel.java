@@ -70,6 +70,7 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 
 	@Override
 	public MoreRowModel setValue(String value) {
+
 		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, order, order));
 		Cell cell2 = secondRow.createCell(order);
 		cell2.setCellValue("");
