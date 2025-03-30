@@ -219,38 +219,38 @@ public class ReadExcel extends ExcelBaseModel {
                     Method method;
                     try {    //若为属性
                         switch (property.getParamType()) {
-                            //若为属性
-                            case FIELD: {
-                                //实例化字段
-                                field = entity.getDeclaredField(property.getProperty());
-                                field.setAccessible(true);
-                                //赋值
-                                field.set(t, o);
-                                break;
-                            }
-                            //若为方法
-                            case METHOD: {
-                                String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
-                                method = entity.getMethod(set, property.getType());
-                                //赋值
-                                method.invoke(t, o);
-                                break;
-                            }
+	                        //若为属性
+	                        case FIELD: {
+		                        //实例化字段
+		                        field = entity.getDeclaredField(property.getProperty());
+		                        field.setAccessible(true);
+		                        //赋值
+		                        field.set(t, o);
+		                        break;
+	                        }
+	                        //若为方法
+	                        case METHOD: {
+		                        String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
+		                        method = entity.getMethod(set, property.getType());
+		                        //赋值
+		                        method.invoke(t, o);
+		                        break;
+	                        }
 
-                            case IMAGE: {
-                                Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
-                                if (picture == null){
-                                    break;
-                                }
-                                field = entity.getDeclaredField(property.getProperty());
-                                field.setAccessible(true);
-                                //赋值
-                                field.set(t, formatValue(property,
-                                        ExcelConfig.getImageFileFunction().apply(new ByteArrayInputStream(picture.getPictureData().getData()), getPictureExtension(picture))));
-                                break;
-                            }
+	                        case IMAGE: {
+		                        Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
+		                        if (picture == null) {
+			                        break;
+		                        }
+		                        field = entity.getDeclaredField(property.getProperty());
+		                        field.setAccessible(true);
+		                        //赋值
+		                        field.set(t, formatValue(property,
+				                        ExcelConfig.getImageFileFunction().apply(new ByteArrayInputStream(picture.getPictureData().getData()), getPictureExtension(picture))));
+		                        break;
+	                        }
                         }
-					} catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
+                    } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
 					         InvocationTargetException e) {
 						throw new RuntimeException(e);
 					} catch (ExcelValueException e) {
@@ -287,6 +287,20 @@ public class ReadExcel extends ExcelBaseModel {
 		return varList;
 	}
 
+	private static String formatValue(ExcelEntity property, String cellValue) {
+		if (property.getFormat() != null) {
+			ExcelFormatBase<?> format = property.getFormat();
+			try {
+				if (format instanceof DefaultFormat) {
+					return ((DefaultFormat) format).ReadToExcel(String.class, cellValue).toString();
+				}
+				return format.ReadToExcel(cellValue,null).toString();
+			} catch (Exception e) {
+				throw new ExcelValueException(property.getTitle() + "错误", e);
+			}
+		}
+		return cellValue;
+	}
 
 	private static Workbook getWorkbook(File file) throws IOException {
 		//读取文件
@@ -412,18 +426,18 @@ public class ReadExcel extends ExcelBaseModel {
 		return null;
 	}
 
-	private static Object getCellValue(String v,ExcelEntity property,Map<String,String> objectMap){
-		Class<?> type = property.getType();
-		ExcelFormatBase<?> format = property.getFormat();
-		try {
-			if (format instanceof DefaultFormat) {
-				return ((DefaultFormat) format).ReadToExcel(type, v);
-			}
-			return format.ReadToExcel(v,objectMap);
-		} catch (Exception e) {
-			throw new ExcelValueException(property.getTitle() + "错误", e);
-		}
-	}
+    private static Object getCellValue(String v, ExcelEntity property, Map<String, String> objectMap) {
+        Class<?> type = property.getType();
+        ExcelFormatBase<?> format = property.getFormat();
+        try {
+            if (format instanceof DefaultFormat) {
+                return ((DefaultFormat) format).ReadToExcel(type, v);
+            }
+            return format.ReadToExcel(v, objectMap);
+        } catch (Exception e) {
+            throw new ExcelValueException(property.getTitle() + "错误", e);
+        }
+    }
 
 	private static String getCellStringValue(Workbook workbook, Cell cell,ExcelEntity property){
 		String cellValue = "";
