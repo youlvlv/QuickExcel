@@ -183,17 +183,12 @@ public abstract class ExcelUtil {
 	public SheetModel setSheetHeader(SheetModel sheet, List<ExcelEntity> listTitle) {
 		//创建表格的样式
 		CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
-		//设置水平、垂直居中
-		cs.setAlignment(HorizontalAlignment.CENTER);
-		cs.setVerticalAlignment(VerticalAlignment.CENTER);
+		cs.cloneStyleFrom(sheet.getExcel().getDefaultStyle());
 		//设置字体
 		Font headerFont = sheet.getExcel().getWorkbook().createFont();
 		headerFont.setFontHeightInPoints((short) 12);
 		/*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
 		headerFont.setBold(true);
-		headerFont.setFontName("宋体");
-		cs.setFont(headerFont);
-		cs.setWrapText(true);//是否自动换行
 		return this.setSheetHeader(sheet, listTitle, cs, (short) 0);
 	}
 
@@ -280,6 +275,7 @@ public abstract class ExcelUtil {
 	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since) {
 		//创建内容样式（头部以下的样式）
 		CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
+		cs.cloneStyleFrom(sheet.getExcel().getDefaultStyle());
 		cs.setWrapText(true);
 		//设置水平垂直居中
 		cs.setAlignment(HorizontalAlignment.CENTER);

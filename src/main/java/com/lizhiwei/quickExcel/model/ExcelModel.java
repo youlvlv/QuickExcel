@@ -3,7 +3,7 @@ package com.lizhiwei.quickExcel.model;
 
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
-import org.apache.commons.compress.utils.IOUtils;
+//import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.Units;
@@ -43,7 +43,6 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 		Font headerFont = xWorkbook.createFont();
 		headerFont.setFontHeightInPoints((short) 12);
 		/*headerFont.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);*/
-		headerFont.setBold(true);
 		headerFont.setFontName("宋体");
 		DEFAULT_CELL_STYLE.setFont(headerFont);
 		DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
@@ -226,7 +225,7 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 	 */
 	public void addPicture(String imagePath, SheetModel sheetModel, int col1, int row1, int col2, int row2) throws IOException {
 		InputStream inputStream = new FileInputStream(imagePath);
-		byte[] imageBytes = IOUtils.toByteArray(inputStream);
+		byte[] imageBytes = inputStream.readAllBytes() ;
 		inputStream.close();
 		int pictureIdx = xWorkbook.addPicture(imageBytes, XSSFWorkbook.PICTURE_TYPE_JPEG);
 		CreationHelper helper = xWorkbook.getCreationHelper();

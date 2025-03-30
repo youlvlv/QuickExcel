@@ -66,8 +66,13 @@ public class ExcelEntity {
 	 */
 	private String aliasProperty = "";
 
+	/**
+	 * 精度
+	 */
 	private int accuracy = -1;
-
+	/**
+	 * 宽度
+	 */
 	private int width;
 
 	public boolean isRead() {
@@ -225,23 +230,27 @@ public class ExcelEntity {
 	}
 
 	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
-		this.title = e.value();
-		this.width = e.width();
-		this.property = value;
-		this.format = format;
-		this.index = e.index();
-		this.topName = e.topName();
-		this.aliasProperty = e.aliasProperty();
-		if (e.secondName() != DefaultTopName.class){
-			this.topName = getTopNameInt(e.secondName()).value();
-		}
-		this.paramType = e.type();
-		this.isRead = e.isRead();
-		this.isWrite = e.isWrite();
-		this.type = clazz;
-		this.alias = e.alias();
-		this.isNotNull = e.isNotNull();
-		this.accuracy = e.accuracy();
+        this.title = e.value();
+        this.width = e.width();
+        this.property = value;
+        this.format = format;
+        this.index = e.index();
+        this.topName = e.topName();
+        this.aliasProperty = e.aliasProperty();
+        if (e.secondName() != DefaultTopName.class) {
+            this.topName = getTopNameInt(e.secondName()).value();
+        }
+        if (!e.isPicture()) {
+            this.paramType = e.type();
+        } else {
+            this.paramType = ParamType.IMAGE;
+        }
+        this.isRead = e.isRead();
+        this.isWrite = e.isWrite();
+        this.type = clazz;
+        this.alias = e.alias();
+        this.isNotNull = e.isNotNull();
+        this.accuracy = e.accuracy();
 	}
 
 	public ExcelEntity(ParamType index) {
@@ -251,7 +260,7 @@ public class ExcelEntity {
 			this.paramType = index;
 			this.type = Integer.class;
 			this.topName = "";
-			this.width=256*15;
+			this.width = 256 * 15;
 		}
 	}
 

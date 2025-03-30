@@ -11,7 +11,7 @@ import java.lang.annotation.*;
  *
  * @author lizhiwei
  */
-@Target({ElementType.FIELD,ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Excel {
@@ -25,6 +25,7 @@ public @interface Excel {
 	/**
 	 * 导出excel时显示的第二名称 该方式存在性能问题 <br>
 	 * 推荐使用 topName 属性
+	 *
 	 * @return
 	 */
 	@Deprecated
@@ -40,6 +41,7 @@ public @interface Excel {
 	/**
 	 * 导出EXCEL时 匹配名称 非必填
 	 * 已废弃
+	 *
 	 * @return
 	 */
 	@Deprecated
@@ -54,9 +56,10 @@ public @interface Excel {
 
 	/**
 	 * 默认此列宽度
+	 *
 	 * @return
 	 */
-	int width() default 256*15;
+	int width() default 256 * 15;
 
 	/**
 	 * 转换工具
@@ -67,30 +70,35 @@ public @interface Excel {
 
 	/**
 	 * 是否可读
+	 *
 	 * @return
 	 */
 	boolean isRead() default true;
 
 	/**
 	 * 是否可写
+	 *
 	 * @return
 	 */
 	boolean isWrite() default true;
 
 	/**
 	 * 当前字段导入方式
+	 *
 	 * @return
 	 */
 	ParamType type() default ParamType.FIELD;
 
 	/**
 	 * 导入时，是否允许非空，默认允许为空
+	 *
 	 * @return
 	 */
 	boolean isNotNull() default false;
 
 	/**
 	 * 别名
+	 *
 	 * @return
 	 */
 	String alias() default "";
@@ -103,7 +111,16 @@ public @interface Excel {
 
 	/**
 	 * 精度
+	 *
 	 * @return
 	 */
 	int accuracy() default -1;
+
+	/**
+	 * 当前是否为图片</p>
+	 * ⚠️请注意：当前仅支持图片浮动在单元格上的图片，不支持图片嵌入在单元格中。
+	 *
+	 * @return
+	 */
+	boolean isPicture() default false;
 }
