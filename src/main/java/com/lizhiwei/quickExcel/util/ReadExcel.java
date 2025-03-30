@@ -180,54 +180,77 @@ public class ReadExcel extends ExcelBaseModel {
 				int pictureIndex = 0;
 				//获取需要读取的数量
 				int size = properties.size();
+				Map<String,String> objectMap = new HashMap<>();
+				Map<String,ExcelEntity> propertyMap = new HashMap<>();
 				for (ExcelEntity property : properties) {
-					// 查看该字段是否允许导入
-					Field field = null;
-					Method method = null;
 					try {
 						//读取当前字段在excel中的值
 						Cell cell = getMergedRegionValue(sheet, i, property.getValue());
-						Object o = getExcelValue(wb, cell, property);
+						String o = getCellStringValue(wb, cell, property);
+						objectMap.put(property.getProperty(), o);
+						if (!Objects.equals(property.getAliasProperty(), "")) {
+							if (!property.getAliasProperty().equals(property.getProperty())) {
+								if (objectMap.containsKey(property.getAliasProperty())) {
+									throw new ExcelReadException("存在了重复的 property");
+								}
+								objectMap.put(property.getAliasProperty(), o);
+							}
+						}
+						propertyMap.put(property.getProperty(),property);
+//						Object o = getExcelValue(wb, cell, property);
 						//若当前字段为空，则读取数量减1
-						if (o == null || o.toString().isEmpty()) {
+						if (o.isEmpty()) {
 							--size;
 						}
-						switch (property.getParamType()) {
-							//若为属性
-							case FIELD: {
-								//实例化字段
-								field = entity.getDeclaredField(property.getProperty());
-								field.setAccessible(true);
-								//赋值
-								field.set(t, o);
-								break;
-							}
-							//若为方法
-							case METHOD: {
-								String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
-								method = entity.getMethod(set, property.getType());
-								//赋值
-								method.invoke(t, o);
-								break;
-							}
-
-							case IMAGE: {
-								Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
-								if (picture == null){
-									break;
-								}
-								field = entity.getDeclaredField(property.getProperty());
-								field.setAccessible(true);
-								//赋值
-								field.set(t, formatValue(property,
-										ExcelConfig.getImageFileFunction().apply(new ByteArrayInputStream(picture.getPictureData().getData()), getPictureExtension(picture))));
-								break;
-							}
-
+					} catch (ExcelValueException e) {
+						if (safe) {
+							error = true;
+							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
+						} else {
+							throw new ExcelReadException("第" + i + "行" + " " + e.getMessage(), e);
 						}
+					}
+				}
+                for (Map.Entry<String, ExcelEntity> entry : propertyMap.entrySet()) {
+                    ExcelEntity property = entry.getValue();
+                    Object o = getCellValue(objectMap.get(entry.getKey()), property, objectMap);
+                    // 查看该字段是否允许导入
+                    Field field;
+                    Method method;
+                    try {    //若为属性
+                        switch (property.getParamType()) {
+	                        //若为属性
+	                        case FIELD: {
+		                        //实例化字段
+		                        field = entity.getDeclaredField(property.getProperty());
+		                        field.setAccessible(true);
+		                        //赋值
+		                        field.set(t, o);
+		                        break;
+	                        }
+	                        //若为方法
+	                        case METHOD: {
+		                        String set = "set" + Pattern.compile("^.").matcher(property.getProperty()).replaceFirst(m -> m.group().toUpperCase());
+		                        method = entity.getMethod(set, property.getType());
+		                        //赋值
+		                        method.invoke(t, o);
+		                        break;
+	                        }
 
-
-					} catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
+	                        case IMAGE: {
+		                        Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
+		                        if (picture == null) {
+			                        break;
+		                        }
+		                        field = entity.getDeclaredField(property.getProperty());
+		                        field.setAccessible(true);
+		                        //赋值
+		                        field.set(t, formatValue(property,
+				                        ExcelConfig.getImageFileFunction().apply(new ByteArrayInputStream(picture.getPictureData().getData()), getPictureExtension(picture))));
+		                        break;
+	                        }
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException |
 					         InvocationTargetException e) {
 						throw new RuntimeException(e);
 					} catch (ExcelValueException e) {
@@ -264,6 +287,20 @@ public class ReadExcel extends ExcelBaseModel {
 		return varList;
 	}
 
+	private static String formatValue(ExcelEntity property, String cellValue) {
+		if (property.getFormat() != null) {
+			ExcelFormatBase<?> format = property.getFormat();
+			try {
+				if (format instanceof DefaultFormat) {
+					return ((DefaultFormat) format).ReadToExcel(String.class, cellValue).toString();
+				}
+				return format.ReadToExcel(cellValue,null).toString();
+			} catch (Exception e) {
+				throw new ExcelValueException(property.getTitle() + "错误", e);
+			}
+		}
+		return cellValue;
+	}
 
 	private static Workbook getWorkbook(File file) throws IOException {
 		//读取文件
@@ -372,25 +409,49 @@ public class ReadExcel extends ExcelBaseModel {
 			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
 				throw new ExcelValueException(property.getTitle() + "为空");
 			} else if (!cellValue.trim().isEmpty()) {
-				return formatValue(property, cellValue);
+				if (property.getFormat() != null) {
+					ExcelFormatBase<?> format = property.getFormat();
+					try {
+						if (format instanceof DefaultFormat) {
+							return ((DefaultFormat) format).ReadToExcel(String.class, cellValue).toString();
+						}
+						return format.ReadToExcel(cellValue,null).toString();
+					} catch (Exception e) {
+						throw new ExcelValueException(property.getTitle() + "错误", e);
+					}
+				}
+				return cellValue;
 			}
 		}
 		return null;
 	}
 
-	private static String formatValue(ExcelEntity property, String cellValue) {
-		if (property.getFormat() != null) {
-			ExcelFormatBase<?> format = property.getFormat();
-			try {
-				if (format instanceof DefaultFormat) {
-					return ((DefaultFormat) format).ReadToExcel(String.class, cellValue).toString();
-				}
-				return format.ReadToExcel(cellValue).toString();
-			} catch (Exception e) {
-				throw new ExcelValueException(property.getTitle() + "错误", e);
+    private static Object getCellValue(String v, ExcelEntity property, Map<String, String> objectMap) {
+        Class<?> type = property.getType();
+        ExcelFormatBase<?> format = property.getFormat();
+        try {
+            if (format instanceof DefaultFormat) {
+                return ((DefaultFormat) format).ReadToExcel(type, v);
+            }
+            return format.ReadToExcel(v, objectMap);
+        } catch (Exception e) {
+            throw new ExcelValueException(property.getTitle() + "错误", e);
+        }
+    }
+
+	private static String getCellStringValue(Workbook workbook, Cell cell,ExcelEntity property){
+		String cellValue = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if (null != cell) {
+			cellValue = getCellValue(workbook, cell, cellValue, sdf, property.getAccuracy());
+			// 判断当前字段是否允许非空，并判断非空
+			if (property.isNotNull() && (cellValue == null || cellValue.trim().isEmpty())) {
+				throw new ExcelValueException(property.getTitle() + "为空");
+			} else if (!cellValue.trim().isEmpty()) {
+				return cellValue;
 			}
 		}
-		return cellValue;
+		return "";
 	}
 
 	/**
@@ -415,7 +476,7 @@ public class ReadExcel extends ExcelBaseModel {
 					if (format instanceof DefaultFormat) {
 						return ((DefaultFormat) format).ReadToExcel(type, cellValue);
 					}
-					return format.ReadToExcel(cellValue);
+					return format.ReadToExcel(cellValue,null);
 				} catch (Exception e) {
 					throw new ExcelValueException(property.getTitle() + "错误", e);
 				}
