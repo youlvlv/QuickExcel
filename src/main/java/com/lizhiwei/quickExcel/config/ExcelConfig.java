@@ -1,9 +1,6 @@
 package com.lizhiwei.quickExcel.config;
 
-import com.lizhiwei.quickExcel.format.DefaultFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormatBase;
-import com.lizhiwei.quickExcel.format.ExcelFormatByType;
+import com.lizhiwei.quickExcel.format.*;
 
 import java.util.HashMap;
 
@@ -25,6 +22,10 @@ public class ExcelConfig {
      * @param <T> 转换器
      */
     public static <T> void addFormat(ExcelFormat<T> format){
+        formatCache.put(format.getClass(),format);
+    }
+
+    public static <T> void addFormat(ExcelMoreFormat<T> format){
         formatCache.put(format.getClass(),format);
     }
 

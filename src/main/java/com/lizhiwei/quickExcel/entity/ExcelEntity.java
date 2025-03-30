@@ -61,6 +61,10 @@ public class ExcelEntity {
 	 * 读取时是否允许为空
 	 */
 	private boolean isNotNull = false;
+	/**
+	 * 属性别名
+	 */
+	private String aliasProperty = "";
 
 	private int accuracy = -1;
 
@@ -227,6 +231,7 @@ public class ExcelEntity {
 		this.format = format;
 		this.index = e.index();
 		this.topName = e.topName();
+		this.aliasProperty = e.aliasProperty();
 		if (e.secondName() != DefaultTopName.class){
 			this.topName = getTopNameInt(e.secondName()).value();
 		}
@@ -263,4 +268,11 @@ public class ExcelEntity {
 	public ExcelEntity() {
 	}
 
+    public String getAliasProperty() {
+        return aliasProperty;
+    }
+
+    public void setAliasProperty(String aliasProperty) {
+        this.aliasProperty = aliasProperty;
+    }
 }

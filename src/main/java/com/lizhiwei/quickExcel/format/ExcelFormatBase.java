@@ -1,5 +1,7 @@
 package com.lizhiwei.quickExcel.format;
 
+import java.util.Map;
+
 public interface ExcelFormatBase<T> extends Cloneable {
 	/**
 	 * 读取实体类属性至excel值
@@ -13,9 +15,12 @@ public interface ExcelFormatBase<T> extends Cloneable {
 	 * 读取excel的值转换至实体类属性类型
 	 *
 	 * @param v 值
+	 * @param oobjectMap 属性名与属性值
 	 * @return 属性
 	 */
-	T ReadToExcel(String v);
+	T ReadToExcel(String v, Map<String,String> objectMap);
+
+
 
 	/**
 	 * 初始化构造器，每次构建excel单元格转换器时都会重新调用，方便同步数据
