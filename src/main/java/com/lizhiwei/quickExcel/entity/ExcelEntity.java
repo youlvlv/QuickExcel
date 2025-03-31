@@ -62,6 +62,11 @@ public class ExcelEntity {
 	 */
 	private boolean isNotNull = false;
 	/**
+	 * 属性别名
+	 */
+	private String aliasProperty = "";
+
+	/**
 	 * 精度
 	 */
 	private int accuracy = -1;
@@ -191,27 +196,8 @@ public class ExcelEntity {
 		this.accuracy = accuracy;
 	}
 
-	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
-		this.title = e.value();
-		this.width = e.width();
-		this.property = value;
-		this.format = format;
-		this.index = e.index();
-		this.topName = e.topName();
-		if (e.secondName() != DefaultTopName.class) {
-			this.topName = getTopNameInt(e.secondName()).value();
-		}
-		if (!e.isPicture()) {
-			this.paramType = e.type();
-		} else {
-			this.paramType = ParamType.IMAGE;
-		}
-		this.isRead = e.isRead();
-		this.isWrite = e.isWrite();
-		this.type = clazz;
-		this.alias = e.alias();
-		this.isNotNull = e.isNotNull();
-		this.accuracy = e.accuracy();
+	public String getEntityType(){
+		return "normal";
 	}
 
 	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
@@ -243,6 +229,30 @@ public class ExcelEntity {
 		this.isNotNull = isNotNull;
 	}
 
+	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
+        this.title = e.value();
+        this.width = e.width();
+        this.property = value;
+        this.format = format;
+        this.index = e.index();
+        this.topName = e.topName();
+        this.aliasProperty = e.aliasProperty();
+        if (e.secondName() != DefaultTopName.class) {
+            this.topName = getTopNameInt(e.secondName()).value();
+        }
+        if (!e.isPicture()) {
+            this.paramType = e.type();
+        } else {
+            this.paramType = ParamType.IMAGE;
+        }
+        this.isRead = e.isRead();
+        this.isWrite = e.isWrite();
+        this.type = clazz;
+        this.alias = e.alias();
+        this.isNotNull = e.isNotNull();
+        this.accuracy = e.accuracy();
+	}
+
 	public ExcelEntity(ParamType index) {
 		if (index == ParamType.INDEX) {
 			this.title = "序号";
@@ -252,10 +262,6 @@ public class ExcelEntity {
 			this.topName = "";
 			this.width = 256 * 15;
 		}
-	}
-
-	public String getEntityType() {
-		return "normal";
 	}
 
 	public ExcelEntity(Integer value, String title) {
@@ -271,4 +277,11 @@ public class ExcelEntity {
 	public ExcelEntity() {
 	}
 
+    public String getAliasProperty() {
+        return aliasProperty;
+    }
+
+    public void setAliasProperty(String aliasProperty) {
+        this.aliasProperty = aliasProperty;
+    }
 }

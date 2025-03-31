@@ -1,9 +1,6 @@
 package com.lizhiwei.quickExcel.config;
 
-import com.lizhiwei.quickExcel.format.DefaultFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormatBase;
-import com.lizhiwei.quickExcel.format.ExcelFormatByType;
+import com.lizhiwei.quickExcel.format.*;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -24,15 +21,18 @@ public class ExcelConfig {
 		return new HashMap<>(formatCache);
 	}
 
-	/**
-	 * 新增默认的转换器 用于节省内存或存在特殊转换器（如：仅包含带参构造器
-	 *
-	 * @param format 转换器实例
-	 * @param <T>    转换器
-	 */
-	public static <T> void addFormat(ExcelFormat<T> format) {
-		formatCache.put(format.getClass(), format);
-	}
+    /**
+     * 新增默认的转换器 用于节省内存或存在特殊转换器（如：仅包含带参构造器
+     * @param format 转换器实例
+     * @param <T> 转换器
+     */
+    public static <T> void addFormat(ExcelFormat<T> format){
+        formatCache.put(format.getClass(),format);
+    }
+
+    public static <T> void addFormat(ExcelMoreFormat<T> format){
+        formatCache.put(format.getClass(),format);
+    }
 
 	/**
 	 * 移除转换器

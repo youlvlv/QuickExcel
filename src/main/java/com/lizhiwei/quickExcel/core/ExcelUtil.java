@@ -134,11 +134,11 @@ public abstract class ExcelUtil {
 	 * @param formatCache 转换器缓存
 	 * @param format      转换器
 	 */
-	private static void extractedExcelFormat(Map<Class<?>, ExcelFormatBase<?>> formatCache, Class<? extends ExcelFormat> format) {
+	private static void extractedExcelFormat(Map<Class<?>, ExcelFormatBase<?>> formatCache, Class<? extends ExcelFormatBase> format) {
 		//判断当前转换器是否存在缓存
 		if (!formatCache.containsKey(format)) {
 			//不存在缓存，则进行实例化
-			ExcelFormat<?> excelFormat;
+			ExcelFormatBase<?> excelFormat;
 			try {
 				excelFormat = format.getDeclaredConstructor().newInstance();
 				excelFormat.init();

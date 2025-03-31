@@ -2,6 +2,7 @@ package com.lizhiwei.quickExcel.entity;
 
 import com.lizhiwei.quickExcel.format.DefaultFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormat;
+import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 
 import java.lang.annotation.*;
 
@@ -65,7 +66,7 @@ public @interface Excel {
 	 *
 	 * @return
 	 */
-	Class<? extends ExcelFormat> format() default DefaultFormat.class;
+	Class<? extends ExcelFormatBase> format() default DefaultFormat.class;
 
 	/**
 	 * 是否可读
@@ -101,6 +102,12 @@ public @interface Excel {
 	 * @return
 	 */
 	String alias() default "";
+
+	/**
+	 * 属性别名
+	 * @return
+	 */
+	String aliasProperty() default "";
 
 	/**
 	 * 精度
