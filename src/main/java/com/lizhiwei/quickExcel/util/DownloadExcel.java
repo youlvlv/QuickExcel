@@ -94,6 +94,20 @@ public class DownloadExcel extends ExcelBaseModel {
         setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, IndexType.NULL, null);
     }
 
+	/**
+	 * 生成EXCEL表
+	 *
+	 * @param fileNameParam 文件名
+	 * @param response      下载流
+	 * @param entity        列表实体类
+	 * @param listContent   列表
+	 * @param <T>           实体类
+	 */
+	public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity,
+	                                        List<T> listContent, IndexType type) {
+		setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, type, null);
+	}
+
 
 	/**
 	 * 生成EXCEL表
@@ -104,8 +118,9 @@ public class DownloadExcel extends ExcelBaseModel {
 	 * @param listContent   列表
 	 * @param <T>           实体类
 	 */
-    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity, List<T> listContent, IndexType type) {
-        setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, type, null);
+	public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity,
+	                                        List<T> listContent, IndexType type, Consumer<CellStyle> styleConsumer) {
+		setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, type, styleConsumer);
     }
 
     /**
