@@ -235,7 +235,7 @@ public class ReadExcel extends ExcelBaseModel {
 							error = true;
 							errorInfoList.add(new ReadErrorInfo(i, e.getMessage()));
 						} else {
-							throw new ExcelReadException("第" + i + "行" + " " + e.getMessage(), e);
+							throw new ExcelReadException("第" + (i+startrow) + "行" + " " + e.getMessage(), e);
 						}
 					}
 
