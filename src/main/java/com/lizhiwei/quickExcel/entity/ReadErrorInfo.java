@@ -33,4 +33,12 @@ public class ReadErrorInfo {
 
 	public ReadErrorInfo() {
 	}
+
+	@Override
+	public String toString() {
+		return "错误信息{" +
+				"行数：" + lineNumber +
+				", 错误内容='" + field +
+				'}';
+	}
 }

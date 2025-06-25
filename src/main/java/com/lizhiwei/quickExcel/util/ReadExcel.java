@@ -212,12 +212,13 @@ public class ReadExcel extends ExcelBaseModel {
 					}
 				}
                 for (Map.Entry<String, ExcelEntity> entry : propertyMap.entrySet()) {
-                    ExcelEntity property = entry.getValue();
-                    Object o = getCellValue(objectMap.get(entry.getKey()), property, objectMap);
-                    // 查看该字段是否允许导入
-                    Field field;
-                    Method method;
-                    try {    //若为属性
+	                try {    //若为属性
+                        ExcelEntity property = entry.getValue();
+                        Object o = getCellValue(objectMap.get(entry.getKey()), property, objectMap);
+                        // 查看该字段是否允许导入
+                        Field field;
+                        Method method;
+
                         switch (property.getParamType()) {
 	                        //若为属性
 	                        case FIELD: {
