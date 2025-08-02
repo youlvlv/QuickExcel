@@ -31,11 +31,12 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 
 	protected Workbook xWorkbook;
 
-	protected CellStyle CustomCellStyle;
+	protected CellStyle DEFAULT_CELL_STYLE_BACK;
 
 	public ExcelModel() {
 		xWorkbook = new XSSFWorkbook();
 		DEFAULT_CELL_STYLE = xWorkbook.createCellStyle();
+		DEFAULT_CELL_STYLE_BACK = xWorkbook.createCellStyle();
 		//设置水平、垂直居中
 		DEFAULT_CELL_STYLE.setAlignment(HorizontalAlignment.CENTER);
 		DEFAULT_CELL_STYLE.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -47,6 +48,7 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 		headerFont.setFontName("宋体");
 		DEFAULT_CELL_STYLE.setFont(headerFont);
 		DEFAULT_CELL_STYLE.setWrapText(true);//是否自动换行
+		DEFAULT_CELL_STYLE_BACK.cloneStyleFrom(DEFAULT_CELL_STYLE);
 	}
 
 	public ExcelModel(Workbook workbook) {
@@ -70,6 +72,10 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 	 */
 	public void write(OutputStream stream) throws IOException {
 		xWorkbook.write(stream);
+	}
+
+	public Font font() {
+		return xWorkbook.createFont();
 	}
 
 	/**
@@ -151,9 +157,20 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 		return DEFAULT_CELL_STYLE;
 	}
 
-	public ExcelModel setDefaultStyle() {
+	public ExcelModel setDefaultStyle(CellStyle style) {
+		DEFAULT_CELL_STYLE = style;
 		return this;
 	}
+
+	/**
+	 * 回滚默认单元格格式
+	 * @return
+	 */
+	public ExcelModel rollbackDefaultStyle() {
+		DEFAULT_CELL_STYLE.cloneStyleFrom(DEFAULT_CELL_STYLE_BACK);
+		return this;
+	}
+
 
 	/**
 	 * 导出excel

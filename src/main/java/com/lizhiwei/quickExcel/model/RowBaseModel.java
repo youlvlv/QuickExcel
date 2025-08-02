@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE;
 import static org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.MOVE_AND_RESIZE;
@@ -31,7 +33,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 
 
 	public RowBaseModel(int rowNumber, Row row, SheetModel sheetModel) {
-		this.rowNumber = rowNumber;
+		this.rowNumber = Integer.parseInt(String.valueOf(rowNumber));
 		this.row = row;
 		this.sheet = sheetModel;
 
@@ -96,6 +98,21 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 		Cell cell = createCell(i);
 		cell.setCellValue(value);
 		cell.setCellStyle(style);
+		return chain;
+	}
+
+	public T setValue(int i, String value, Function<CellStyle, CellStyle> style) {
+		if (value.contains("DRAW_IMAGE::")) {
+			setValue(i, value.replace("DRAW_IMAGE::", ""), this.sheet);
+		}
+		Cell cell = createCell(i);
+		cell.setCellValue(value);
+		cell.setCellStyle(style.apply(cell.getCellStyle()));
+		return chain;
+	}
+
+	public T setMoreValue(Supplier<List<String>> valueSupplier) {
+		valueSupplier.get().forEach(this::setValue);
 		return chain;
 	}
 
@@ -234,6 +251,12 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 */
 	public T setValue(String value) {
 		this.setValue(order++, value,sheet.getExcel().getDefaultStyle());
+		return chain;
+	}
+
+
+	public T setValue(String value, Function<CellStyle, CellStyle> style) {
+		this.setValue(order++, value, style);
 		return chain;
 	}
 }
