@@ -4,10 +4,12 @@ import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 
@@ -16,22 +18,24 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 	 */
 	protected final int endRowNumber;
 
-
 	protected final Row secondRow;
 
+	protected final Sheet xSheet;
 
-	public MoreRowModel(int rowNumber, int endRowNumber, Row row, Row secondRow, SheetModel sheetModel) {
+
+	public MoreRowModel(int rowNumber, int endRowNumber, Row row, Sheet xSheet, SheetModel sheetModel) {
 		super(rowNumber, row, sheetModel);
 		super.chain = this;
-		this.endRowNumber = endRowNumber;
-		this.secondRow = secondRow;
+		this.endRowNumber = Integer.parseInt(String.valueOf(endRowNumber));
+		this.xSheet = xSheet;
+		this.secondRow = xSheet.createRow(rowNumber+1);
 	}
 
 	public RowModelSeparation getRow(int i) {
 		if (i == 0) {
 			return new RowModelSeparation(rowNumber, row, sheet, this);
 		} else if (i > 0 && i + rowNumber <= endRowNumber) {
-			return new RowModelSeparation(i + 1, secondRow, sheet, this);
+			return new RowModelSeparation(i + 1,xSheet.createRow(i + rowNumber) , sheet, this);
 		} else {
 			throw new RuntimeException("超出范围");
 		}
@@ -76,6 +80,12 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 		cell2.setCellValue("");
 		cell2.setCellStyle(sheet.getExcel().getDefaultStyle());
 		return super.setValue(value);
+	}
+
+	@Override
+	public MoreRowModel setValue(String value, Function<CellStyle, CellStyle> style) {
+		sheet.addMergedRegion(new CellRangeAddress(rowNumber, endRowNumber, order, order));
+		return super.setValue(value, style);
 	}
 
 	public MoreRowModel setValue(int i, String firstValue, String secondValue, CellStyle style) {
@@ -161,9 +171,16 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 			super(rowNumber, row, sheetModel);
 			super.chain = this;
 			this.moreRowModel = moreRowModel;
+			// 拷贝 moreRowModel.order
+			this.order = Integer.valueOf(moreRowModel.order.toString());
 		}
 
 		public MoreRowModel overSignRow() {
+			return moreRowModel;
+		}
+
+		public MoreRowModel overSignRowAndAddOrder() {
+			moreRowModel.order = this.order;
 			return moreRowModel;
 		}
 	}

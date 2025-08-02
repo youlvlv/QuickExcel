@@ -423,7 +423,7 @@ public class SheetModel extends ExcelBaseModel {
 	 * @return
 	 */
 	public MoreRowModel newMoreRow() {
-		return new MoreRowModel(rowNum, rowNum + 1, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
+		return new MoreRowModel(rowNum, rowNum + 1, xSheet.createRow(rowNum++), xSheet, this);
 	}
 
 	/**
@@ -432,7 +432,12 @@ public class SheetModel extends ExcelBaseModel {
 	 * @return
 	 */
 	public MoreRowModel newMoreRow(int rowSize) {
-		return new MoreRowModel(rowNum, rowNum + rowSize, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
+		try {
+			return new MoreRowModel(rowNum, rowNum + (rowSize-1), xSheet.createRow(rowNum++), xSheet,this);
+		} finally {
+			rowNum += (rowSize-1);
+		}
+
 	}
 
 	private Font createEquivalentFont(Font sourceFont, Workbook targetWorkbook) {
