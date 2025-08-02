@@ -180,6 +180,23 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 		return chain;
 	}
 
+	public T addPicture(InputStream inputStream, int col1, int row1, Cell cell) {
+		try {
+			Workbook workbook = this.sheet.getSheet().getWorkbook();
+			byte[] imageBytes = IOUtils.toByteArray(inputStream);
+			inputStream.close();
+			// 图片转换为BufferedImage对象
+			Drawing<?> drawing = this.sheet.getSheet().createDrawingPatriarch();
+			ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, col1, row1, col1 + 1, row1 + 1);
+			anchor.setAnchorType(DONT_MOVE_AND_RESIZE);
+			// 创建图片
+			drawing.createPicture(anchor, workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG));
+			return chain;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * @param imagePath  图片路径
 	 * @param sheetModel 工作表
