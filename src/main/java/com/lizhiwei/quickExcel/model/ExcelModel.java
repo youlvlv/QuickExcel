@@ -157,7 +157,7 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 	}
 
 	public ExcelModel setDefaultStyle(CellStyle style) {
-		DEFAULT_CELL_STYLE = style;
+//		DEFAULT_CELL_STYLE = style;
 		return this;
 	}
 
@@ -195,6 +195,7 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 	public void close() {
 		try {
 			xWorkbook.close();
+			this.rollbackDefaultStyle();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {

@@ -4,6 +4,7 @@ import com.lizhiwei.quickExcel.exception.IORunTimeException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 
 import javax.imageio.ImageIO;
