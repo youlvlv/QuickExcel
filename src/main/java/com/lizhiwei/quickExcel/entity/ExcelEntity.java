@@ -68,7 +68,7 @@ public class ExcelEntity {
 	/**
 	 * 宽度
 	 */
-	private int width;
+	private int width = 256 * 15;
 
 	public boolean isRead() {
 		return isRead;

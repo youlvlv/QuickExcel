@@ -221,7 +221,7 @@ public abstract class ExcelUtil {
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		listTitle.forEach(x -> x.setIndex(i.getAndIncrement()));
 		//判断是否有多行头
-		boolean moreRow = listTitle.stream().filter(x -> !x.getTopName().isEmpty()).findAny().orElse(null) != null;
+		boolean moreRow = listTitle.stream().filter(x -> x.getTopName() != null && !x.getTopName().isEmpty()).findAny().orElse(null) != null;
 		if (moreRow) {
 			MoreRowModel xRow0 = sheet.newMoreRow();
 			//获取所有非默认头的字段
