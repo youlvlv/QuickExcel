@@ -1,7 +1,6 @@
 package com.lizhiwei.quickExcel.entity;
 
 import com.lizhiwei.quickExcel.format.DefaultFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 
 import java.lang.annotation.*;

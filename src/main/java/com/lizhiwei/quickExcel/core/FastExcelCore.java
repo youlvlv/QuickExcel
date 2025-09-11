@@ -8,7 +8,6 @@ import com.lizhiwei.quickExcel.model.FileOperation;
 import com.lizhiwei.quickExcel.model.SheetModel;
 import org.apache.poi.ss.usermodel.CellStyle;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;

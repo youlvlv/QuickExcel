@@ -4,7 +4,6 @@ package com.lizhiwei.quickExcel.core;
 import com.lizhiwei.quickExcel.config.ExcelConfig;
 import com.lizhiwei.quickExcel.entity.*;
 import com.lizhiwei.quickExcel.format.DefaultFormat;
-import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.MoreRowModel;
 import com.lizhiwei.quickExcel.model.RowModel;

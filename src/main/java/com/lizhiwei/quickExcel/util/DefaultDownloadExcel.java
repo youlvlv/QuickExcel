@@ -1,13 +1,10 @@
 package com.lizhiwei.quickExcel.util;
 
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
-import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.FileOperation;
 import com.lizhiwei.quickExcel.model.HttpServletResponseModel;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.*;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;

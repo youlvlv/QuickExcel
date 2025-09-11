@@ -1,8 +1,6 @@
 package com.lizhiwei.quickExcel.model;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.IndexedColorMap;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 
 public class ExcelStyle {
 
