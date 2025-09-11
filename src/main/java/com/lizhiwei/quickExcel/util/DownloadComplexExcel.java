@@ -2,8 +2,9 @@ package com.lizhiwei.quickExcel.util;
 
 
 import com.lizhiwei.quickExcel.model.ExcelModel;
+import com.lizhiwei.quickExcel.model.HttpServletResponseJavaxModel;
+import com.lizhiwei.quickExcel.model.HttpServletResponseSpring6Model;
 
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 通过链式方式构建Excel
@@ -25,8 +26,14 @@ public class DownloadComplexExcel {
      * @param fileName
      * @return
      */
-    public static DefaultDownloadExcel createDownload(HttpServletResponse response, String fileName) {
-        return new DefaultDownloadExcel(response, fileName);
+    public static DefaultDownloadExcel createDownload(Object response, String fileName) {
+        try {
+            Class.forName("jakarta.servlet.http.HttpServletResponse");
+            return new DefaultDownloadExcel(HttpServletResponseSpring6Model.of(response), fileName);
+        } catch (ClassNotFoundException e) {
+            return new DefaultDownloadExcel(HttpServletResponseJavaxModel.of(response), fileName);
+        }
+
     }
 
 

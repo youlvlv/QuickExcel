@@ -4,14 +4,11 @@ import cn.idev.excel.FastExcel;
 import cn.idev.excel.support.ExcelTypeEnum;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.Since;
+import com.lizhiwei.quickExcel.model.FileOperation;
 import com.lizhiwei.quickExcel.model.SheetModel;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.CellStyle;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -27,8 +24,8 @@ public class FastExcelCore extends ExcelUtil {
                 .mapToObj(i -> list.subList(i, Math.min(i + chunkSize, list.size())));
     }
 
-    public <T> void createExcel(String fileName, HttpServletResponse response, Class<T> entity, List<T> listContent) {
-        try (OutputStream outputStream = response.getOutputStream()) {
+    public <T> void createExcel(FileOperation operation, Class<T> entity, List<T> listContent) {
+        operation.run(outputStream -> {
             List<ExcelEntity> top = getExcelEntities(entity);
             var sheet = FastExcel.write(outputStream).excelType(ExcelTypeEnum.XLSX).sheet();
             AtomicInteger index = new AtomicInteger(0);
@@ -56,12 +53,8 @@ public class FastExcelCore extends ExcelUtil {
                     return list;
                 });
             });
-            //作用：在前端作用显示为调用浏览器下载弹窗
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
-            response.setContentType("application/octet-stream");
-        } catch (IOException ignored) {
+        });
 
-        }
 
     }
 

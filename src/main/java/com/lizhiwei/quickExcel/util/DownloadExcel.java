@@ -140,66 +140,39 @@ public class DownloadExcel extends ExcelBaseModel {
 	 * @param listContent   列表
 	 * @param <T>           实体类
 	 */
-    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity, List<T> listContent) {
-        setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, IndexType.NULL, null);
+    public static <T> void setExcelProperty(FileOperation operation, Class<T> entity, List<T> listContent) {
+        setExcelProperty(operation, entity, listContent, IndexType.NULL, null);
     }
 
-	/**
-	 * 生成EXCEL表
-	 *
-	 * @param fileNameParam 文件名
-	 * @param response      下载流
-	 * @param entity        列表实体类
-	 * @param listContent   列表
-	 * @param <T>           实体类
-	 */
-	public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity,
-	                                        List<T> listContent, IndexType type) {
-		setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, type, null);
-	}
 
-
-	/**
-	 * 生成EXCEL表
-	 *
-	 * @param fileNameParam 文件名
-	 * @param response      下载流
-	 * @param entity        列表实体类
-	 * @param listContent   列表
-	 * @param <T>           实体类
-	 */
-	public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity,
-	                                        List<T> listContent, IndexType type, Consumer<CellStyle> styleConsumer) {
-		setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, type, styleConsumer);
-    }
 
     /**
      * 生成EXCEL表
      *
-     * @param fileNameParam 文件名
+     * @param operation   文件操作
      * @param response      下载流
      * @param entity        实体类
      * @param listContent   列表
      * @param styleConsumer 自定义样式
      * @param <T>
      */
-    public static <T> void setExcelProperty(String fileNameParam, HttpServletResponse response, Class<T> entity,
+    public static <T> void setExcelProperty(FileOperation operation, Class<T> entity,
                                             List<T> listContent, Consumer<CellStyle> styleConsumer) {
-        setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, IndexType.NULL, styleConsumer);
+        setExcelProperty(operation, entity, listContent, IndexType.NULL, styleConsumer);
     }
 
 
-	public static <T> void createExcel(String fileNameParam, HttpServletResponse response, Class<T> entity,
+	public static <T> void createExcel(FileOperation operation, Class<T> entity,
 	                                   List<T> listContent) {
-		setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, IndexType.NULL);
+		setExcelProperty(operation, entity, listContent, IndexType.NULL);
 	}
 
-	public static <T> void createExcel(String fileNameParam, HttpServletResponse response, Class<T> entity,
+	public static <T> void createExcel(FileOperation operation, Class<T> entity,
 	                                   List<T> listContent, WriteWorkType writeWorkType) {
 
 		switch (writeWorkType) {
-			case QuickExcel -> createExcel(fileNameParam, response, entity, listContent);
-			case FastExcel -> FAST_EXCEL_CORE.createExcel(fileNameParam, response, entity, listContent);
+		case QuickExcel -> createExcel(operation, entity, listContent);
+		case FastExcel -> FAST_EXCEL_CORE.createExcel(operation, entity, listContent);
 		}
 	}
 

@@ -178,7 +178,13 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 	 * @return
 	 */
 	public ExcelModel exportExcel(FileOperation operation) {
-		operation.run(this);
+        operation.run(outputStream -> {
+            try {
+                this.write(outputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 		return this;
 	}
 
@@ -188,7 +194,13 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 	 * @param operation
 	 */
 	public void exportExcelAndClose(FileOperation operation) {
-		operation.run(this);
+        operation.run(outputStream -> {
+            try {
+                this.write(outputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 		this.close();
 	}
 
