@@ -1,7 +1,9 @@
 package com.lizhiwei.quickExcel.util;
 
+import com.lizhiwei.quickExcel.core.FastExcelCore;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.IndexType;
+import com.lizhiwei.quickExcel.entity.WriteWorkType;
 import com.lizhiwei.quickExcel.model.ExcelBaseModel;
 import com.lizhiwei.quickExcel.model.ExcelModel;
 import com.lizhiwei.quickExcel.model.FileOperation;
@@ -19,6 +21,8 @@ import java.util.function.Consumer;
 public class DownloadExcel extends ExcelBaseModel {
 
 	private static final SimpleDateFormat df = new SimpleDateFormat("MM月dd日");
+
+	private static final FastExcelCore FAST_EXCEL_CORE = new FastExcelCore();
 
 	/**
 	 * 生成EXCEL表
@@ -183,6 +187,21 @@ public class DownloadExcel extends ExcelBaseModel {
                                             List<T> listContent, Consumer<CellStyle> styleConsumer) {
         setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, IndexType.NULL, styleConsumer);
     }
+
+
+	public static <T> void createExcel(String fileNameParam, HttpServletResponse response, Class<T> entity,
+	                                   List<T> listContent) {
+		setExcelProperty(new DefaultDownloadExcel(response, fileNameParam), entity, listContent, IndexType.NULL);
+	}
+
+	public static <T> void createExcel(String fileNameParam, HttpServletResponse response, Class<T> entity,
+	                                   List<T> listContent, WriteWorkType writeWorkType) {
+
+		switch (writeWorkType) {
+			case QuickExcel -> createExcel(fileNameParam, response, entity, listContent);
+			case FastExcel -> FAST_EXCEL_CORE.createExcel(fileNameParam, response, entity, listContent);
+		}
+	}
 
 	private DownloadExcel() {
 	}

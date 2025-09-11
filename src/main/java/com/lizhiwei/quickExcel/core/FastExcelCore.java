@@ -1,0 +1,72 @@
+package com.lizhiwei.quickExcel.core;
+
+import cn.idev.excel.FastExcel;
+import cn.idev.excel.support.ExcelTypeEnum;
+import com.lizhiwei.quickExcel.entity.ExcelEntity;
+import com.lizhiwei.quickExcel.entity.Since;
+import com.lizhiwei.quickExcel.model.SheetModel;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.CellStyle;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+/**
+ * FastExcel 抽象层，提供 QuickExcel 转换至 FastExcel
+ */
+public class FastExcelCore extends ExcelUtil {
+    public static <T> Stream<List<T>> chunkedStream(List<T> list, int chunkSize) {
+        return IntStream.iterate(0, i -> i + chunkSize)
+                .limit((list.size() + chunkSize - 1) / chunkSize)
+                .mapToObj(i -> list.subList(i, Math.min(i + chunkSize, list.size())));
+    }
+
+    public <T> void createExcel(String fileName, HttpServletResponse response, Class<T> entity, List<T> listContent) {
+        try (OutputStream outputStream = response.getOutputStream()) {
+            List<ExcelEntity> top = getExcelEntities(entity);
+            var sheet = FastExcel.write(outputStream).excelType(ExcelTypeEnum.XLSX).sheet();
+            AtomicInteger index = new AtomicInteger(0);
+            List<List<String>> head = Collections.singletonList(top.stream().flatMap(x -> Stream.of(x.getTitle())).toList());
+            sheet.table(index.get()).head(head);
+            chunkedStream(listContent, 10000).forEach((x) -> {
+                sheet.table(index.incrementAndGet()).doWrite(() -> {
+                    List<Map<String, String>> list = new ArrayList<>();
+                    for (T t : x) {
+                        Map<String, String> map = new HashMap<>();
+                        //获取类属性
+                        for (ExcelEntity excelEntity : top) {
+                            String value = null;
+                            try {
+                                value = getParamString(excelEntity, t);
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                            //循环设置每列的值
+                            map.put(excelEntity.getTitle(), value);
+                            break;
+                        }
+                        list.add(map);
+                    }
+                    return list;
+                });
+            });
+            //作用：在前端作用显示为调用浏览器下载弹窗
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+            response.setContentType("application/octet-stream");
+        } catch (IOException ignored) {
+
+        }
+
+    }
+
+    @Override
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
+        return null;
+    }
+}
