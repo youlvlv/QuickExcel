@@ -122,4 +122,11 @@ public @interface Excel {
 	 * @return
 	 */
 	boolean isPicture() default false;
+    
+    /**
+     * 导入时，数据校验规则
+     *
+     * @return
+     */
+    Class<? extends Rule>[] rules() default {};
 }
