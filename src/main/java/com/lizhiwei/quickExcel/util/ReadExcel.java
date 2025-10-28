@@ -5,6 +5,7 @@ import com.lizhiwei.quickExcel.config.ExcelConfig;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.PictureMap;
 import com.lizhiwei.quickExcel.entity.ReadErrorInfo;
+import com.lizhiwei.quickExcel.entity.Rule;
 import com.lizhiwei.quickExcel.exception.ExcelReadException;
 import com.lizhiwei.quickExcel.exception.ExcelValueException;
 import com.lizhiwei.quickExcel.exception.IORunTimeException;
@@ -212,6 +213,9 @@ public class ReadExcel extends ExcelBaseModel {
 	                try {    //若为属性
                         ExcelEntity property = entry.getValue();
                         Object o = getCellValue(objectMap.get(entry.getKey()), property, objectMap);
+                        for (Rule rule : property.getRules()) {
+                            rule.rule(o);
+                        }
                         // 查看该字段是否允许导入
                         Field field;
                         Method method;

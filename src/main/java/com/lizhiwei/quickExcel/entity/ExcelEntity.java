@@ -75,6 +75,8 @@ public class ExcelEntity {
 	 */
 	private int width = 256 * 15;
 
+    private Rule[] rules;
+
 	public boolean isRead() {
 		return isRead;
 	}
@@ -200,10 +202,48 @@ public class ExcelEntity {
 		return "normal";
 	}
 
-	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
+    public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
 		this.title = title;
 		this.value = value;
 		this.format = format;
+	}
+
+	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
+        this.title = e.value();
+        this.width = e.width();
+        this.property = value;
+        this.format = format;
+        this.index = e.index();
+        this.topName = e.topName();
+        this.aliasProperty = e.aliasProperty();
+        if (e.secondName() != DefaultTopName.class) {
+            this.topName = getTopNameInt(e.secondName()).value();
+        }
+        if (!e.isPicture()) {
+            this.paramType = e.type();
+        } else {
+            this.paramType = ParamType.IMAGE;
+        }
+        // 1. 获取 Class 数组
+        Class<? extends Rule>[] ruleClasses = e.rules();
+
+        // 2. 转换为 Rule 实例数组
+        Rule[] rules = new Rule[ruleClasses.length];
+        for (int i = 0; i < ruleClasses.length; i++) {
+            try {
+                // 假设 Rule 有无参构造函数
+                rules[i] = ruleClasses[i].getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException |
+                     InvocationTargetException | NoSuchMethodException ex) {
+                throw new RuntimeException("Failed to instantiate rule: " + ruleClasses[i], ex);
+            }
+        }
+        this.isRead = e.isRead();
+        this.isWrite = e.isWrite();
+        this.type = clazz;
+        this.alias = e.alias();
+        this.isNotNull = e.isNotNull();
+        this.accuracy = e.accuracy();
 	}
 
 	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName, ParamType type) {
@@ -229,29 +269,9 @@ public class ExcelEntity {
 		this.isNotNull = isNotNull;
 	}
 
-	public ExcelEntity(Excel e, ExcelFormatBase<?> format, String value, Class clazz) {
-        this.title = e.value();
-        this.width = e.width();
-        this.property = value;
-        this.format = format;
-        this.index = e.index();
-        this.topName = e.topName();
-        this.aliasProperty = e.aliasProperty();
-        if (e.secondName() != DefaultTopName.class) {
-            this.topName = getTopNameInt(e.secondName()).value();
-        }
-        if (!e.isPicture()) {
-            this.paramType = e.type();
-        } else {
-            this.paramType = ParamType.IMAGE;
-        }
-        this.isRead = e.isRead();
-        this.isWrite = e.isWrite();
-        this.type = clazz;
-        this.alias = e.alias();
-        this.isNotNull = e.isNotNull();
-        this.accuracy = e.accuracy();
-	}
+    public Rule[] getRules() {
+        return rules;
+    }
 
 	public ExcelEntity(ParamType index) {
 		if (index == ParamType.INDEX) {
