@@ -1,5 +1,7 @@
 package com.lizhiwei.quickExcel.entity;
 
+import com.lizhiwei.quickExcel.exception.ExcelValueException;
+
 /**
  * 导入时校验规则
  *
@@ -7,5 +9,5 @@ package com.lizhiwei.quickExcel.entity;
  */
 public interface Rule<T> {
 
-	void rule(T row);
+    void rule(T t) throws ExcelValueException;
 }

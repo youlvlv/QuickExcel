@@ -6,6 +6,10 @@ import java.io.OutputStream;
 public interface HttpServletResponseModel {
 
 
-    OutputStream apply(String fileName) throws IOException;
+    OutputStream getOutputStream(String fileName) throws IOException;
+
+    interface HttpServletResponseModelFactory {
+        HttpServletResponseModel of(Object response);
+    }
 
 }
