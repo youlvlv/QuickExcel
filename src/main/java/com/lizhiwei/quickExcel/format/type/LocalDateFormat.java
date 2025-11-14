@@ -43,7 +43,7 @@ public class LocalDateFormat implements ExcelFormatByType<LocalDate> {
 			}
 		});
 		if (formatter.get() == null) {
-			return null;
+            throw new ExcelValueException("当前日期格式不正确");
 		}
 		try {
 			return LocalDate.parse(v, formatter.get());
