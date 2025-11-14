@@ -5,6 +5,8 @@ import com.lizhiwei.quickExcel.format.ExcelFormat;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 导出Excel实体类
@@ -75,7 +77,7 @@ public class ExcelEntity {
 	 */
 	private int width = 256 * 15;
 
-    private Rule[] rules;
+    private Rule<?>[] rules;
 
 	public boolean isRead() {
 		return isRead;
@@ -225,10 +227,10 @@ public class ExcelEntity {
             this.paramType = ParamType.IMAGE;
         }
         // 1. 获取 Class 数组
-        Class<? extends Rule>[] ruleClasses = e.rules();
+        Class<? extends Rule<?>>[] ruleClasses = e.rules();
 
         // 2. 转换为 Rule 实例数组
-        Rule[] rules = new Rule[ruleClasses.length];
+        Rule<?>[] rules = new Rule[ruleClasses.length];
         for (int i = 0; i < ruleClasses.length; i++) {
             try {
                 // 假设 Rule 有无参构造函数
@@ -238,6 +240,7 @@ public class ExcelEntity {
                 throw new RuntimeException("Failed to instantiate rule: " + ruleClasses[i], ex);
             }
         }
+        this.rules = rules;
         this.isRead = e.isRead();
         this.isWrite = e.isWrite();
         this.type = clazz;
@@ -269,8 +272,8 @@ public class ExcelEntity {
 		this.isNotNull = isNotNull;
 	}
 
-    public Rule[] getRules() {
-        return rules;
+    public List<Rule<?>> getRules() {
+        return List.of(Optional.of(rules).orElse(new Rule<?>[0]));
     }
 
 	public ExcelEntity(ParamType index) {

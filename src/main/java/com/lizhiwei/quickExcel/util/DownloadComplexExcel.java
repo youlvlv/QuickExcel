@@ -2,8 +2,7 @@ package com.lizhiwei.quickExcel.util;
 
 
 import com.lizhiwei.quickExcel.model.ExcelModel;
-import com.lizhiwei.quickExcel.model.HttpServletResponseJavaxModel;
-import com.lizhiwei.quickExcel.model.HttpServletResponseSpring6Model;
+import com.lizhiwei.quickExcel.model.HttpServletResponseModel;
 
 
 /**
@@ -27,11 +26,23 @@ public class DownloadComplexExcel {
      * @return
      */
     public static DefaultDownloadExcel createDownload(Object response, String fileName) {
+        HttpServletResponseModel model;
         try {
             Class.forName("jakarta.servlet.http.HttpServletResponse");
-            return new DefaultDownloadExcel(HttpServletResponseSpring6Model.of(response), fileName);
+            model = ConditionalProxyFactory.createProxyIfAvailable(
+                    Class.forName("com.lizhiwei.quickExcel.model.HttpServletResponseSpring6Model$HttpServletResponseSpring6ModelFactory"),
+                    HttpServletResponseModel.HttpServletResponseModelFactory.class).of(response);
+            return new DefaultDownloadExcel(model, fileName);
         } catch (ClassNotFoundException e) {
-            return new DefaultDownloadExcel(HttpServletResponseJavaxModel.of(response), fileName);
+            try {
+                model = ConditionalProxyFactory.createProxyIfAvailable(
+                        Class.forName("com.lizhiwei.quickExcel.model.HttpServletResponseJavaxModel$HttpServletResponseJavaxModelFactory"),
+                        HttpServletResponseModel.HttpServletResponseModelFactory.class).of(response);
+                return new DefaultDownloadExcel(model, fileName);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            }
+
         }
 
     }

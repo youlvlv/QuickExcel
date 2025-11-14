@@ -30,7 +30,7 @@ class DefaultDownloadExcel implements FileOperation {
 		String fileName = path.substring(path.lastIndexOf("/") + 1);
 		File file = new File(path);
 		try (BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()));
-		     OutputStream outputStream = response.apply(fileName);) {
+             OutputStream outputStream = response.getOutputStream(fileName)) {
 			byte[] buffer = new byte[1024];
 			int len;
 			while ((len = inputStream.read(buffer)) != -1) { /** 将流中内容写出去 .*/

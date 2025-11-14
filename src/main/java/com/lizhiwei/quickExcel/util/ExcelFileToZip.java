@@ -60,7 +60,7 @@ public class ExcelFileToZip {
         name = name + ".zip";
         File zip = new File(path, name);
         toZip(files, zip);
-        try (OutputStream outputStream = response.apply(name)){
+        try (OutputStream outputStream = response.getOutputStream(name)) {
             BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(zip.toPath()));
             byte[] buffer = new byte[1024];
             int len;
