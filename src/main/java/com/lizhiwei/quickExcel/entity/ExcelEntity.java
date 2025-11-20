@@ -231,6 +231,7 @@ public class ExcelEntity {
 
         // 2. 转换为 Rule 实例数组
         Rule<?>[] rules = new Rule[ruleClasses.length];
+        this.rules = rules;
         for (int i = 0; i < ruleClasses.length; i++) {
             try {
                 // 假设 Rule 有无参构造函数
