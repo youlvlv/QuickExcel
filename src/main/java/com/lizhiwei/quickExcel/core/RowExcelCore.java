@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,8 @@ public class RowExcelCore extends ExcelUtil {
 
 
 	@Override
-	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle,
+                                          List<Since> since, CellStyle cs, short ss, BiConsumer<T, RowModel> row) {
 		//去掉所有禁止导出的字段
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		for (int i = 0; i < listTitle.size(); i++) {
@@ -68,6 +70,7 @@ public class RowExcelCore extends ExcelUtil {
 							}
 						}
 					}
+                    row.accept(t, xRow);
 				}
 				if (since != null) {
 					for (Since s : since) {

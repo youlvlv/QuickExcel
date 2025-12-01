@@ -5,6 +5,7 @@ import com.lizhiwei.quickExcel.entity.Since;
 import com.lizhiwei.quickExcel.exception.ExcelValueException;
 import com.lizhiwei.quickExcel.format.ExcelFormatBase;
 import com.lizhiwei.quickExcel.model.ColumnModel;
+import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
 import org.apache.poi.ss.usermodel.CellStyle;
 
@@ -13,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,8 @@ public class ColumnExcelCore extends ExcelUtil {
 
 
 	@Override
-	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs,
+                                          short ss, BiConsumer<T, RowModel> row) {
 		//去掉所有禁止导出的字段
 		listTitle = listTitle.stream().filter(ExcelEntity::isWrite).collect(Collectors.toList());
 		int start = sheet.getRowNum();

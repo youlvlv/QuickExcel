@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -282,6 +283,27 @@ public abstract class ExcelUtil {
 		return this.setSheetContent(sheet, listContent, listTitle, since, cs, (short) 0);
 	}
 
+
+    /**
+     * 配置(赋值)表格内容部分
+     *
+     * @param sheet       工作表
+     * @param listContent 内容
+     * @param listTitle   表头
+     * @param since       合并表格
+     */
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle,
+                                          List<Since> since, BiConsumer<T, RowModel> row) {
+        //创建内容样式（头部以下的样式）
+        CellStyle cs = sheet.getExcel().getWorkbook().createCellStyle();
+        cs.cloneStyleFrom(sheet.getExcel().getDefaultStyle());
+        cs.setWrapText(true);
+        //设置水平垂直居中
+        cs.setAlignment(HorizontalAlignment.CENTER);
+        cs.setVerticalAlignment(VerticalAlignment.CENTER);
+        return this.setSheetContent(sheet, listContent, listTitle, since, cs, (short) 0, row);
+    }
+
 	/**
 	 * 配置(赋值)表格内容部分
 	 *
@@ -291,9 +313,28 @@ public abstract class ExcelUtil {
 	 * @param since       合并表格
 	 * @param cs          样式
 	 */
-	public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs) {
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle,
+                                          List<Since> since, CellStyle cs) {
 		return this.setSheetContent(sheet, listContent, listTitle, since, cs, (short) 0);
 	}
+
+    /**
+     * 配置(赋值)表格内容部分
+     *
+     * @param sheet       工作表
+     * @param listContent 内容
+     * @param listTitle   表头
+     * @param since       合并表格
+     * @param cs          样式
+     * @param ss          行高
+     * @param <T>         实体类
+     * @return 返回
+     */
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent,
+                                          List<ExcelEntity> listTitle, List<Since> since, CellStyle cs,
+                                          short ss) {
+        return this.setSheetContent(sheet, listContent, listTitle, since, cs, ss, null);
+    }
 
 
 	/**
@@ -308,5 +349,7 @@ public abstract class ExcelUtil {
 	 * @param <T>         实体类
 	 * @return 返回
 	 */
-	public abstract  <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss);
+    public abstract <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent,
+                                                   List<ExcelEntity> listTitle, List<Since> since, CellStyle cs,
+                                                   short ss, BiConsumer<T, RowModel> row);
 }

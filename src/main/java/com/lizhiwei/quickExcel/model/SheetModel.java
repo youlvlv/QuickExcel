@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class SheetModel extends ExcelBaseModel {
 	private static final Logger log = LogManager.getLogger(SheetModel.class);
@@ -143,6 +144,20 @@ public class SheetModel extends ExcelBaseModel {
 		List<ExcelEntity> list = getEntities(entity);
 		return util().setSheetContent(this, listContent, list, null);
 	}
+
+
+    /**
+     * 录入数据信息
+     *
+     * @param entity      实体类class
+     * @param listContent 数据
+     * @param <T>
+     * @return
+     */
+    public <T> SheetModel createContent(Class<T> entity, List<T> listContent, BiConsumer<T, RowModel> row) {
+        List<ExcelEntity> list = getEntities(entity);
+        return util().setSheetContent(this, listContent, list, null, row);
+    }
 
 	/**
 	 * 录入数据信息
@@ -425,7 +440,7 @@ public class SheetModel extends ExcelBaseModel {
 	 * @return
 	 */
 	public MoreRowModel newMoreRow() {
-		return new MoreRowModel(rowNum, rowNum + 1, xSheet.createRow(rowNum++), xSheet, this);
+        return new MoreRowModel(rowNum, rowNum + 1, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
 	}
 
 	/**
@@ -434,12 +449,7 @@ public class SheetModel extends ExcelBaseModel {
 	 * @return
 	 */
 	public MoreRowModel newMoreRow(int rowSize) {
-		try {
-			return new MoreRowModel(rowNum, rowNum + (rowSize-1), xSheet.createRow(rowNum++), xSheet,this);
-		} finally {
-			rowNum += (rowSize-1);
-		}
-
+        return new MoreRowModel(rowNum, rowNum + rowSize, xSheet.createRow(rowNum++), xSheet.createRow(rowNum++), this);
 	}
 
 	private Font createEquivalentFont(Font sourceFont, Workbook targetWorkbook) {
