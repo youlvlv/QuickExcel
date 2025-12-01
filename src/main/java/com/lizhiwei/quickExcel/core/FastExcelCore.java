@@ -5,11 +5,13 @@ import cn.idev.excel.support.ExcelTypeEnum;
 import com.lizhiwei.quickExcel.entity.ExcelEntity;
 import com.lizhiwei.quickExcel.entity.Since;
 import com.lizhiwei.quickExcel.model.FileOperation;
+import com.lizhiwei.quickExcel.model.RowModel;
 import com.lizhiwei.quickExcel.model.SheetModel;
 import org.apache.poi.ss.usermodel.CellStyle;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -58,7 +60,7 @@ public class FastExcelCore extends ExcelUtil {
     }
 
     @Override
-    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss) {
+    public <T> SheetModel setSheetContent(SheetModel sheet, List<T> listContent, List<ExcelEntity> listTitle, List<Since> since, CellStyle cs, short ss, BiConsumer<T, RowModel> row) {
         return null;
     }
 }
