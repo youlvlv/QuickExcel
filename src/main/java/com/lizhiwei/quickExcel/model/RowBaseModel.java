@@ -276,6 +276,18 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	}
 
 
+    /**
+     * 设置值
+     *
+     * @param value 内容
+     * @return 返回
+     */
+    public T setValue(String value, CellStyle cs) {
+        this.setValue(order++, value, cs);
+        return chain;
+    }
+
+
 	public T setValue(String value, Function<CellStyle, CellStyle> style) {
 		this.setValue(order++, value, style);
 		return chain;

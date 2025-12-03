@@ -40,18 +40,17 @@ public class RowExcelCore extends ExcelUtil {
 					//获取类属性
 					Field field;
 					Method getter;
-					int order = 0;
 					for (ExcelEntity excelEntity : listTitle) {
 						switch (excelEntity.getParamType()) {
 							case INDEX: {
-								xRow.setValue(order++, String.valueOf(sheet.getNum()), cs);
+                                xRow.setValue(String.valueOf(sheet.getNum()), cs);
 								break;
 							}
 							// 属性
 							case FIELD: {
 								String value = getParamString(excelEntity, t);
 								//循环设置每列的值
-								xRow.setValue(order++, value, cs);
+                                xRow.setValue(value, cs);
 								break;
 							}
 							// 方法
@@ -65,7 +64,7 @@ public class RowExcelCore extends ExcelUtil {
 								ExcelFormatBase format = excelEntity.getFormat();
 								value = format.WriterToExcel(o);
 								//循环设置每列的值
-								xRow.setValue(order++, value, cs);
+                                xRow.setValue(value, cs);
 								break;
 							}
 						}
