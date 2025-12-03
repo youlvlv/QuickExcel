@@ -96,7 +96,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 	 * @return
 	 */
 	public T setValue(int i, String value, CellStyle style) {
-		if (value.contains("DRAW_IMAGE::")) {
+        if (value != null && value.contains("DRAW_IMAGE::")) {
 			setValue(i, value.replace("DRAW_IMAGE::", ""), this.sheet);
 		}
 		Cell cell = createCell(i);
