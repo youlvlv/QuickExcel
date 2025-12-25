@@ -69,7 +69,9 @@ public class RowExcelCore extends ExcelUtil {
 							}
 						}
 					}
-                    row.accept(t, xRow);
+					if (row != null) {
+						row.accept(t, xRow);
+					}
 				}
 				if (since != null) {
 					for (Since s : since) {
