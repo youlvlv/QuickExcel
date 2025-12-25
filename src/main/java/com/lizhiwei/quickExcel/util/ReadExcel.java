@@ -158,7 +158,7 @@ public class ReadExcel extends ExcelBaseModel {
                     for (Object o : draw) {
                         if (o instanceof Picture picture) {
                             ClientAnchor ca = picture.getClientAnchor();
-                            pictureMap.put(ca.getRow1(), picture);
+                            pictureMap.put(new PictureMap.PictureKey(ca.getRow1(), (int) ca.getCol1()), picture);
                         }
                     }
                 });
@@ -253,7 +253,7 @@ public class ReadExcel extends ExcelBaseModel {
                             }
 
                             case IMAGE: {
-                                Picture picture = pictureMap.get(row.getRowNum(), pictureIndex++);
+                                Picture picture = pictureMap.get(new PictureMap.PictureKey(row.getRowNum(), property.getValue()));
                                 if (picture == null) {
                                     break;
                                 }
