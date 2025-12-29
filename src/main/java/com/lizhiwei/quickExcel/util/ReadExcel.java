@@ -536,14 +536,24 @@ public class ReadExcel extends ExcelBaseModel {
                     //判断是否为日期类型
                     cellValue = sdf.format(cell.getDateCellValue());
                 } else {
-                    String msg = String.valueOf(cell.getNumericCellValue());
-                    if (msg.contains(".0")) {
-                        cellValue = checkNumber(String.valueOf(cell.getNumericCellValue()));
+                    double numericValue = cell.getNumericCellValue();
+
+                    // ✅ 正确判断：是否为数学意义上的整数（如 163.0, -50.0）
+                    if (numericValue == Math.floor(numericValue) && !Double.isInfinite(numericValue)) {
+                        // 是整数，直接转为 long 避免 .0
+                        cellValue = String.valueOf((long) numericValue);
                     } else {
+                        // 有真实小数部分（如 163.008, 123.45）
                         if (accuracy == -1) {
-                            cellValue = String.valueOf(cell.getNumericCellValue());
+                            // 保留原始有效数字，自动去除无意义的尾随零
+                            cellValue = new BigDecimal(String.valueOf(numericValue))
+                                    .stripTrailingZeros()
+                                    .toPlainString();
                         } else {
-                            cellValue = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(accuracy, RoundingMode.HALF_UP).toString();
+                            // 按指定精度四舍五入
+                            cellValue = BigDecimal.valueOf(numericValue)
+                                    .setScale(accuracy, RoundingMode.HALF_UP)
+                                    .toPlainString(); // 使用 toPlainString() 避免科学计数法
                         }
                     }
                 }
