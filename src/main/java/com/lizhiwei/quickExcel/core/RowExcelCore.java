@@ -76,7 +76,7 @@ public class RowExcelCore extends ExcelUtil {
 				if (since != null) {
 					for (Since s : since) {
 						int i = listTitle.stream().filter(x -> x.getProperty().equals(s.getTitle())).findFirst().get().getIndex();
-						sheet.addMergedRegion(new CellRangeAddress(start, sheet.getRowNum() - 1, i, i));
+						sheet.addMergedRegion(new CellRangeAddress( s.getStartRow(), s.getStartRow()+s.getRow()-1, i, i));
 					}
 				}
 
