@@ -228,6 +228,23 @@ public class SheetModel extends ExcelBaseModel {
 		return sheetModel;
 	}
 
+	/**
+	 * 录入数据信息(可传修改后的列集合)
+	 *
+	 * @param list      List<ExcelEntity>
+	 * @param listContent 数据
+	 * @param since       合并
+	 * @param <T>
+	 * @return
+	 */
+	public <T> SheetModel createContent(List<ExcelEntity> list, List<T> listContent, Since... since) {
+		SheetModel sheetModel = null;
+		if (operationalModel == OperationalModel.ROW) {
+			sheetModel = util().setSheetContent(this, listContent, list, Arrays.asList(since));
+		}
+		return sheetModel;
+	}
+
 	// 获取merge对象
 	public static CellRangeAddress getMergedRegion(Sheet sheet, int rowNum,
 	                                               short cellNum) {
