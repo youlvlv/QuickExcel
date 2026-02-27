@@ -79,6 +79,8 @@ public class ExcelEntity {
 
     private Rule<?>[] rules;
 
+	private ImageFileSaveFunction imageFileSaveFunction;
+
 	public boolean isRead() {
 		return isRead;
 	}
@@ -204,7 +206,11 @@ public class ExcelEntity {
 		return "normal";
 	}
 
-    public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
+	public ImageFileSaveFunction getImageFileSaveFunction() {
+		return imageFileSaveFunction;
+	}
+
+	public ExcelEntity(Integer value, String title, ExcelFormat<?> format) {
 		this.title = title;
 		this.value = value;
 		this.format = format;
@@ -248,6 +254,13 @@ public class ExcelEntity {
         this.alias = e.alias();
         this.isNotNull = e.isNotNull();
         this.accuracy = e.accuracy();
+		if (e.excelImgInfo() != DefaultImageFileSaveFunction.class) {
+			try {
+				this.imageFileSaveFunction = e.excelImgInfo().getDeclaredConstructor().newInstance();
+			} catch (Exception ex) {
+				throw new RuntimeException("Failed to instantiate imageFileSaveFunction: " + e.excelImgInfo(), ex);
+			}
+		}
 	}
 
 	public ExcelEntity(String value, String title, ExcelFormat<?> format, int index, Class<? extends TopName> topName, ParamType type) {

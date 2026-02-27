@@ -1,5 +1,6 @@
 package com.lizhiwei.quickExcel.config;
 
+import com.lizhiwei.quickExcel.entity.ImageFileSaveFunction;
 import com.lizhiwei.quickExcel.format.*;
 
 import java.io.InputStream;
@@ -15,7 +16,23 @@ public class ExcelConfig {
 	private static final HashMap<Class<?>, ExcelFormatBase<?>> formatCache = new HashMap<>() {{
 		put(DefaultFormat.class, new DefaultFormat());
 	}};
-	private static BiFunction<InputStream, String, String> imageFileFunction;
+	private static ImageFileSaveFunction imageFileFunction;
+	
+	/**
+	 * Excel 读取引擎版本
+	 */
+	public enum ReadEngine {
+		/**
+		 * V2 引擎 - 基于 Apache POI（默认）
+		 */
+		V2,
+		/**
+		 * V3 引擎 - 基于 SAX/DOM 解析，内存占用更低
+		 */
+		V3
+	}
+	
+	private static ReadEngine defaultReadEngine = ReadEngine.V2;
 
 	static public HashMap<Class<?>, ExcelFormatBase<?>> getFormatCache() {
 		return new HashMap<>(formatCache);
@@ -53,12 +70,28 @@ public class ExcelConfig {
 	}
 
 
-	public static void createExcelImageSaveFunction(BiFunction<InputStream, String, String> imageFilePath) {
+	public static void createExcelImageSaveFunction(ImageFileSaveFunction imageFilePath) {
 		imageFileFunction = imageFilePath;
 	}
 
 
-	public static BiFunction<InputStream, String, String> getImageFileFunction() {
+	public static ImageFileSaveFunction getImageFileFunction() {
 		return Optional.ofNullable(imageFileFunction).orElse((imageFilePath, type) -> "");
+	}
+	
+	/**
+	 * 设置默认的 Excel 读取引擎
+	 * @param engine 引擎版本（V2 或 V3）
+	 */
+	public static void setDefaultReadEngine(ReadEngine engine) {
+		defaultReadEngine = engine;
+	}
+	
+	/**
+	 * 获取默认的 Excel 读取引擎
+	 * @return 当前默认引擎
+	 */
+	public static ReadEngine getDefaultReadEngine() {
+		return defaultReadEngine;
 	}
 }

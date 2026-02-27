@@ -40,12 +40,9 @@ public class ExcelBaseModel {
 	}
 
 	protected ExcelUtil util() {
-		switch (operationalModel) {
-			case COLUMN:
-				return columnCore;
-			case ROW:
-			default:
-				return rowCore;
-		}
+        return switch (operationalModel) {
+            case COLUMN -> columnCore;
+            default -> rowCore;
+        };
 	}
 }

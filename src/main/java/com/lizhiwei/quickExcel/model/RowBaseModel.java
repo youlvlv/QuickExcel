@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import static org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE;
 import static org.apache.poi.ss.usermodel.ClientAnchor.AnchorType.MOVE_AND_RESIZE;
 
-public class RowBaseModel<T extends RowBaseModel<T>> {
+public abstract class RowBaseModel<T extends RowBaseModel<T,Y>,Y extends ModelBase> implements ModelBase<Y> {
 
 	/**
 	 * 当前行数
@@ -83,9 +83,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 		return chain;
 	}
 
-	public SheetModel over() {
-		return sheet;
-	}
+	public abstract Y over();
 
 	/**
 	 * 设置值
@@ -244,7 +242,7 @@ public class RowBaseModel<T extends RowBaseModel<T>> {
 		for (String imagePath : imagePathList) {
 			File imageFile = new File(imagePath);
 			if (!imageFile.exists()) {
-				System.out.println("警告：文件 " + imagePath + " 不存在，跳过此图片插入操作！");
+                logger.error("警告：文件 {} 不存在，跳过此图片插入操作！", imagePath);
 				continue; // 跳过当前不存在的文件，处理下一个图片
 			}
 			InputStream inputStream = new FileInputStream(imagePath);

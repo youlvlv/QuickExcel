@@ -2,7 +2,7 @@ package com.lizhiwei.quickExcel.model;
 
 import org.apache.poi.ss.usermodel.Row;
 
-public class RowModel extends RowBaseModel<RowModel> {
+public class RowModel extends RowBaseModel<RowModel,SheetModel> {
 
 	/**
 	 * 当前单元格位置
@@ -13,6 +13,11 @@ public class RowModel extends RowBaseModel<RowModel> {
 	public RowModel(int rowNumber, Row row, SheetModel sheetModel) {
 		super(rowNumber, row, sheetModel);
 		super.chain = this;
+	}
+
+	@Override
+	public SheetModel over() {
+		return sheet;
 	}
 
 	public RowModel setHigh(short high) {

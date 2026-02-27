@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 
-public class MoreRowModel extends RowBaseModel<MoreRowModel> {
+public class MoreRowModel extends RowBaseModel<MoreRowModel,SheetModel> {
 
 	/**
 	 * 结束行数
@@ -154,6 +154,11 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 		return this;
 	}
 
+	@Override
+	public SheetModel over() {
+		return sheet;
+	}
+
 
 	public void setSecondHeaderValue(List<ExcelEntity> v, CellStyle style) {
 		for (ExcelEntity excelEntity : v) {
@@ -163,7 +168,7 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 		}
 	}
 
-	public static class RowModelSeparation extends RowBaseModel<RowModelSeparation> {
+	public static class RowModelSeparation extends RowBaseModel<RowModelSeparation,MoreRowModel> {
 
 		protected final MoreRowModel moreRowModel;
 
@@ -181,6 +186,11 @@ public class MoreRowModel extends RowBaseModel<MoreRowModel> {
 
 		public MoreRowModel overSignRowAndAddOrder() {
 			moreRowModel.order = this.order;
+			return moreRowModel;
+		}
+
+		@Override
+		public MoreRowModel over() {
 			return moreRowModel;
 		}
 	}

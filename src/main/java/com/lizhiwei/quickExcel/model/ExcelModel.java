@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * excel模型
  */
-public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
+public class ExcelModel extends ExcelBaseModel implements AutoCloseable,ModelBase {
 
 	/**
 	 * 默认的单元格格式
@@ -278,6 +278,11 @@ public class ExcelModel extends ExcelBaseModel implements AutoCloseable {
 			return ExcelType.XLS;
 		}
 		throw new IORunTimeException("当前不支持该类型");
+	}
+
+	@Override
+	public ModelBase over() {
+		throw new RuntimeException("当前已是顶部模型");
 	}
 
 

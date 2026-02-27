@@ -129,4 +129,7 @@ public @interface Excel {
      * @return
      */
     Class<? extends Rule<?>>[] rules() default {};
+
+
+	Class<? extends ImageFileSaveFunction> excelImgInfo() default DefaultImageFileSaveFunction.class;
 }

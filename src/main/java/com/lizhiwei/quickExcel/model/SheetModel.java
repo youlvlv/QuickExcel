@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-public class SheetModel extends ExcelBaseModel {
+public class SheetModel extends ExcelBaseModel implements ModelBase<ExcelModel> {
 	private static final Logger log = LogManager.getLogger(SheetModel.class);
 	private final Sheet xSheet;
 	private final ExcelModel excel;
