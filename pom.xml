@@ -6,7 +6,7 @@
 
 	<groupId>com.github</groupId>
 	<artifactId>QuickExcel</artifactId>
-	<version>3.0</version>
+	<version>4.0</version>
 	<packaging>jar</packaging>
 
 
@@ -173,5 +173,10 @@
 			<!--            </plugin>-->
 		</plugins>
 	</build>
-
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<url>http://172.16.1.148:8081/repository/maven-lizhiwei-release/</url>
+		</repository>
+	</distributionManagement>
 </project>
